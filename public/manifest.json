@@ -1,0 +1,20 @@
+{
+  "name": "圣地亚哥华人网球俱乐部食神杯 - San Diego Chinese Tennis Club",
+  "short_name": "圣地亚哥华人网球俱乐部食神杯",
+  "description": "Your premier destination for San Diego Chinese Tennis Club Food God Cup management, schedules, standings, and community updates.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#0f3460",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["sports", "lifestyle", "utilities"],
+  "lang": "en",
+  "dir": "ltr"
+}

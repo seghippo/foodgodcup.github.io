@@ -1,0 +1,202 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { 
+  color-scheme: light dark; 
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-league-primary dark:via-league-secondary dark:to-league-accent text-slate-900 dark:text-slate-100 min-h-screen;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-100 dark:bg-slate-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-league-accent rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-league-highlight;
+}
+
+/* Enhanced link styles */
+a { 
+  @apply text-league-accent hover:text-league-highlight transition-colors duration-200; 
+}
+
+/* Modern card component */
+.card { 
+  @apply rounded-3xl border border-slate-200/50 dark:border-slate-700/50 shadow-sports p-6 bg-card-gradient dark:bg-dark-card-gradient backdrop-blur-sm hover:shadow-sports-lg transition-all duration-300 hover:-translate-y-1; 
+}
+
+.card:hover {
+  @apply border-league-accent/30 dark:border-league-accent/30;
+}
+
+/* Enhanced button styles */
+.btn { 
+  @apply inline-flex items-center gap-2 rounded-2xl px-6 py-3 font-semibold border border-transparent bg-gradient-to-r from-league-accent to-league-highlight text-white hover:from-league-highlight hover:to-league-accent active:scale-95 transition-all duration-200 shadow-lg hover:shadow-glow; 
+}
+
+.btn-secondary {
+  @apply inline-flex items-center gap-2 rounded-2xl px-6 py-3 font-semibold border-2 border-league-accent text-league-accent hover:bg-league-accent hover:text-white transition-all duration-200;
+}
+
+.btn-gold {
+  @apply inline-flex items-center gap-2 rounded-2xl px-6 py-3 font-semibold border border-transparent bg-gradient-to-r from-league-gold to-yellow-500 text-white hover:shadow-glow-gold transition-all duration-200;
+}
+
+/* Enhanced badge styles */
+.badge { 
+  @apply inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-sm font-medium bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border border-slate-200 dark:border-slate-600; 
+}
+
+.badge-success {
+  @apply bg-gradient-to-r from-league-success to-emerald-500 text-white border-transparent;
+}
+
+.badge-warning {
+  @apply bg-gradient-to-r from-league-warning to-orange-500 text-white border-transparent;
+}
+
+.badge-danger {
+  @apply bg-gradient-to-r from-league-danger to-red-500 text-white border-transparent;
+}
+
+/* Hero section styles */
+.hero {
+  @apply relative overflow-hidden rounded-3xl bg-hero-gradient text-white p-8 md:p-12;
+}
+
+.hero::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-league-accent/20 to-league-highlight/20;
+}
+
+/* Stats card styles */
+.stat-card {
+  @apply bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/50 dark:border-slate-700/50 shadow-lg hover:shadow-xl transition-all duration-300;
+}
+
+/* Navigation styles */
+.nav-link {
+  @apply px-4 py-2 rounded-xl font-medium transition-all duration-200 hover:bg-white/10 dark:hover:bg-slate-800/50 hover:scale-105;
+}
+
+.nav-link.active {
+  @apply bg-league-accent text-white shadow-lg;
+}
+
+/* Loading animations */
+@keyframes shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Custom focus styles */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-league-accent focus:ring-offset-2 dark:focus:ring-offset-slate-800;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  .card {
+    @apply p-4 rounded-2xl;
+  }
+  
+  .btn {
+    @apply px-4 py-2.5 text-sm;
+  }
+  
+  .btn-gold {
+    @apply px-4 py-2.5 text-sm;
+  }
+  
+  .btn-secondary {
+    @apply px-4 py-2.5 text-sm;
+  }
+  
+  .hero {
+    @apply p-6 rounded-2xl;
+  }
+  
+  .stat-card {
+    @apply p-4;
+  }
+}
+
+/* iPhone-specific optimizations */
+@supports (-webkit-touch-callout: none) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .card {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  .btn, .btn-gold, .btn-secondary {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+}
+
+/* Safe area handling for iPhone X and newer */
+@supports (padding: max(0px)) {
+  .container {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+  
+  .hero {
+    padding-top: max(2rem, env(safe-area-inset-top));
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Touch-friendly button sizes */
+@media (pointer: coarse) {
+  .btn, .btn-gold, .btn-secondary {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  .nav-link {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+}
+
+/* Prevent zoom on input focus (iOS) */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] {
+    font-size: 16px;
+  }
+}
