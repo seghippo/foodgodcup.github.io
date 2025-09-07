@@ -56,7 +56,7 @@ const translations = {
     // Standings
     'standings.title': 'Standings',
     'standings.tennisCompetition': 'Tennis Competition',
-    'standings.culinaryCompetition': 'Culinary Competition',
+    'standings.culinaryCompetition': 'Food Competition',
     'standings.scoringSystem': 'Scoring System:',
     'standings.scoringDesc': 'Top 2 teams = 3 points, Middle 2 teams = 1 point, Bottom 3 teams = 0 points',
     'standings.team': 'Team',
@@ -145,7 +145,7 @@ const translations = {
     // Standings
     'standings.title': '排名',
     'standings.tennisCompetition': '网球比赛',
-    'standings.culinaryCompetition': '烹饪比赛',
+    'standings.culinaryCompetition': '美食赛',
     'standings.scoringSystem': '计分系统：',
     'standings.scoringDesc': '前2名队伍 = 3分，中间2名队伍 = 1分，后3名队伍 = 0分',
     'standings.team': '队伍',
