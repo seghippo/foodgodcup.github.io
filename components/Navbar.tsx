@@ -14,7 +14,7 @@ export function Navbar() {
   const link = (href: string, label: string) => (
     <Link
       key={href}
-      href={href}
+      href={href as any}
       onClick={() => setIsMobileMenuOpen(false)}
       className={clsx(
         'nav-link focus-ring',
