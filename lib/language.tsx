@@ -122,7 +122,7 @@ const translations = {
     
     // Homepage
     'home.welcome': '欢迎来到',
-    'home.title': '圣地亚哥华人网球俱乐部食神杯',
+    'home.title': '圣地亚哥食神杯',
     'home.subtitle': '圣地亚哥华人网球俱乐部',
     'home.description': '圣地亚哥华人网球俱乐部食神杯管理、赛程、排名和社区更新的首选平台。体验网球卓越与烹饪激情的完美融合。',
     'home.viewSchedule': '查看赛程',
