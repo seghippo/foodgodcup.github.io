@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { LanguageProvider } from '@/lib/language';
+import { AuthProvider } from '@/lib/auth';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -49,13 +50,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${inter.className} antialiased`}>
         <LanguageProvider>
-          <div className="min-h-screen flex flex-col">
-            <Navbar />
-            <main className="flex-1 container max-w-7xl py-8 px-4 sm:px-6 lg:px-8">
-              {children}
-            </main>
-            <Footer />
-          </div>
+          <AuthProvider>
+            <div className="min-h-screen flex flex-col">
+              <Navbar />
+              <main className="flex-1 container max-w-7xl py-8 px-4 sm:px-6 lg:px-8">
+                {children}
+              </main>
+              <Footer />
+            </div>
+          </AuthProvider>
         </LanguageProvider>
       </body>
     </html>

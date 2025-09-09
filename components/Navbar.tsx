@@ -49,6 +49,7 @@ export function Navbar() {
           {link('/schedule', t('nav.schedule'))}
           {link('/standings', t('nav.standings'))}
           {link('/blog', t('nav.blog'))}
+          {link('/captain', t('nav.captain'))}
         </nav>
 
 
@@ -77,6 +78,7 @@ export function Navbar() {
             {link('/schedule', t('nav.schedule'))}
             {link('/standings', t('nav.standings'))}
             {link('/blog', t('nav.blog'))}
+            {link('/captain', t('nav.captain'))}
           </nav>
         </div>
       )}

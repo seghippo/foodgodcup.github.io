@@ -38,6 +38,22 @@ export type Game = {
 export type Standing = { teamId: string; wins: number; losses: number; draws: number; points: number };
 export type CulinaryStanding = { teamId: string; points: number; round1: number; round2: number; round3: number };
 
+export type MatchResult = {
+  id: string;
+  gameId: string; // References the original game
+  homeTeamId: string;
+  awayTeamId: string;
+  homeScore: number;
+  awayScore: number;
+  submittedBy: string; // Captain ID who submitted
+  submittedAt: string; // ISO timestamp
+  status: 'pending' | 'approved' | 'rejected';
+  players: {
+    homeTeam: { playerId: string; wins: number; losses: number }[];
+    awayTeam: { playerId: string; wins: number; losses: number }[];
+  };
+};
+
 export type Post = {
   slug: string;
   title: string;
@@ -270,6 +286,34 @@ export const culinaryStandings: CulinaryStanding[] = [
   { teamId: 'TJG', points: 3, round1: 0, round2: 1, round3: 1 }, // No points, middle, middle
   { teamId: 'LGN', points: 2, round1: 1, round2: 0, round3: 1 }, // Middle, no points, middle
   { teamId: 'HBR', points: 0, round1: 0, round2: 0, round3: 0 }  // No points in all rounds
+];
+
+// Sample match results (captain submissions)
+export const matchResults: MatchResult[] = [
+  // Example: Preseason game result
+  {
+    id: 'MR001',
+    gameId: 'P1',
+    homeTeamId: 'TJG',
+    awayTeamId: 'FJT',
+    homeScore: 3,
+    awayScore: 2,
+    submittedBy: 'TJ01', // Xue Feng (Tianjin captain)
+    submittedAt: '2024-01-15T10:30:00Z',
+    status: 'approved',
+    players: {
+      homeTeam: [
+        { playerId: 'TJ01', wins: 1, losses: 0 },
+        { playerId: 'TJ02', wins: 1, losses: 0 },
+        { playerId: 'TJ03', wins: 1, losses: 1 }
+      ],
+      awayTeam: [
+        { playerId: 'FJ01', wins: 0, losses: 1 },
+        { playerId: 'FJ02', wins: 1, losses: 1 },
+        { playerId: 'FJ03', wins: 1, losses: 0 }
+      ]
+    }
+  }
 ];
 
 export const posts: Post[] = [
