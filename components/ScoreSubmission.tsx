@@ -20,8 +20,8 @@ export default function ScoreSubmission({ gameId, onScoreSubmit }: ScoreSubmissi
   const game = schedule.find(g => g.id === gameId);
   if (!game) return null;
 
-  const homeTeam = teams.find(t => t.id === game.homeTeam);
-  const awayTeam = teams.find(t => t.id === game.awayTeam);
+  const homeTeam = teams.find(t => t.id === game.home);
+  const awayTeam = teams.find(t => t.id === game.away);
   
   if (!homeTeam || !awayTeam) return null;
 
@@ -41,8 +41,8 @@ export default function ScoreSubmission({ gameId, onScoreSubmit }: ScoreSubmissi
     const matchResult = {
       id: `MR${Date.now()}`,
       gameId: gameId,
-      homeTeamId: game.homeTeam,
-      awayTeamId: game.awayTeam,
+      homeTeamId: game.home,
+      awayTeamId: game.away,
       homeScore,
       awayScore,
       submittedBy: 'CAPTAIN_ID', // This would come from authentication

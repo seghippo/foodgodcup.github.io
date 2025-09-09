@@ -89,8 +89,8 @@ export default function CaptainPage() {
         <h2 className="text-xl font-semibold mb-4">{t('captain.selectGame')}</h2>
         <div className="grid gap-3">
           {availableGames.map(game => {
-            const homeTeam = teams.find(t => t.id === game.homeTeam);
-            const awayTeam = teams.find(t => t.id === game.awayTeam);
+            const homeTeam = teams.find(t => t.id === game.home);
+            const awayTeam = teams.find(t => t.id === game.away);
             
             if (!homeTeam || !awayTeam) return null;
 
