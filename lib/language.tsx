@@ -100,6 +100,18 @@ const translations = {
     'schedule.finalScore': 'Final Score',
     'schedule.playerStats': 'Player Statistics',
     'schedule.submitting': 'Submitting...',
+    'schedule.submitDetailedScore': 'Submit Detailed Match Scores',
+    'schedule.matchLine': 'Match Line',
+    'schedule.matchType': 'Match Type',
+    'schedule.doubles': 'Doubles',
+    'schedule.singles': 'Singles',
+    'schedule.players': 'Players',
+    'schedule.selectPlayer': 'Select Player',
+    'schedule.addPlayer': 'Add Player',
+    'schedule.sets': 'Sets',
+    'schedule.addSet': 'Add Set',
+    'schedule.set': 'Set',
+    'schedule.addMatchLine': 'Add Match Line',
     
     // Captain
     'captain.title': 'Captain Dashboard',
@@ -153,6 +165,7 @@ const translations = {
     'common.loading': 'Loading...',
     'common.error': 'Error',
     'common.success': 'Success',
+    'common.remove': 'Remove',
   },
   zh: {
     // Navigation
@@ -232,6 +245,18 @@ const translations = {
     'schedule.finalScore': '最终比分',
     'schedule.playerStats': '球员统计',
     'schedule.submitting': '提交中...',
+    'schedule.submitDetailedScore': '提交详细比赛成绩',
+    'schedule.matchLine': '比赛线',
+    'schedule.matchType': '比赛类型',
+    'schedule.doubles': '双打',
+    'schedule.singles': '单打',
+    'schedule.players': '球员',
+    'schedule.selectPlayer': '选择球员',
+    'schedule.addPlayer': '添加球员',
+    'schedule.sets': '盘数',
+    'schedule.addSet': '添加盘',
+    'schedule.set': '盘',
+    'schedule.addMatchLine': '添加比赛线',
     
     // Captain
     'captain.title': '队长管理台',
@@ -285,6 +310,7 @@ const translations = {
     'common.loading': '加载中...',
     'common.error': '错误',
     'common.success': '成功',
+    'common.remove': '删除',
   }
 };
 

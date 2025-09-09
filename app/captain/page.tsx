@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/lib/language';
 import { useAuth } from '@/lib/auth';
 import { teams, schedule, matchResults } from '@/lib/data';
-import ScoreSubmission from '@/components/ScoreSubmission';
+import DetailedScoreSubmission from '@/components/DetailedScoreSubmission';
 
 export default function CaptainPage() {
   const { t, getTeamName } = useLanguage();
@@ -136,7 +136,7 @@ export default function CaptainPage() {
 
       {/* Score Submission Form */}
       {selectedGame && (
-        <ScoreSubmission 
+        <DetailedScoreSubmission 
           gameId={selectedGame} 
           onScoreSubmit={handleScoreSubmit}
         />
@@ -157,7 +157,7 @@ export default function CaptainPage() {
                 <div key={result.id} className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <div className="font-semibold">
-                      {getTeamName(homeTeam)} {result.homeScore} - {result.awayScore} {getTeamName(awayTeam)}
+                      {getTeamName(homeTeam)} {result.homeTotalScore} - {result.awayTotalScore} {getTeamName(awayTeam)}
                     </div>
                     <span className={`px-2 py-1 rounded text-xs ${
                       result.status === 'approved'

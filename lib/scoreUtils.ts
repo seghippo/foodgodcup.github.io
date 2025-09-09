@@ -11,12 +11,12 @@ export function updateTeamStandings(matchResults: MatchResult[]): Standing[] {
       const awayTeamIndex = newStandings.findIndex(s => s.teamId === result.awayTeamId);
 
       if (homeTeamIndex !== -1 && awayTeamIndex !== -1) {
-        if (result.homeScore > result.awayScore) {
+        if (result.homeTotalScore > result.awayTotalScore) {
           // Home team wins
           newStandings[homeTeamIndex].wins += 1;
           newStandings[awayTeamIndex].losses += 1;
           newStandings[homeTeamIndex].points += 3;
-        } else if (result.awayScore > result.homeScore) {
+        } else if (result.awayTotalScore > result.homeTotalScore) {
           // Away team wins
           newStandings[awayTeamIndex].wins += 1;
           newStandings[homeTeamIndex].losses += 1;
@@ -44,28 +44,36 @@ export function updatePlayerStats(matchResults: MatchResult[]): Player[] {
   matchResults
     .filter(result => result.status === 'approved')
     .forEach(result => {
-      // Update home team player stats
-      result.players.homeTeam.forEach(playerResult => {
-        const team = updatedTeams.find(t => t.id === result.homeTeamId);
-        if (team) {
-          const player = team.roster.find(p => p.id === playerResult.playerId);
-          if (player) {
-            player.wins += playerResult.wins;
-            player.losses += playerResult.losses;
+      result.matchLines.forEach(matchLine => {
+        // Update home team player stats
+        matchLine.homePlayers.forEach(playerId => {
+          const team = updatedTeams.find(t => t.id === result.homeTeamId);
+          if (team) {
+            const player = team.roster.find(p => p.id === playerId);
+            if (player) {
+              if (matchLine.winner === 'home') {
+                player.wins += 1;
+              } else {
+                player.losses += 1;
+              }
+            }
           }
-        }
-      });
+        });
 
-      // Update away team player stats
-      result.players.awayTeam.forEach(playerResult => {
-        const team = updatedTeams.find(t => t.id === result.awayTeamId);
-        if (team) {
-          const player = team.roster.find(p => p.id === playerResult.playerId);
-          if (player) {
-            player.wins += playerResult.wins;
-            player.losses += playerResult.losses;
+        // Update away team player stats
+        matchLine.awayPlayers.forEach(playerId => {
+          const team = updatedTeams.find(t => t.id === result.awayTeamId);
+          if (team) {
+            const player = team.roster.find(p => p.id === playerId);
+            if (player) {
+              if (matchLine.winner === 'away') {
+                player.wins += 1;
+              } else {
+                player.losses += 1;
+              }
+            }
           }
-        }
+        });
       });
     });
 
