@@ -17,6 +17,7 @@ interface LanguageContextType {
   getPostTitle: (post: any) => string;
   getPostExcerpt: (post: any) => string;
   getPostContent: (post: any) => string;
+  isClient: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -289,9 +290,11 @@ const translations = {
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<Language>('zh');
+  const [isClient, setIsClient] = useState(false);
 
   // Load language from localStorage on mount
   useEffect(() => {
+    setIsClient(true);
     const savedLanguage = localStorage.getItem('language') as Language;
     if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'zh')) {
       setLanguage(savedLanguage);
@@ -300,8 +303,10 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   // Save language to localStorage when it changes
   useEffect(() => {
-    localStorage.setItem('language', language);
-  }, [language]);
+    if (isClient) {
+      localStorage.setItem('language', language);
+    }
+  }, [language, isClient]);
 
   const t = (key: string): string => {
     return translations[language][key as keyof typeof translations[typeof language]] || key;
@@ -353,7 +358,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, getTeamName, getCoachName, getArenaName, getPlayerName, getPlayerPosition, getPlayerExperience, getPostTitle, getPostExcerpt, getPostContent }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t, getTeamName, getCoachName, getArenaName, getPlayerName, getPlayerPosition, getPlayerExperience, getPostTitle, getPostExcerpt, getPostContent, isClient }}>
       {children}
     </LanguageContext.Provider>
   );
