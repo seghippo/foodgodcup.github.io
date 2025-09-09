@@ -59,14 +59,14 @@ export const teams: Team[] = [
     cityEn: 'Northeast',
     coach: '胡哥',
     coachEn: 'Brother Hu',
-    founded: 2018,
+    founded: 2025,
     arena: 'Northeast Tennis Center',
     arenaEn: 'Northeast Tennis Center',
     roster: [
-      { id: 'DND1', name: '张强', nameEn: 'Zhang Qiang', position: '单打', positionEn: 'Singles', age: 28, experience: '专业级', experienceEn: 'Professional' },
-      { id: 'DND2', name: '李娜', nameEn: 'Li Na', position: '双打', positionEn: 'Doubles', age: 25, experience: '高级', experienceEn: 'Advanced' },
-      { id: 'DND3', name: '王明', nameEn: 'Wang Ming', position: '混双', positionEn: 'Mixed Doubles', age: 30, experience: '中级', experienceEn: 'Intermediate' },
-      { id: 'DND4', name: '陈雪', nameEn: 'Chen Xue', position: '替补', positionEn: 'Substitute', age: 22, experience: '初级', experienceEn: 'Beginner' }
+      { id: 'DB01', name: 'Player 1', nameEn: 'Player 1', position: '单打', positionEn: 'Singles', age: 28, experience: '专业级', experienceEn: 'Professional' },
+      { id: 'DB02', name: 'Player 2', nameEn: 'Player 2', position: '双打', positionEn: 'Doubles', age: 25, experience: '高级', experienceEn: 'Advanced' },
+      { id: 'DB03', name: 'Player 3', nameEn: 'Player 3', position: '混双', positionEn: 'Mixed Doubles', age: 30, experience: '中级', experienceEn: 'Intermediate' },
+      { id: 'DB04', name: 'Player 4', nameEn: 'Player 4', position: '替补', positionEn: 'Substitute', age: 22, experience: '初级', experienceEn: 'Beginner' }
     ]
   },
   { 
@@ -77,14 +77,23 @@ export const teams: Team[] = [
     cityEn: 'Fujian',
     coach: '卫东',
     coachEn: 'Wei Dong',
-    founded: 2019,
+    founded: 2025,
     arena: 'Fujian Tennis Club',
     arenaEn: 'Fujian Tennis Club',
     roster: [
-      { id: 'FJT1', name: '林志华', nameEn: 'Lin Zhihua', position: '单打', positionEn: 'Singles', age: 26, experience: '专业级', experienceEn: 'Professional' },
-      { id: 'FJT2', name: '黄美玲', nameEn: 'Huang Meiling', position: '双打', positionEn: 'Doubles', age: 24, experience: '高级', experienceEn: 'Advanced' },
-      { id: 'FJT3', name: '郑伟', nameEn: 'Zheng Wei', position: '混双', positionEn: 'Mixed Doubles', age: 29, experience: '中级', experienceEn: 'Intermediate' },
-      { id: 'FJT4', name: '吴晓', nameEn: 'Wu Xiao', position: '替补', positionEn: 'Substitute', age: 23, experience: '初级', experienceEn: 'Beginner' }
+      { id: 'FJ01', name: 'Weidong', nameEn: 'Weidong', position: '单打', positionEn: 'Singles', age: 30, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'FJ02', name: 'lao ye', nameEn: 'lao ye', position: '双打', positionEn: 'Doubles', age: 32, experience: '4.5级', experienceEn: '4.5 Level' },
+      { id: 'FJ03', name: 'Jim Yang', nameEn: 'Jim Yang', position: '混双', positionEn: 'Mixed Doubles', age: 28, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'FJ04', name: 'Carl Xiao', nameEn: 'Carl Xiao', position: '替补', positionEn: 'Substitute', age: 26, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'FJ05', name: 'Patrick Huang', nameEn: 'Patrick Huang', position: '替补', positionEn: 'Substitute', age: 29, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'FJ06', name: 'Zhu Liang', nameEn: 'Zhu Liang', position: '替补', positionEn: 'Substitute', age: 27, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'FJ07', name: 'Jim Chen', nameEn: 'Jim Chen', position: '替补', positionEn: 'Substitute', age: 25, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'FJ08', name: 'Ian Huang', nameEn: 'Ian Huang', position: '替补', positionEn: 'Substitute', age: 24, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'FJ09', name: 'Isabella Luo', nameEn: 'Isabella Luo', position: '替补', positionEn: 'Substitute', age: 23, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'FJ10', name: 'Huli', nameEn: 'Huli', position: '替补', positionEn: 'Substitute', age: 31, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'FJ11', name: 'Joi', nameEn: 'Joi', position: '替补', positionEn: 'Substitute', age: 22, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'FJ12', name: '海盺', nameEn: 'Hai Xin', position: '替补', positionEn: 'Substitute', age: 26, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'FJ13', name: 'June', nameEn: 'June', position: '替补', positionEn: 'Substitute', age: 25, experience: '3.5级', experienceEn: '3.5 Level' }
     ]
   },
   { 
@@ -95,14 +104,25 @@ export const teams: Team[] = [
     cityEn: 'Beijing',
     coach: '王涤',
     coachEn: 'Wang Di',
-    founded: 2017,
+    founded: 2025,
     arena: 'Beijing Tennis Academy',
     arenaEn: 'Beijing Tennis Academy',
     roster: [
-      { id: 'BJD1', name: '刘建国', nameEn: 'Liu Jianguo', position: '单打', positionEn: 'Singles', age: 31, experience: '专业级', experienceEn: 'Professional' },
-      { id: 'BJD2', name: '赵丽华', nameEn: 'Zhao Lihua', position: '双打', positionEn: 'Doubles', age: 27, experience: '高级', experienceEn: 'Advanced' },
-      { id: 'BJD3', name: '孙大伟', nameEn: 'Sun Dawei', position: '混双', positionEn: 'Mixed Doubles', age: 25, experience: '中级', experienceEn: 'Intermediate' },
-      { id: 'BJD4', name: '周小敏', nameEn: 'Zhou Xiaomin', position: '替补', positionEn: 'Substitute', age: 21, experience: '初级', experienceEn: 'Beginner' }
+      { id: 'BJ01', name: 'Player 1', nameEn: 'Player 1', position: '单打', positionEn: 'Singles', age: 30, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'BJ02', name: 'Player 2', nameEn: 'Player 2', position: '双打', positionEn: 'Doubles', age: 28, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'BJ03', name: 'Player 3', nameEn: 'Player 3', position: '混双', positionEn: 'Mixed Doubles', age: 26, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'BJ04', name: 'Player 4', nameEn: 'Player 4', position: '替补', positionEn: 'Substitute', age: 25, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'BJ05', name: 'Player 5', nameEn: 'Player 5', position: '替补', positionEn: 'Substitute', age: 27, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'BJ06', name: 'Player 6', nameEn: 'Player 6', position: '替补', positionEn: 'Substitute', age: 24, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'BJ07', name: 'Player 7', nameEn: 'Player 7', position: '替补', positionEn: 'Substitute', age: 29, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'BJ08', name: 'Player 8', nameEn: 'Player 8', position: '替补', positionEn: 'Substitute', age: 23, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'BJ09', name: 'Player 9', nameEn: 'Player 9', position: '替补', positionEn: 'Substitute', age: 31, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'BJ10', name: 'Player 10', nameEn: 'Player 10', position: '替补', positionEn: 'Substitute', age: 22, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'BJ11', name: 'Player 11', nameEn: 'Player 11', position: '替补', positionEn: 'Substitute', age: 26, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'BJ12', name: 'Player 12', nameEn: 'Player 12', position: '替补', positionEn: 'Substitute', age: 28, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'BJ13', name: 'Player 13', nameEn: 'Player 13', position: '替补', positionEn: 'Substitute', age: 25, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'BJ14', name: 'Player 14', nameEn: 'Player 14', position: '替补', positionEn: 'Substitute', age: 24, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'BJ15', name: 'Player 15', nameEn: 'Player 15', position: '替补', positionEn: 'Substitute', age: 27, experience: '3.5级', experienceEn: '3.5 Level' }
     ]
   },
   { 
@@ -113,14 +133,25 @@ export const teams: Team[] = [
     cityEn: 'Guangdong',
     coach: '麦克',
     coachEn: 'Mike',
-    founded: 2020,
+    founded: 2025,
     arena: 'Guangdong Tennis Center',
     arenaEn: 'Guangdong Tennis Center',
     roster: [
-      { id: 'LGN1', name: '陈志明', nameEn: 'Chen Zhiming', position: '单打', positionEn: 'Singles', age: 29, experience: '专业级', experienceEn: 'Professional' },
-      { id: 'LGN2', name: '李小红', nameEn: 'Li Xiaohong', position: '双打', positionEn: 'Doubles', age: 26, experience: '高级', experienceEn: 'Advanced' },
-      { id: 'LGN3', name: '黄志强', nameEn: 'Huang Zhiqiang', position: '混双', positionEn: 'Mixed Doubles', age: 28, experience: '中级', experienceEn: 'Intermediate' },
-      { id: 'LGN4', name: '张美玲', nameEn: 'Zhang Meiling', position: '替补', positionEn: 'Substitute', age: 24, experience: '初级', experienceEn: 'Beginner' }
+      { id: 'LG01', name: 'Michael', nameEn: 'Michael', position: '单打', positionEn: 'Singles', age: 30, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'LG02', name: 'Frankie', nameEn: 'Frankie', position: '双打', positionEn: 'Doubles', age: 28, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'LG03', name: 'Ken', nameEn: 'Ken', position: '混双', positionEn: 'Mixed Doubles', age: 32, experience: '4.5级', experienceEn: '4.5 Level' },
+      { id: 'LG04', name: 'Phung', nameEn: 'Phung', position: '替补', positionEn: 'Substitute', age: 26, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'LG05', name: 'Bin', nameEn: 'Bin', position: '替补', positionEn: 'Substitute', age: 25, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'LG06', name: 'Chan', nameEn: 'Chan', position: '替补', positionEn: 'Substitute', age: 31, experience: '4.5级', experienceEn: '4.5 Level' },
+      { id: 'LG07', name: 'Sheng', nameEn: 'Sheng', position: '替补', positionEn: 'Substitute', age: 27, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'LG08', name: 'Roy', nameEn: 'Roy', position: '替补', positionEn: 'Substitute', age: 29, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'LG09', name: 'Byung', nameEn: 'Byung', position: '替补', positionEn: 'Substitute', age: 24, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'LG10', name: 'Katrina', nameEn: 'Katrina', position: '替补', positionEn: 'Substitute', age: 23, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'LG11', name: 'Player 11', nameEn: 'Player 11', position: '替补', positionEn: 'Substitute', age: 26, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'LG12', name: 'Player 12', nameEn: 'Player 12', position: '替补', positionEn: 'Substitute', age: 28, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'LG13', name: 'Player 13', nameEn: 'Player 13', position: '替补', positionEn: 'Substitute', age: 25, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'LG14', name: 'Player 14', nameEn: 'Player 14', position: '替补', positionEn: 'Substitute', age: 22, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'LG15', name: 'Player 15', nameEn: 'Player 15', position: '替补', positionEn: 'Substitute', age: 30, experience: '3.5级', experienceEn: '3.5 Level' }
     ]
   },
   { 
@@ -131,14 +162,22 @@ export const teams: Team[] = [
     cityEn: 'Tianjin',
     coach: '雪峰',
     coachEn: 'Xue Feng',
-    founded: 2016,
+    founded: 2025,
     arena: 'Tianjin Tennis Club',
     arenaEn: 'Tianjin Tennis Club',
     roster: [
-      { id: 'TJG1', name: '王大力', nameEn: 'Wang Dali', position: '单打', positionEn: 'Singles', age: 27, experience: '专业级', experienceEn: 'Professional' },
-      { id: 'TJG2', name: '刘美丽', nameEn: 'Liu Meili', position: '双打', positionEn: 'Doubles', age: 25, experience: '高级', experienceEn: 'Advanced' },
-      { id: 'TJG3', name: '张伟', nameEn: 'Zhang Wei', position: '混双', positionEn: 'Mixed Doubles', age: 30, experience: '中级', experienceEn: 'Intermediate' },
-      { id: 'TJG4', name: '李娜娜', nameEn: 'Li Nana', position: '替补', positionEn: 'Substitute', age: 22, experience: '初级', experienceEn: 'Beginner' }
+      { id: 'TJ01', name: 'Xue Feng', nameEn: 'Xue Feng', position: '单打', positionEn: 'Singles', age: 30, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'TJ02', name: 'Liu Yuan', nameEn: 'Liu Yuan', position: '双打', positionEn: 'Doubles', age: 28, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'TJ03', name: 'Han Peng', nameEn: 'Han Peng', position: '混双', positionEn: 'Mixed Doubles', age: 25, experience: '3.0级', experienceEn: '3.0 Level' },
+      { id: 'TJ04', name: 'Wang XZ', nameEn: 'Wang XZ', position: '替补', positionEn: 'Substitute', age: 26, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'TJ05', name: 'Jeff Yang', nameEn: 'Jeff Yang', position: '替补', positionEn: 'Substitute', age: 29, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'TJ06', name: 'Mike Yang', nameEn: 'Mike Yang', position: '替补', positionEn: 'Substitute', age: 27, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'TJ07', name: 'Dennis Du', nameEn: 'Dennis Du', position: '替补', positionEn: 'Substitute', age: 31, experience: '4.5级', experienceEn: '4.5 Level' },
+      { id: 'TJ08', name: 'Sharp Xiao', nameEn: 'Sharp Xiao', position: '替补', positionEn: 'Substitute', age: 24, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'TJ09', name: 'Serena', nameEn: 'Serena', position: '替补', positionEn: 'Substitute', age: 23, experience: '4.5级', experienceEn: '4.5 Level' },
+      { id: 'TJ10', name: 'Lucy Liu', nameEn: 'Lucy Liu', position: '替补', positionEn: 'Substitute', age: 26, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'TJ11', name: 'Jing Li', nameEn: 'Jing Li', position: '替补', positionEn: 'Substitute', age: 22, experience: '3.0级', experienceEn: '3.0 Level' },
+      { id: 'TJ12', name: 'Jing Dong', nameEn: 'Jing Dong', position: '替补', positionEn: 'Substitute', age: 25, experience: '3.5级', experienceEn: '3.5 Level' }
     ]
   },
   { 
@@ -149,14 +188,21 @@ export const teams: Team[] = [
     cityEn: 'Jiangsu',
     coach: 'Sophia',
     coachEn: 'Sophia',
-    founded: 2021,
+    founded: 2025,
     arena: 'Jiangsu Tennis Academy',
     arenaEn: 'Jiangsu Tennis Academy',
     roster: [
-      { id: 'JZH1', name: '徐志强', nameEn: 'Xu Zhiqiang', position: '单打', positionEn: 'Singles', age: 26, experience: '专业级', experienceEn: 'Professional' },
-      { id: 'JZH2', name: '杨丽华', nameEn: 'Yang Lihua', position: '双打', positionEn: 'Doubles', age: 24, experience: '高级', experienceEn: 'Advanced' },
-      { id: 'JZH3', name: '朱小明', nameEn: 'Zhu Xiaoming', position: '混双', positionEn: 'Mixed Doubles', age: 28, experience: '中级', experienceEn: 'Intermediate' },
-      { id: 'JZH4', name: '钱小芳', nameEn: 'Qian Xiaofang', position: '替补', positionEn: 'Substitute', age: 23, experience: '初级', experienceEn: 'Beginner' }
+      { id: 'JZ01', name: 'Player 1', nameEn: 'Player 1', position: '单打', positionEn: 'Singles', age: 30, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'JZ02', name: 'Player 2', nameEn: 'Player 2', position: '双打', positionEn: 'Doubles', age: 28, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'JZ03', name: 'Player 3', nameEn: 'Player 3', position: '混双', positionEn: 'Mixed Doubles', age: 26, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'JZ04', name: 'Player 4', nameEn: 'Player 4', position: '替补', positionEn: 'Substitute', age: 25, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'JZ05', name: 'Player 5', nameEn: 'Player 5', position: '替补', positionEn: 'Substitute', age: 27, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'JZ06', name: 'Player 6', nameEn: 'Player 6', position: '替补', positionEn: 'Substitute', age: 24, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'JZ07', name: 'Player 7', nameEn: 'Player 7', position: '替补', positionEn: 'Substitute', age: 29, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'JZ08', name: 'Player 8', nameEn: 'Player 8', position: '替补', positionEn: 'Substitute', age: 23, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'JZ09', name: 'Player 9', nameEn: 'Player 9', position: '替补', positionEn: 'Substitute', age: 31, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'JZ10', name: 'Player 10', nameEn: 'Player 10', position: '替补', positionEn: 'Substitute', age: 22, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'JZ11', name: 'Player 11', nameEn: 'Player 11', position: '替补', positionEn: 'Substitute', age: 26, experience: '3.5级', experienceEn: '3.5 Level' }
     ]
   },
   { 
@@ -167,14 +213,21 @@ export const teams: Team[] = [
     cityEn: 'Hubei',
     coach: 'Roger',
     coachEn: 'Roger',
-    founded: 2015,
+    founded: 2025,
     arena: 'Hubei Tennis Center',
     arenaEn: 'Hubei Tennis Center',
     roster: [
-      { id: 'HBR1', name: '何志华', nameEn: 'He Zhihua', position: '单打', positionEn: 'Singles', age: 30, experience: '专业级', experienceEn: 'Professional' },
-      { id: 'HBR2', name: '邓小丽', nameEn: 'Deng Xiaoli', position: '双打', positionEn: 'Doubles', age: 27, experience: '高级', experienceEn: 'Advanced' },
-      { id: 'HBR3', name: '胡大伟', nameEn: 'Hu Dawei', position: '混双', positionEn: 'Mixed Doubles', age: 29, experience: '中级', experienceEn: 'Intermediate' },
-      { id: 'HBR4', name: '田小敏', nameEn: 'Tian Xiaomin', position: '替补', positionEn: 'Substitute', age: 25, experience: '初级', experienceEn: 'Beginner' }
+      { id: 'HB01', name: 'Player 1', nameEn: 'Player 1', position: '单打', positionEn: 'Singles', age: 30, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'HB02', name: 'Player 2', nameEn: 'Player 2', position: '双打', positionEn: 'Doubles', age: 28, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'HB03', name: 'Player 3', nameEn: 'Player 3', position: '混双', positionEn: 'Mixed Doubles', age: 26, experience: '4.0级', experienceEn: '4.0 Level' },
+      { id: 'HB04', name: 'Player 4', nameEn: 'Player 4', position: '替补', positionEn: 'Substitute', age: 25, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'HB05', name: 'Player 5', nameEn: 'Player 5', position: '替补', positionEn: 'Substitute', age: 27, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'HB06', name: 'Player 6', nameEn: 'Player 6', position: '替补', positionEn: 'Substitute', age: 24, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'HB07', name: 'Player 7', nameEn: 'Player 7', position: '替补', positionEn: 'Substitute', age: 29, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'HB08', name: 'Player 8', nameEn: 'Player 8', position: '替补', positionEn: 'Substitute', age: 23, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'HB09', name: 'Player 9', nameEn: 'Player 9', position: '替补', positionEn: 'Substitute', age: 31, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'HB10', name: 'Player 10', nameEn: 'Player 10', position: '替补', positionEn: 'Substitute', age: 22, experience: '3.5级', experienceEn: '3.5 Level' },
+      { id: 'HB11', name: 'Player 11', nameEn: 'Player 11', position: '替补', positionEn: 'Substitute', age: 26, experience: '3.5级', experienceEn: '3.5 Level' }
     ]
   }
 ];
@@ -183,16 +236,16 @@ export const teamsById = Object.fromEntries(teams.map(t => [t.id, t] as const));
 
 export const schedule: Game[] = [
   // Preseason Game
-  { id: 'P1', date: new Date(Date.now() - 7*86400000).toISOString(), home: 'TJG', away: 'FJT', venue: 'Tianjin Tennis Club', time: '7:00 PM', homeScore: 3, awayScore: 2, isPreseason: true, status: 'preseason' },
+  { id: 'P1', date: new Date(Date.now() - 7*86400000).toISOString(), home: 'TJG', away: 'FJT', venue: 'Kit Carson', time: '7:00 PM', homeScore: 3, awayScore: 2, isPreseason: true, status: 'preseason' },
   
   // Regular Season Games
-  { id: 'G1', date: new Date().toISOString(), home: 'DND', away: 'FJT', venue: 'Northeast Tennis Center', time: '7:00 PM', status: 'scheduled' },
-  { id: 'G2', date: new Date(Date.now() + 86400000).toISOString(), home: 'BJD', away: 'LGN', venue: 'Beijing Tennis Academy', time: '6:30 PM', status: 'scheduled' },
-  { id: 'G3', date: new Date(Date.now() + 2*86400000).toISOString(), home: 'TJG', away: 'JZH', venue: 'Tianjin Tennis Club', time: '8:00 PM', status: 'scheduled' },
-  { id: 'G4', date: new Date(Date.now() + 3*86400000).toISOString(), home: 'HBR', away: 'DND', venue: 'Hubei Tennis Center', time: '7:30 PM', status: 'scheduled' },
-  { id: 'G5', date: new Date(Date.now() + 4*86400000).toISOString(), home: 'FJT', away: 'BJD', venue: 'Fujian Tennis Club', time: '6:00 PM', status: 'scheduled' },
-  { id: 'G6', date: new Date(Date.now() + 5*86400000).toISOString(), home: 'LGN', away: 'TJG', venue: 'Guangdong Tennis Center', time: '8:30 PM', status: 'scheduled' },
-  { id: 'G7', date: new Date(Date.now() + 6*86400000).toISOString(), home: 'JZH', away: 'HBR', venue: 'Jiangsu Tennis Academy', time: '7:00 PM', status: 'scheduled' }
+  { id: 'G1', date: new Date().toISOString(), home: 'DND', away: 'FJT', venue: '', time: '7:00 PM', status: 'scheduled' },
+  { id: 'G2', date: new Date(Date.now() + 86400000).toISOString(), home: 'BJD', away: 'LGN', venue: '', time: '6:30 PM', status: 'scheduled' },
+  { id: 'G3', date: new Date(Date.now() + 2*86400000).toISOString(), home: 'TJG', away: 'JZH', venue: '', time: '8:00 PM', status: 'scheduled' },
+  { id: 'G4', date: new Date(Date.now() + 3*86400000).toISOString(), home: 'HBR', away: 'DND', venue: '', time: '7:30 PM', status: 'scheduled' },
+  { id: 'G5', date: new Date(Date.now() + 4*86400000).toISOString(), home: 'FJT', away: 'BJD', venue: '', time: '6:00 PM', status: 'scheduled' },
+  { id: 'G6', date: new Date(Date.now() + 5*86400000).toISOString(), home: 'LGN', away: 'TJG', venue: '', time: '8:30 PM', status: 'scheduled' },
+  { id: 'G7', date: new Date(Date.now() + 6*86400000).toISOString(), home: 'JZH', away: 'HBR', venue: '', time: '7:00 PM', status: 'scheduled' }
 ];
 
 export const standings: Standing[] = [

@@ -58,11 +58,9 @@ export function Footer() {
           {/* Contact Info */}
           <div>
             <h3 className="font-semibold text-slate-900 dark:text-white mb-4">{t('footer.contact')}</h3>
-            <ul className="space-y-2 text-slate-600 dark:text-slate-400">
-              <li>info@leaguehq.com</li>
-              <li>(555) 123-4567</li>
-              <li>123 Sports Ave<br />City, State 12345</li>
-            </ul>
+            <div className="text-slate-600 dark:text-slate-400">
+              <p>San Diego Chinese Tennis Club (SDCTC)</p>
+            </div>
           </div>
         </div>
 
