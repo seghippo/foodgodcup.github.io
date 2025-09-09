@@ -6,7 +6,7 @@ import { useLanguage } from '@/lib/language';
 
 export default function HomePage() {
   const latest = latestPost();
-  const { t, getPostTitle, getPostExcerpt } = useLanguage();
+  const { t, getPostTitle, getPostExcerpt, language, setLanguage } = useLanguage();
   
   // Count completed official matches (excluding preseason)
   const completedMatches = schedule.filter(game => game.status === 'completed' && !game.isPreseason).length;
@@ -15,13 +15,39 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="hero relative overflow-hidden">
         <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <span className="text-white/90 text-sm font-medium">{t('home.welcome')}</span>
             </div>
-            <span className="text-white/90 text-sm font-medium">{t('home.welcome')}</span>
+            
+            {/* Language Switcher */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setLanguage('en')}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors backdrop-blur-sm ${
+                  language === 'en' 
+                    ? 'bg-white/20 text-white border border-white/30' 
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => setLanguage('zh')}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors backdrop-blur-sm ${
+                  language === 'zh' 
+                    ? 'bg-white/20 text-white border border-white/30' 
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                中文
+              </button>
+            </div>
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black mb-4 md:mb-6 leading-tight">
             {t('home.title')}
