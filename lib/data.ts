@@ -134,7 +134,7 @@ export const teams: Team[] = [
   { 
     id: 'LGN', 
     name: '两广牛河', 
-    nameEn: 'Cantonese Beef Noodles',
+    nameEn: 'Liangguang',
     city: 'Guangdong',
     cityEn: 'Guangdong',
     coach: '麦克',
@@ -188,7 +188,7 @@ export const teams: Team[] = [
   { 
     id: 'JZH', 
     name: '江浙沪狮子头', 
-    nameEn: 'Jiangsu Lion Head',
+    nameEn: 'JZH',
     city: 'Jiangsu',
     cityEn: 'Jiangsu',
     coach: 'Sophia',
