@@ -66,7 +66,14 @@ export const teams: Team[] = [
       { id: 'DB01', name: 'Player 1', nameEn: 'Player 1', position: '单打', positionEn: 'Singles', age: 28, experience: '1.0级', experienceEn: '1.0 Level' },
       { id: 'DB02', name: 'Player 2', nameEn: 'Player 2', position: '双打', positionEn: 'Doubles', age: 25, experience: '1.0级', experienceEn: '1.0 Level' },
       { id: 'DB03', name: 'Player 3', nameEn: 'Player 3', position: '混双', positionEn: 'Mixed Doubles', age: 30, experience: '1.0级', experienceEn: '1.0 Level' },
-      { id: 'DB04', name: 'Player 4', nameEn: 'Player 4', position: '替补', positionEn: 'Substitute', age: 22, experience: '1.0级', experienceEn: '1.0 Level' }
+      { id: 'DB04', name: 'Player 4', nameEn: 'Player 4', position: '替补', positionEn: 'Substitute', age: 22, experience: '1.0级', experienceEn: '1.0 Level' },
+      { id: 'DB05', name: 'Player 5', nameEn: 'Player 5', position: '替补', positionEn: 'Substitute', age: 26, experience: '1.0级', experienceEn: '1.0 Level' },
+      { id: 'DB06', name: 'Player 6', nameEn: 'Player 6', position: '替补', positionEn: 'Substitute', age: 24, experience: '1.0级', experienceEn: '1.0 Level' },
+      { id: 'DB07', name: 'Player 7', nameEn: 'Player 7', position: '替补', positionEn: 'Substitute', age: 29, experience: '1.0级', experienceEn: '1.0 Level' },
+      { id: 'DB08', name: 'Player 8', nameEn: 'Player 8', position: '替补', positionEn: 'Substitute', age: 27, experience: '1.0级', experienceEn: '1.0 Level' },
+      { id: 'DB09', name: 'Player 9', nameEn: 'Player 9', position: '替补', positionEn: 'Substitute', age: 25, experience: '1.0级', experienceEn: '1.0 Level' },
+      { id: 'DB10', name: 'Player 10', nameEn: 'Player 10', position: '替补', positionEn: 'Substitute', age: 23, experience: '1.0级', experienceEn: '1.0 Level' },
+      { id: 'DB11', name: 'Player 11', nameEn: 'Player 11', position: '替补', positionEn: 'Substitute', age: 31, experience: '1.0级', experienceEn: '1.0 Level' }
     ]
   },
   { 
@@ -150,8 +157,7 @@ export const teams: Team[] = [
       { id: 'LG11', name: 'Player 11', nameEn: 'Player 11', position: '替补', positionEn: 'Substitute', age: 26, experience: '1.0级', experienceEn: '1.0 Level' },
       { id: 'LG12', name: 'Player 12', nameEn: 'Player 12', position: '替补', positionEn: 'Substitute', age: 28, experience: '1.0级', experienceEn: '1.0 Level' },
       { id: 'LG13', name: 'Player 13', nameEn: 'Player 13', position: '替补', positionEn: 'Substitute', age: 25, experience: '1.0级', experienceEn: '1.0 Level' },
-      { id: 'LG14', name: 'Player 14', nameEn: 'Player 14', position: '替补', positionEn: 'Substitute', age: 22, experience: '1.0级', experienceEn: '1.0 Level' },
-      { id: 'LG15', name: 'Player 15', nameEn: 'Player 15', position: '替补', positionEn: 'Substitute', age: 30, experience: '1.0级', experienceEn: '1.0 Level' }
+      { id: 'LG14', name: 'Player 14', nameEn: 'Player 14', position: '替补', positionEn: 'Substitute', age: 22, experience: '1.0级', experienceEn: '1.0 Level' }
     ]
   },
   { 
@@ -226,8 +232,7 @@ export const teams: Team[] = [
       { id: 'HB07', name: 'Player 7', nameEn: 'Player 7', position: '替补', positionEn: 'Substitute', age: 29, experience: '1.0级', experienceEn: '1.0 Level' },
       { id: 'HB08', name: 'Player 8', nameEn: 'Player 8', position: '替补', positionEn: 'Substitute', age: 23, experience: '1.0级', experienceEn: '1.0 Level' },
       { id: 'HB09', name: 'Player 9', nameEn: 'Player 9', position: '替补', positionEn: 'Substitute', age: 31, experience: '1.0级', experienceEn: '1.0 Level' },
-      { id: 'HB10', name: 'Player 10', nameEn: 'Player 10', position: '替补', positionEn: 'Substitute', age: 22, experience: '1.0级', experienceEn: '1.0 Level' },
-      { id: 'HB11', name: 'Player 11', nameEn: 'Player 11', position: '替补', positionEn: 'Substitute', age: 26, experience: '1.0级', experienceEn: '1.0 Level' }
+      { id: 'HB10', name: 'Player 10', nameEn: 'Player 10', position: '替补', positionEn: 'Substitute', age: 22, experience: '1.0级', experienceEn: '1.0 Level' }
     ]
   }
 ];

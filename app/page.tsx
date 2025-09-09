@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { posts, latestPost, schedule } from '@/lib/data';
+import { posts, latestPost, schedule, teams } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
 
 export default function HomePage() {
@@ -10,6 +10,9 @@ export default function HomePage() {
   
   // Count completed official matches (excluding preseason)
   const completedMatches = schedule.filter(game => game.status === 'completed' && !game.isPreseason).length;
+  
+  // Calculate total players from all team rosters
+  const totalPlayers = teams.reduce((total, team) => total + team.roster.length, 0);
   return (
     <div className="space-y-12">
       {/* Hero Section */}
@@ -104,7 +107,7 @@ export default function HomePage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
             </svg>
           </div>
-          <div className="text-xl sm:text-2xl font-bold text-league-primary dark:text-white">81</div>
+          <div className="text-xl sm:text-2xl font-bold text-league-primary dark:text-white">{totalPlayers}</div>
           <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{t('home.players')}</div>
         </div>
       </section>
