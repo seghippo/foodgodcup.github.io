@@ -51,29 +51,6 @@ export function Navbar() {
           {link('/blog', t('nav.blog'))}
         </nav>
 
-        {/* Language Switcher */}
-        <div className="hidden md:flex items-center gap-2">
-          <button
-            onClick={() => setLanguage('en')}
-            className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-              language === 'en' 
-                ? 'bg-league-accent text-white' 
-                : 'text-slate-600 dark:text-slate-400 hover:text-league-accent'
-            }`}
-          >
-            EN
-          </button>
-          <button
-            onClick={() => setLanguage('zh')}
-            className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-              language === 'zh' 
-                ? 'bg-league-accent text-white' 
-                : 'text-slate-600 dark:text-slate-400 hover:text-league-accent'
-            }`}
-          >
-            中文
-          </button>
-        </div>
 
         {/* Mobile menu button */}
         <button 
@@ -100,31 +77,6 @@ export function Navbar() {
             {link('/schedule', t('nav.schedule'))}
             {link('/standings', t('nav.standings'))}
             {link('/blog', t('nav.blog'))}
-            
-            {/* Mobile Language Switcher */}
-            <div className="flex items-center gap-2 pt-2 border-t border-slate-200/50 dark:border-slate-700/50">
-              <span className="text-sm text-slate-500 dark:text-slate-400">Language:</span>
-              <button
-                onClick={() => setLanguage('en')}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                  language === 'en' 
-                    ? 'bg-league-accent text-white' 
-                    : 'text-slate-600 dark:text-slate-400 hover:text-league-accent'
-                }`}
-              >
-                EN
-              </button>
-              <button
-                onClick={() => setLanguage('zh')}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                  language === 'zh' 
-                    ? 'bg-league-accent text-white' 
-                    : 'text-slate-600 dark:text-slate-400 hover:text-league-accent'
-                }`}
-              >
-                中文
-              </button>
-            </div>
           </nav>
         </div>
       )}
