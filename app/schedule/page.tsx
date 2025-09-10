@@ -10,10 +10,30 @@ export default function SchedulePage() {
   
   // Function to format date string without timezone issues
   const formatDateString = (dateString: string) => {
-    // Parse the date string as local date to avoid timezone conversion
-    const [year, month, day] = dateString.split('-').map(Number);
-    const date = new Date(year, month - 1, day); // month is 0-indexed
-    return date.toLocaleDateString();
+    try {
+      // Handle both ISO strings and simple date strings
+      let date: Date;
+      
+      if (dateString.includes('T')) {
+        // ISO string format: "2024-01-15T00:00:00.000Z"
+        date = new Date(dateString);
+      } else {
+        // Simple date format: "2024-01-15"
+        const [year, month, day] = dateString.split('-').map(Number);
+        date = new Date(year, month - 1, day); // month is 0-indexed
+      }
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        console.error('Invalid date string:', dateString);
+        return 'Invalid Date';
+      }
+      
+      return date.toLocaleDateString();
+    } catch (error) {
+      console.error('Error formatting date:', dateString, error);
+      return 'Invalid Date';
+    }
   };
   
   // Refresh schedule from localStorage when component mounts
