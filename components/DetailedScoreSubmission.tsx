@@ -3,10 +3,13 @@
 import { useState } from 'react';
 import { useLanguage } from '@/lib/language';
 import { teams, schedule, type Game, type Team, type MatchLine } from '@/lib/data';
+import { isGameDateInFuture } from '@/lib/dateUtils';
+import GameDateModifier from './GameDateModifier';
 
 interface DetailedScoreSubmissionProps {
   gameId: string;
   onScoreSubmit: (result: any) => void;
+  onDateUpdate?: (gameId: string, newDate: string) => void;
 }
 
 interface MatchLineForm {
@@ -21,7 +24,7 @@ interface MatchLineForm {
   }[];
 }
 
-export default function DetailedScoreSubmission({ gameId, onScoreSubmit }: DetailedScoreSubmissionProps) {
+export default function DetailedScoreSubmission({ gameId, onScoreSubmit, onDateUpdate }: DetailedScoreSubmissionProps) {
   const { t, getTeamName, getPlayerName } = useLanguage();
   const [matchLines, setMatchLines] = useState<MatchLineForm[]>([
     {
@@ -44,6 +47,27 @@ export default function DetailedScoreSubmission({ gameId, onScoreSubmit }: Detai
   const awayTeam = teams.find(t => t.id === game.away);
   
   if (!homeTeam || !awayTeam) return null;
+
+  // Check if game is in the future
+  const isFutureGame = isGameDateInFuture(game.date);
+  
+  // If game is in the future, show date modifier instead of score submission
+  if (isFutureGame) {
+    return (
+      <div className="space-y-4">
+        <GameDateModifier 
+          game={game} 
+          onDateUpdate={onDateUpdate || (() => {})} 
+        />
+        <div className="card">
+          <div className="text-center text-slate-600 dark:text-slate-400">
+            <p className="mb-2">{t('captain.futureGameWarning')}</p>
+            <p className="text-sm">{t('captain.scoresResetWarning')}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const addMatchLine = () => {
     const newLineNumber = matchLines.length + 1;

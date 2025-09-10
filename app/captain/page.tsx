@@ -6,6 +6,7 @@ import { useLanguage } from '@/lib/language';
 import { useAuth } from '@/lib/auth';
 import { teams, schedule, matchResults } from '@/lib/data';
 import DetailedScoreSubmission from '@/components/DetailedScoreSubmission';
+import ScoreModification from '@/components/ScoreModification';
 
 export default function CaptainPage() {
   const { t, getTeamName } = useLanguage();
@@ -45,6 +46,21 @@ export default function CaptainPage() {
 
   const handleScoreSubmit = (result: any) => {
     setSubmittedResults(prev => [...prev, result]);
+  };
+
+  const handleScoreUpdate = (updatedResult: any) => {
+    setSubmittedResults(prev => 
+      prev.map(result => 
+        result.id === updatedResult.id ? updatedResult : result
+      )
+    );
+  };
+
+  const handleDateUpdate = (gameId: string, newDate: string) => {
+    // In a real application, this would update the game date in the database
+    // For now, we'll just show a success message
+    console.log(`Game ${gameId} date updated to ${newDate}`);
+    // You could add a toast notification here
   };
 
   return (
@@ -136,10 +152,22 @@ export default function CaptainPage() {
 
       {/* Score Submission Form */}
       {selectedGame && (
-        <DetailedScoreSubmission 
-          gameId={selectedGame} 
-          onScoreSubmit={handleScoreSubmit}
-        />
+        <>
+          {/* Check if there's an existing result for this game */}
+          {submittedResults.find(result => result.gameId === selectedGame) ? (
+            <ScoreModification 
+              gameId={selectedGame} 
+              onScoreUpdate={handleScoreUpdate}
+              onDateUpdate={handleDateUpdate}
+            />
+          ) : (
+            <DetailedScoreSubmission 
+              gameId={selectedGame} 
+              onScoreSubmit={handleScoreSubmit}
+              onDateUpdate={handleDateUpdate}
+            />
+          )}
+        </>
       )}
 
       {/* Submitted Results */}
