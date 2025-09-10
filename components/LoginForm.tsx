@@ -20,11 +20,11 @@ export default function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormPr
     e.preventDefault();
     setError('');
 
-    const success = await login(email, password);
-    if (success) {
+    const result = await login(email, password);
+    if (result.success) {
       onSuccess?.();
     } else {
-      setError(t('auth.loginError'));
+      setError(result.error || t('auth.loginError'));
     }
   };
 

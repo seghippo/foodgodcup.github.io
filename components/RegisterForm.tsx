@@ -42,11 +42,11 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
       return;
     }
 
-    const success = await register(formData);
-    if (success) {
+    const result = await register(formData);
+    if (result.success) {
       onSuccess?.();
     } else {
-      setError(t('auth.registrationError'));
+      setError(result.error || t('auth.registrationError'));
     }
   };
 

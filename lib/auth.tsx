@@ -1,6 +1,10 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import bcrypt from 'bcryptjs';
+import { validateInput, registerSchema, loginSchema } from './validation';
+import { sanitizeEmail, sanitizeName, sanitizePassword, sanitizeTeamId } from './sanitizer';
+import { checkRateLimit, resetRateLimit } from './rateLimiter';
 
 export interface User {
   id: string;
@@ -14,8 +18,8 @@ export interface User {
 
 export interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (userData: RegisterData) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (userData: RegisterData) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   isLoading: boolean;
   isAuthenticated: boolean;
@@ -54,10 +58,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     setIsLoading(true);
     
     try {
+      // Sanitize inputs
+      const sanitizedEmail = sanitizeEmail(email);
+      const sanitizedPassword = sanitizePassword(password);
+      
+      // Validate inputs
+      const validation = validateInput(loginSchema, {
+        email: sanitizedEmail,
+        password: sanitizedPassword
+      });
+      
+      if (validation.error) {
+        setIsLoading(false);
+        return { success: false, error: validation.error };
+      }
+      
+      // Check rate limiting
+      const rateLimit = checkRateLimit(sanitizedEmail);
+      if (!rateLimit.allowed) {
+        setIsLoading(false);
+        const blockedUntil = rateLimit.blockedUntil ? new Date(rateLimit.blockedUntil).toLocaleTimeString() : 'unknown';
+        return { 
+          success: false, 
+          error: `Too many login attempts. Please try again after ${blockedUntil}` 
+        };
+      }
+      
       // Simulate API call - in real app, this would call your backend
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -90,7 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ];
 
       // Check both mock users and registered users from localStorage
-      let foundUser = mockUsers.find(u => u.email === email);
+      let foundUser = mockUsers.find(u => u.email === sanitizedEmail);
       
       // If not found in mock users, check registered users in localStorage
       if (!foundUser && typeof window !== 'undefined') {
@@ -98,19 +128,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const registeredUsers = localStorage.getItem('tennis-club-registered-users');
           if (registeredUsers) {
             const users: User[] = JSON.parse(registeredUsers);
-            foundUser = users.find(u => u.email === email);
+            foundUser = users.find(u => u.email === sanitizedEmail);
           }
         } catch (error) {
           console.error('Error loading registered users:', error);
         }
       }
       
-      // Check password - mock users use 'password123', registered users use their actual password
-      const isPasswordValid = foundUser?.password 
-        ? password === foundUser.password  // Registered user with saved password
-        : password === 'password123';      // Mock user with hardcoded password
+      if (!foundUser) {
+        setIsLoading(false);
+        return { success: false, error: 'Invalid email or password' };
+      }
       
-      if (foundUser && isPasswordValid) {
+      // Check password - mock users use 'password123', registered users use hashed password
+      let isPasswordValid = false;
+      
+      if (foundUser.password) {
+        // Registered user with hashed password
+        isPasswordValid = await bcrypt.compare(sanitizedPassword, foundUser.password);
+      } else {
+        // Mock user with hardcoded password
+        isPasswordValid = sanitizedPassword === 'password123';
+      }
+      
+      if (isPasswordValid) {
+        // Reset rate limit on successful login
+        resetRateLimit(sanitizedEmail);
+        
         // Don't include password in the session user object for security
         const sessionUser = { ...foundUser };
         delete sessionUser.password;
@@ -120,45 +164,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           localStorage.setItem('tennis-club-user', JSON.stringify(sessionUser));
         }
         setIsLoading(false);
-        return true;
+        return { success: true };
       } else {
         setIsLoading(false);
-        return false;
+        return { success: false, error: 'Invalid email or password' };
       }
     } catch (error) {
       console.error('Login error:', error);
       setIsLoading(false);
-      return false;
+      return { success: false, error: 'An error occurred during login' };
     }
   };
 
-  const register = async (userData: RegisterData): Promise<boolean> => {
+  const register = async (userData: RegisterData): Promise<{ success: boolean; error?: string }> => {
     setIsLoading(true);
     
     try {
-      // Validate input
-      if (userData.password !== userData.confirmPassword) {
+      // Sanitize inputs
+      const sanitizedData = {
+        email: sanitizeEmail(userData.email),
+        password: sanitizePassword(userData.password),
+        confirmPassword: sanitizePassword(userData.confirmPassword),
+        name: sanitizeName(userData.name),
+        teamId: sanitizeTeamId(userData.teamId)
+      };
+      
+      // Validate inputs
+      const validation = validateInput(registerSchema, sanitizedData);
+      
+      if (validation.error) {
         setIsLoading(false);
-        return false;
+        return { success: false, error: validation.error };
       }
-
-      if (userData.password.length < 6) {
-        setIsLoading(false);
-        return false;
-      }
-
+      
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(sanitizedData.password, 12);
+      
       // Create new user
       const newUser: User = {
-        id: userData.teamId + '01', // Mock ID generation
-        email: userData.email,
-        name: userData.name,
-        teamId: userData.teamId,
+        id: sanitizedData.teamId + '01', // Mock ID generation
+        email: sanitizedData.email,
+        name: sanitizedData.name,
+        teamId: sanitizedData.teamId,
         role: 'captain',
         isVerified: false,
-        password: userData.password // Save the password for registered users
+        password: hashedPassword // Save the hashed password
       };
 
       // Save to registered users list in localStorage
@@ -172,30 +225,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           
           // Check if user already exists
-          const userExists = registeredUsers.some(u => u.email === userData.email);
+          const userExists = registeredUsers.some(u => u.email === sanitizedData.email);
           if (userExists) {
             setIsLoading(false);
-            return false; // User already exists
+            return { success: false, error: 'User with this email already exists' };
           }
           
           registeredUsers.push(newUser);
           localStorage.setItem('tennis-club-registered-users', JSON.stringify(registeredUsers));
         } catch (error) {
           console.error('Error saving registered user:', error);
+          setIsLoading(false);
+          return { success: false, error: 'Failed to save user data' };
         }
       }
 
-      // Set as current user and save session
-      setUser(newUser);
+      // Set as current user and save session (without password)
+      const sessionUser = { ...newUser };
+      delete sessionUser.password;
+      
+      setUser(sessionUser);
       if (typeof window !== 'undefined') {
-        localStorage.setItem('tennis-club-user', JSON.stringify(newUser));
+        localStorage.setItem('tennis-club-user', JSON.stringify(sessionUser));
       }
       setIsLoading(false);
-      return true;
+      return { success: true };
     } catch (error) {
       console.error('Registration error:', error);
       setIsLoading(false);
-      return false;
+      return { success: false, error: 'An error occurred during registration' };
     }
   };
 
