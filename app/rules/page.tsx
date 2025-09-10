@@ -224,31 +224,16 @@ export default function RulesPage() {
           </h2>
         </div>
         
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div className="p-4 bg-gradient-to-r from-league-success/10 to-emerald-500/10 rounded-xl border border-league-success/20">
-              <h3 className="font-semibold text-league-primary dark:text-white mb-2">
-                {t('rules.general.participation.title')}
-              </h3>
-              <ul className="space-y-1 text-slate-600 dark:text-slate-300">
-                <li>• {t('rules.general.participation.attendance')}</li>
-                <li>• {t('rules.general.participation.minimum')}</li>
-                <li>• {t('rules.general.participation.respect')}</li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            <div className="p-4 bg-gradient-to-r from-league-warning/10 to-orange-500/10 rounded-xl border border-league-warning/20">
-              <h3 className="font-semibold text-league-primary dark:text-white mb-2">
-                {t('rules.general.penalties.title')}
-              </h3>
-              <ul className="space-y-1 text-slate-600 dark:text-slate-300">
-                <li>• {t('rules.general.penalties.noShow')}</li>
-                <li>• {t('rules.general.penalties.noParticipation')}</li>
-                <li>• {t('rules.general.penalties.unsportsmanlike')}</li>
-              </ul>
-            </div>
+        <div className="space-y-4">
+          <div className="p-4 bg-gradient-to-r from-league-success/10 to-emerald-500/10 rounded-xl border border-league-success/20">
+            <h3 className="font-semibold text-league-primary dark:text-white mb-2">
+              {t('rules.general.participation.title')}
+            </h3>
+            <ul className="space-y-1 text-slate-600 dark:text-slate-300">
+              <li>• {t('rules.general.participation.attendance')}</li>
+              <li>• {t('rules.general.participation.minimum')}</li>
+              <li>• {t('rules.general.participation.respect')}</li>
+            </ul>
           </div>
         </div>
       </div>
