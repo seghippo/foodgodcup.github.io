@@ -205,15 +205,17 @@ export default function CaptainPage() {
         </div>
       </div>
 
-      {/* Game Selection or Create Game */}
-      {availableGames.length === 0 ? (
-        <CreateGameForm 
-          userTeamId={user.teamId} 
-          onGameCreated={handleGameCreated}
-        />
-      ) : (
-        <div className="card">
-          <h2 className="text-xl font-semibold mb-4">{t('captain.selectGame')}</h2>
+      {/* Game Selection */}
+      <div className="card">
+        <h2 className="text-xl font-semibold mb-4">{t('captain.selectGame')}</h2>
+        
+        {availableGames.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-slate-600 dark:text-slate-400 mb-4">
+              {t('captain.noGamesScheduled')}
+            </p>
+          </div>
+        ) : (
           <div className="grid gap-3">
             {availableGames.map(game => {
               const homeTeam = teams.find(t => t.id === game.home);
@@ -279,16 +281,16 @@ export default function CaptainPage() {
               );
             })}
           </div>
-          
-          {/* Add Create Game Button */}
-          <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-            <CreateGameForm 
-              userTeamId={user.teamId} 
-              onGameCreated={handleGameCreated}
-            />
-          </div>
+        )}
+        
+        {/* Create Game Button - Always Available */}
+        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+          <CreateGameForm 
+            userTeamId={user.teamId} 
+            onGameCreated={handleGameCreated}
+          />
         </div>
-      )}
+      </div>
 
       {/* Edit Game Form */}
       {gameToEdit && (
