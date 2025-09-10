@@ -292,10 +292,60 @@ export const teams: Team[] = [
 
 export const teamsById = Object.fromEntries(teams.map(t => [t.id, t] as const));
 
-export const schedule: Game[] = [
+// Default schedule with preseason game
+const defaultSchedule: Game[] = [
   // Preseason Game
   { id: 'P1', date: new Date(Date.now() - 7*86400000).toISOString(), home: 'TJG', away: 'FJT', venue: 'Kit Carson', time: '7:00 PM', homeScore: 3, awayScore: 2, isPreseason: true, status: 'preseason' }
 ];
+
+// Function to get schedule from localStorage or return default
+function getScheduleFromStorage(): Game[] {
+  if (typeof window === 'undefined') {
+    return defaultSchedule; // Server-side rendering
+  }
+  
+  try {
+    const stored = localStorage.getItem('tennis-schedule');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Ensure we always have the preseason game
+      const hasPreseason = parsed.some((game: Game) => game.id === 'P1');
+      if (!hasPreseason) {
+        parsed.unshift(defaultSchedule[0]);
+      }
+      return parsed;
+    }
+  } catch (error) {
+    console.error('Error loading schedule from localStorage:', error);
+  }
+  
+  return defaultSchedule;
+}
+
+// Function to save schedule to localStorage
+function saveScheduleToStorage(schedule: Game[]): void {
+  if (typeof window === 'undefined') {
+    return; // Server-side rendering
+  }
+  
+  try {
+    localStorage.setItem('tennis-schedule', JSON.stringify(schedule));
+  } catch (error) {
+    console.error('Error saving schedule to localStorage:', error);
+  }
+}
+
+// Initialize schedule from storage
+export const schedule: Game[] = getScheduleFromStorage();
+
+// Function to refresh schedule from storage (for client-side updates)
+export function refreshScheduleFromStorage(): Game[] {
+  const refreshedSchedule = getScheduleFromStorage();
+  // Update the exported schedule array
+  schedule.length = 0;
+  schedule.push(...refreshedSchedule);
+  return refreshedSchedule;
+}
 
 // Function to create a new game
 export function createNewGame(homeTeamId: string, awayTeamId: string, date: string, time: string, venue: string = ''): Game {
@@ -314,6 +364,7 @@ export function createNewGame(homeTeamId: string, awayTeamId: string, date: stri
 // Function to add a new game to the schedule
 export function addGameToSchedule(game: Game): void {
   schedule.push(game);
+  saveScheduleToStorage(schedule);
 }
 
 // Function to remove a game from the schedule
@@ -321,6 +372,7 @@ export function removeGameFromSchedule(gameId: string): boolean {
   const index = schedule.findIndex(game => game.id === gameId);
   if (index !== -1) {
     schedule.splice(index, 1);
+    saveScheduleToStorage(schedule);
     return true;
   }
   return false;
@@ -331,6 +383,7 @@ export function updateGameInfo(gameId: string, updates: Partial<Game>): boolean 
   const index = schedule.findIndex(game => game.id === gameId);
   if (index !== -1) {
     schedule[index] = { ...schedule[index], ...updates };
+    saveScheduleToStorage(schedule);
     return true;
   }
   return false;

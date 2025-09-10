@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/lib/language';
 import { useAuth } from '@/lib/auth';
-import { teams, schedule, matchResults, removeGameFromSchedule, updateGameInfo } from '@/lib/data';
+import { teams, schedule, matchResults, removeGameFromSchedule, updateGameInfo, refreshScheduleFromStorage } from '@/lib/data';
 import DetailedScoreSubmission from '@/components/DetailedScoreSubmission';
 import ScoreModification from '@/components/ScoreModification';
 import CreateGameForm from '@/components/CreateGameForm';
@@ -17,9 +17,16 @@ export default function CaptainPage() {
   const [selectedGame, setSelectedGame] = useState<string>('');
   const [submittedResults, setSubmittedResults] = useState(matchResults);
   const [currentSchedule, setCurrentSchedule] = useState(schedule);
+  const [scheduleKey, setScheduleKey] = useState(0); // Key to force re-render when schedule changes
   const [gameToDelete, setGameToDelete] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [gameToEdit, setGameToEdit] = useState<string | null>(null);
+
+  // Refresh schedule from localStorage when component mounts
+  useEffect(() => {
+    const refreshedSchedule = refreshScheduleFromStorage();
+    setCurrentSchedule(refreshedSchedule);
+  }, []);
 
   // Redirect to auth if not authenticated
   useEffect(() => {
@@ -87,10 +94,13 @@ export default function CaptainPage() {
   };
 
   const handleGameCreated = (newGame: any) => {
-    // Update the current schedule state
-    setCurrentSchedule(prev => [...prev, newGame]);
+    // Refresh schedule from localStorage to get the latest data
+    const refreshedSchedule = refreshScheduleFromStorage();
+    setCurrentSchedule(refreshedSchedule);
     // Select the newly created game
     setSelectedGame(newGame.id);
+    // Force re-render
+    setScheduleKey(prev => prev + 1);
   };
 
   const handleDeleteGame = (gameId: string) => {
@@ -104,8 +114,9 @@ export default function CaptainPage() {
         // Remove from schedule
         const success = removeGameFromSchedule(gameToDelete);
         if (success) {
-          // Update current schedule state
-          setCurrentSchedule(prev => prev.filter(game => game.id !== gameToDelete));
+          // Refresh schedule from localStorage to get the latest data
+          const refreshedSchedule = refreshScheduleFromStorage();
+          setCurrentSchedule(refreshedSchedule);
           
           // Clear selected game if it was the deleted one
           if (selectedGame === gameToDelete) {
@@ -114,6 +125,9 @@ export default function CaptainPage() {
           
           // Remove any submitted results for this game
           setSubmittedResults(prev => prev.filter(result => result.gameId !== gameToDelete));
+          
+          // Force re-render
+          setScheduleKey(prev => prev + 1);
           
           // Show success message
           alert(t('captain.gameDeleted'));
@@ -145,13 +159,15 @@ export default function CaptainPage() {
       // Update in schedule
       const success = updateGameInfo(updatedGame.id, updatedGame);
       if (success) {
-        // Update current schedule state
-        setCurrentSchedule(prev => 
-          prev.map(game => game.id === updatedGame.id ? updatedGame : game)
-        );
+        // Refresh schedule from localStorage to get the latest data
+        const refreshedSchedule = refreshScheduleFromStorage();
+        setCurrentSchedule(refreshedSchedule);
         
         // Clear edit mode
         setGameToEdit(null);
+        
+        // Force re-render
+        setScheduleKey(prev => prev + 1);
         
         // Show success message
         alert(t('captain.gameUpdated'));

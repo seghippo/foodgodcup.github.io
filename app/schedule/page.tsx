@@ -1,10 +1,20 @@
 'use client';
 
-import { schedule, teamsById } from '@/lib/data';
+import { schedule, teamsById, refreshScheduleFromStorage } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
+import { useState, useEffect } from 'react';
 
 export default function SchedulePage() {
   const { t, getTeamName, isClient } = useLanguage();
+  const [currentSchedule, setCurrentSchedule] = useState(schedule);
+  
+  // Refresh schedule from localStorage when component mounts
+  useEffect(() => {
+    if (isClient) {
+      const refreshedSchedule = refreshScheduleFromStorage();
+      setCurrentSchedule(refreshedSchedule);
+    }
+  }, [isClient]);
   
   if (!isClient) {
     return (
@@ -67,7 +77,7 @@ export default function SchedulePage() {
             </tr>
           </thead>
           <tbody>
-            {schedule.map((g) => (
+            {currentSchedule.map((g) => (
               <tr key={g.id} className="border-t border-slate-200 dark:border-slate-800">
                 <td className="py-3 pr-4">{new Date(g.date).toLocaleDateString()}</td>
                 <td className="py-3 pr-4">
