@@ -14,6 +14,14 @@ export default function CaptainPage() {
   const { t, getTeamName } = useLanguage();
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const router = useRouter();
+  
+  // Function to format date string without timezone issues
+  const formatDateString = (dateString: string) => {
+    // Parse the date string as local date to avoid timezone conversion
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day); // month is 0-indexed
+    return date.toLocaleDateString();
+  };
   const [selectedGame, setSelectedGame] = useState<string>('');
   const [submittedResults, setSubmittedResults] = useState(matchResults);
   const [currentSchedule, setCurrentSchedule] = useState(schedule);
@@ -257,7 +265,7 @@ export default function CaptainPage() {
                         <div className="font-semibold">{getTeamName(awayTeam)}</div>
                       </div>
                       <div className="text-sm text-slate-600 dark:text-slate-400">
-                        {new Date(game.date).toLocaleDateString()}
+                        {formatDateString(game.date)}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">

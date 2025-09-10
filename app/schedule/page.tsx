@@ -8,6 +8,14 @@ export default function SchedulePage() {
   const { t, getTeamName, isClient } = useLanguage();
   const [currentSchedule, setCurrentSchedule] = useState(schedule);
   
+  // Function to format date string without timezone issues
+  const formatDateString = (dateString: string) => {
+    // Parse the date string as local date to avoid timezone conversion
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day); // month is 0-indexed
+    return date.toLocaleDateString();
+  };
+  
   // Refresh schedule from localStorage when component mounts
   useEffect(() => {
     if (isClient) {
@@ -79,7 +87,7 @@ export default function SchedulePage() {
           <tbody>
             {currentSchedule.map((g) => (
               <tr key={g.id} className="border-t border-slate-200 dark:border-slate-800">
-                <td className="py-3 pr-4">{new Date(g.date).toLocaleDateString()}</td>
+                <td className="py-3 pr-4">{formatDateString(g.date)}</td>
                 <td className="py-3 pr-4">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{getTeamName(teamsById[g.home])}</span>
