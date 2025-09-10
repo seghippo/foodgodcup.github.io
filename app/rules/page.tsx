@@ -169,11 +169,42 @@ export default function RulesPage() {
                   <p>• {t('rules.tennis.chapter6.self.rule3')}</p>
                   <p>• {t('rules.tennis.chapter6.self.rule4')}</p>
                 </div>
+                <p className="font-medium">{t('rules.tennis.chapter6.details.title')}</p>
+                <div className="ml-4 space-y-1 text-sm">
+                  <p>• {t('rules.tennis.chapter6.details.doubles')}</p>
+                  <p>• {t('rules.tennis.chapter6.details.serve')}</p>
+                  <p>• {t('rules.tennis.chapter6.details.noExcuse')}</p>
+                  <p>• {t('rules.tennis.chapter6.details.let')}</p>
+                </div>
                 <p className="text-sm">{t('rules.tennis.chapter6.dispute.title')}</p>
                 <div className="ml-4 space-y-1 text-sm">
                   <p>1. {t('rules.tennis.chapter6.dispute.rule1')}</p>
                   <p>2. {t('rules.tennis.chapter6.dispute.rule2')}</p>
                 </div>
+                <p className="font-medium">{t('rules.tennis.chapter6.officials.title')}</p>
+                <p className="text-sm">{t('rules.tennis.chapter6.officials.desc')}</p>
+                <p className="font-medium">{t('rules.tennis.chapter6.etiquette.title')}</p>
+                <p className="text-sm">{t('rules.tennis.chapter6.etiquette.desc')}</p>
+                <p className="font-medium">{t('rules.tennis.chapter6.friendship.title')}</p>
+                <p className="text-sm">{t('rules.tennis.chapter6.friendship.desc')}</p>
+              </div>
+            </div>
+
+            <div className="p-4 bg-gradient-to-r from-league-warning/10 to-orange-500/10 rounded-xl border border-league-warning/20">
+              <h3 className="font-semibold text-league-primary dark:text-white mb-3">
+                {t('rules.tennis.chapter7.title')}
+              </h3>
+              <div className="space-y-2 text-slate-600 dark:text-slate-300">
+                <p className="font-medium">{t('rules.tennis.chapter7.voluntary.title')}</p>
+                <p className="text-sm">{t('rules.tennis.chapter7.voluntary.desc')}</p>
+                <p className="font-medium">{t('rules.tennis.chapter7.injury.title')}</p>
+                <p className="text-sm">{t('rules.tennis.chapter7.injury.desc')}</p>
+                <p className="font-medium">{t('rules.tennis.chapter7.liability.title')}</p>
+                <p className="text-sm">{t('rules.tennis.chapter7.liability.desc')}</p>
+                <p className="font-medium">{t('rules.tennis.chapter7.agreement.title')}</p>
+                <p className="text-sm">{t('rules.tennis.chapter7.agreement.desc')}</p>
+                <p className="font-medium">{t('rules.tennis.chapter7.club.title')}</p>
+                <p className="text-sm">{t('rules.tennis.chapter7.club.desc')}</p>
               </div>
             </div>
           </div>
