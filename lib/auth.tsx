@@ -9,6 +9,7 @@ export interface User {
   teamId: string;
   role: 'captain' | 'admin';
   isVerified: boolean;
+  password?: string; // For registered users
 }
 
 export interface AuthContextType {
@@ -95,22 +96,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!foundUser && typeof window !== 'undefined') {
         try {
           const registeredUsers = localStorage.getItem('tennis-club-registered-users');
-          console.log('Registered users from localStorage:', registeredUsers);
           if (registeredUsers) {
             const users: User[] = JSON.parse(registeredUsers);
-            console.log('Parsed registered users:', users);
             foundUser = users.find(u => u.email === email);
-            console.log('Found user in registered users:', foundUser);
           }
         } catch (error) {
           console.error('Error loading registered users:', error);
         }
       }
       
-      if (foundUser && password === 'password123') { // Mock password
-        setUser(foundUser);
+      // Check password - mock users use 'password123', registered users use their actual password
+      const isPasswordValid = foundUser?.password 
+        ? password === foundUser.password  // Registered user with saved password
+        : password === 'password123';      // Mock user with hardcoded password
+      
+      if (foundUser && isPasswordValid) {
+        // Don't include password in the session user object for security
+        const sessionUser = { ...foundUser };
+        delete sessionUser.password;
+        
+        setUser(sessionUser);
         if (typeof window !== 'undefined') {
-          localStorage.setItem('tennis-club-user', JSON.stringify(foundUser));
+          localStorage.setItem('tennis-club-user', JSON.stringify(sessionUser));
         }
         setIsLoading(false);
         return true;
@@ -150,7 +157,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: userData.name,
         teamId: userData.teamId,
         role: 'captain',
-        isVerified: false
+        isVerified: false,
+        password: userData.password // Save the password for registered users
       };
 
       // Save to registered users list in localStorage
@@ -166,15 +174,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Check if user already exists
           const userExists = registeredUsers.some(u => u.email === userData.email);
           if (userExists) {
-            console.log('User already exists:', userData.email);
             setIsLoading(false);
             return false; // User already exists
           }
           
           registeredUsers.push(newUser);
           localStorage.setItem('tennis-club-registered-users', JSON.stringify(registeredUsers));
-          console.log('Saved new user to localStorage:', newUser);
-          console.log('All registered users:', registeredUsers);
         } catch (error) {
           console.error('Error saving registered user:', error);
         }
