@@ -443,7 +443,7 @@ const translations = {
     'rules.tennis.chapter6.self.rule3': '立即喊出 - 如果是"OUT"或"FAULT"，要马上大声清楚地喊，并最好伴随手势',
     'rules.tennis.chapter6.self.rule4': '不能借口"没看到"来改判 - 如果球员没看清，应当给对手得分',
     'rules.tennis.chapter6.details.title': '几个细则：',
-    'rules.tennis.chapter6.details.doubles': '双打时：两个同队球员都可以判线，如果看到不同结论，应以更近的球员的判定为准',
+    'rules.tennis.chapter6.details.doubles': '双打时：两个同队球员都可以判线，如果看到不同结论，应该判对方得分',
     'rules.tennis.chapter6.details.serve': '发球判定：接发球方负责判定球是否落在接发区内',
     'rules.tennis.chapter6.details.noExcuse': '不能借口"没看到"来改判：如果球员没看清，应当给对手得分',
     'rules.tennis.chapter6.details.let': '"Let"球：如果双方都不确定，或有干扰（比如隔壁场球滚进来），可重新发球',
