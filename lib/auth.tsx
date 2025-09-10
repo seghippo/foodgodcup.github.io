@@ -83,8 +83,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       ];
 
-      // Simple mock authentication
-      const foundUser = mockUsers.find(u => u.email === email);
+      // Check both mock users and registered users from localStorage
+      let foundUser = mockUsers.find(u => u.email === email);
+      
+      // If not found in mock users, check registered users in localStorage
+      if (!foundUser) {
+        try {
+          const registeredUsers = localStorage.getItem('tennis-club-registered-users');
+          if (registeredUsers) {
+            const users: User[] = JSON.parse(registeredUsers);
+            foundUser = users.find(u => u.email === email);
+          }
+        } catch (error) {
+          console.error('Error loading registered users:', error);
+        }
+      }
       
       if (foundUser && password === 'password123') { // Mock password
         setUser(foundUser);
@@ -130,7 +143,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isVerified: false
       };
 
-      // In real app, this would be saved to database
+      // Save to registered users list in localStorage
+      try {
+        const existingUsers = localStorage.getItem('tennis-club-registered-users');
+        let registeredUsers: User[] = [];
+        
+        if (existingUsers) {
+          registeredUsers = JSON.parse(existingUsers);
+        }
+        
+        // Check if user already exists
+        const userExists = registeredUsers.some(u => u.email === userData.email);
+        if (userExists) {
+          setIsLoading(false);
+          return false; // User already exists
+        }
+        
+        registeredUsers.push(newUser);
+        localStorage.setItem('tennis-club-registered-users', JSON.stringify(registeredUsers));
+      } catch (error) {
+        console.error('Error saving registered user:', error);
+      }
+
+      // Set as current user and save session
       setUser(newUser);
       localStorage.setItem('tennis-club-user', JSON.stringify(newUser));
       setIsLoading(false);

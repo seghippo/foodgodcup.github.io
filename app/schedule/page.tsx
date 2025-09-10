@@ -1,12 +1,13 @@
 'use client';
 
-import { schedule, teamsById, refreshScheduleFromStorage } from '@/lib/data';
+import { schedule, teamsById, refreshScheduleFromStorage, refreshMatchResultsFromStorage } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
 import { useState, useEffect } from 'react';
 
 export default function SchedulePage() {
   const { t, getTeamName, isClient } = useLanguage();
   const [currentSchedule, setCurrentSchedule] = useState(schedule);
+  const [matchResults, setMatchResults] = useState<any[]>([]);
   
   // Function to format date string without timezone issues
   const formatDateString = (dateString: string) => {
@@ -36,11 +37,14 @@ export default function SchedulePage() {
     }
   };
   
-  // Refresh schedule from localStorage when component mounts
+  // Refresh schedule and match results from localStorage when component mounts
   useEffect(() => {
     if (isClient) {
       const refreshedSchedule = refreshScheduleFromStorage();
       setCurrentSchedule(refreshedSchedule);
+      
+      const refreshedResults = refreshMatchResultsFromStorage();
+      setMatchResults(refreshedResults);
     }
   }, [isClient]);
   
@@ -70,6 +74,7 @@ export default function SchedulePage() {
   };
 
   const getScoreDisplay = (game: any) => {
+    // First check if game has legacy scores (for preseason games)
     if (game.homeScore !== undefined && game.awayScore !== undefined) {
       return (
         <div className="flex items-center gap-2">
@@ -86,6 +91,29 @@ export default function SchedulePage() {
         </div>
       );
     }
+    
+    // Check for match results
+    const matchResult = matchResults.find(result => 
+      result.gameId === game.id && result.status === 'approved'
+    );
+    
+    if (matchResult) {
+      return (
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-league-primary dark:text-white">
+            {matchResult.homeTotalScore} - {matchResult.awayTotalScore}
+          </span>
+          {matchResult.homeTotalScore > matchResult.awayTotalScore ? (
+            <span className="text-xs text-league-success">🏆 {getTeamName(teamsById[game.home])}</span>
+          ) : matchResult.awayTotalScore > matchResult.homeTotalScore ? (
+            <span className="text-xs text-league-success">🏆 {getTeamName(teamsById[game.away])}</span>
+          ) : (
+            <span className="text-xs text-league-info">Draw</span>
+          )}
+        </div>
+      );
+    }
+    
     return <span className="text-slate-400">-</span>;
   };
   
