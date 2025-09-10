@@ -391,22 +391,23 @@ export function generateCulinaryPlayerStandings(): CulinaryPlayerStanding[] {
   const culinaryPlayerStandings: CulinaryPlayerStanding[] = [];
   
   // Sample data for top 3 players in each round
+  // New scoring system: 1st place = 3 points, 2nd place = 2 points, 3rd place = 1 point
   const round1Top3 = [
-    { playerId: 'BJD_P1', playerName: '王涤', playerNameEn: 'Wang Di', teamId: 'BJD', teamName: '北京烤鸭', teamNameEn: 'Beijing Roast Duck', points: 3 },
-    { playerId: 'JZH_P1', playerName: 'Sophia', playerNameEn: 'Sophia', teamId: 'JZH', teamName: '江浙沪狮子头', teamNameEn: 'JZH Lion Head', points: 3 },
-    { playerId: 'DND_P1', playerName: '胡哥', playerNameEn: 'Hu Ge', teamId: 'DND', teamName: '东北炖粉条', teamNameEn: 'Northeast Stewed Noodles', points: 1 }
+    { playerId: 'BJD_P1', playerName: '王涤', playerNameEn: 'Wang Di', teamId: 'BJD', teamName: '北京烤鸭', teamNameEn: 'Beijing Roast Duck', points: 3 }, // 1st place
+    { playerId: 'JZH_P1', playerName: 'Sophia', playerNameEn: 'Sophia', teamId: 'JZH', teamName: '江浙沪狮子头', teamNameEn: 'JZH Lion Head', points: 2 }, // 2nd place
+    { playerId: 'DND_P1', playerName: '胡哥', playerNameEn: 'Hu Ge', teamId: 'DND', teamName: '东北炖粉条', teamNameEn: 'Northeast Stewed Noodles', points: 1 } // 3rd place
   ];
   
   const round2Top3 = [
-    { playerId: 'BJD_P2', playerName: '王涤', playerNameEn: 'Wang Di', teamId: 'BJD', teamName: '北京烤鸭', teamNameEn: 'Beijing Roast Duck', points: 3 },
-    { playerId: 'DND_P2', playerName: '胡哥', playerNameEn: 'Hu Ge', teamId: 'DND', teamName: '东北炖粉条', teamNameEn: 'Northeast Stewed Noodles', points: 3 },
-    { playerId: 'JZH_P2', playerName: 'Sophia', playerNameEn: 'Sophia', teamId: 'JZH', teamName: '江浙沪狮子头', teamNameEn: 'JZH Lion Head', points: 1 }
+    { playerId: 'DND_P2', playerName: '胡哥', playerNameEn: 'Hu Ge', teamId: 'DND', teamName: '东北炖粉条', teamNameEn: 'Northeast Stewed Noodles', points: 3 }, // 1st place
+    { playerId: 'BJD_P2', playerName: '王涤', playerNameEn: 'Wang Di', teamId: 'BJD', teamName: '北京烤鸭', teamNameEn: 'Beijing Roast Duck', points: 2 }, // 2nd place
+    { playerId: 'JZH_P2', playerName: 'Sophia', playerNameEn: 'Sophia', teamId: 'JZH', teamName: '江浙沪狮子头', teamNameEn: 'JZH Lion Head', points: 1 } // 3rd place
   ];
   
   const round3Top3 = [
-    { playerId: 'BJD_P3', playerName: '王涤', playerNameEn: 'Wang Di', teamId: 'BJD', teamName: '北京烤鸭', teamNameEn: 'Beijing Roast Duck', points: 3 },
-    { playerId: 'JZH_P3', playerName: 'Sophia', playerNameEn: 'Sophia', teamId: 'JZH', teamName: '江浙沪狮子头', teamNameEn: 'JZH Lion Head', points: 3 },
-    { playerId: 'DND_P3', playerName: '胡哥', playerNameEn: 'Hu Ge', teamId: 'DND', teamName: '东北炖粉条', teamNameEn: 'Northeast Stewed Noodles', points: 1 }
+    { playerId: 'JZH_P3', playerName: 'Sophia', playerNameEn: 'Sophia', teamId: 'JZH', teamName: '江浙沪狮子头', teamNameEn: 'JZH Lion Head', points: 3 }, // 1st place
+    { playerId: 'BJD_P3', playerName: '王涤', playerNameEn: 'Wang Di', teamId: 'BJD', teamName: '北京烤鸭', teamNameEn: 'Beijing Roast Duck', points: 2 }, // 2nd place
+    { playerId: 'DND_P3', playerName: '胡哥', playerNameEn: 'Hu Ge', teamId: 'DND', teamName: '东北炖粉条', teamNameEn: 'Northeast Stewed Noodles', points: 1 } // 3rd place
   ];
   
   // Combine all rounds and calculate total points
