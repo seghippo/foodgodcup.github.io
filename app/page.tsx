@@ -63,8 +63,10 @@ export default function HomePage() {
               </button>
             </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black mb-4 md:mb-6 leading-tight">
-            {t('home.title')}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 md:mb-6 leading-tight text-white drop-shadow-lg">
+            <span className="bg-gradient-to-r from-white via-yellow-100 to-yellow-200 bg-clip-text text-transparent">
+              {t('home.title')}
+            </span>
           </h1>
           <p className="text-lg sm:text-xl text-white/90 mb-6 md:mb-8 max-w-2xl leading-relaxed">
             {t('home.description')}

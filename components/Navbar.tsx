@@ -35,7 +35,7 @@ export function Navbar() {
             </svg>
           </div>
           <div className="flex flex-col">
-            <span className="font-black text-lg tracking-tight bg-gradient-to-r from-league-primary to-league-accent dark:from-white dark:to-league-accent bg-clip-text text-transparent">
+            <span className="font-black text-lg tracking-tight bg-gradient-to-r from-league-primary via-league-accent to-league-highlight dark:from-white dark:via-yellow-100 dark:to-yellow-200 bg-clip-text text-transparent drop-shadow-sm">
               {t('home.title')}
             </span>
             <span className="text-xs text-slate-500 dark:text-slate-400 -mt-1 hidden sm:block">{t('home.subtitle')}</span>
