@@ -269,17 +269,27 @@ export const teamsById = Object.fromEntries(teams.map(t => [t.id, t] as const));
 
 export const schedule: Game[] = [
   // Preseason Game
-  { id: 'P1', date: new Date(Date.now() - 7*86400000).toISOString(), home: 'TJG', away: 'FJT', venue: 'Kit Carson', time: '7:00 PM', homeScore: 3, awayScore: 2, isPreseason: true, status: 'preseason' },
-  
-  // Regular Season Games
-  { id: 'G1', date: new Date().toISOString(), home: 'DND', away: 'FJT', venue: '', time: '7:00 PM', status: 'scheduled' },
-  { id: 'G2', date: new Date(Date.now() + 86400000).toISOString(), home: 'BJD', away: 'LGN', venue: '', time: '6:30 PM', status: 'scheduled' },
-  { id: 'G3', date: new Date(Date.now() + 2*86400000).toISOString(), home: 'TJG', away: 'JZH', venue: '', time: '8:00 PM', status: 'scheduled' },
-  { id: 'G4', date: new Date(Date.now() + 3*86400000).toISOString(), home: 'HBR', away: 'DND', venue: '', time: '7:30 PM', status: 'scheduled' },
-  { id: 'G5', date: new Date(Date.now() + 4*86400000).toISOString(), home: 'FJT', away: 'BJD', venue: '', time: '6:00 PM', status: 'scheduled' },
-  { id: 'G6', date: new Date(Date.now() + 5*86400000).toISOString(), home: 'LGN', away: 'TJG', venue: '', time: '8:30 PM', status: 'scheduled' },
-  { id: 'G7', date: new Date(Date.now() + 6*86400000).toISOString(), home: 'JZH', away: 'HBR', venue: '', time: '7:00 PM', status: 'scheduled' }
+  { id: 'P1', date: new Date(Date.now() - 7*86400000).toISOString(), home: 'TJG', away: 'FJT', venue: 'Kit Carson', time: '7:00 PM', homeScore: 3, awayScore: 2, isPreseason: true, status: 'preseason' }
 ];
+
+// Function to create a new game
+export function createNewGame(homeTeamId: string, awayTeamId: string, date: string, time: string, venue: string = ''): Game {
+  const gameId = `G${Date.now()}`; // Generate unique ID
+  return {
+    id: gameId,
+    date: date,
+    home: homeTeamId,
+    away: awayTeamId,
+    venue: venue,
+    time: time,
+    status: 'scheduled'
+  };
+}
+
+// Function to add a new game to the schedule
+export function addGameToSchedule(game: Game): void {
+  schedule.push(game);
+}
 
 export const standings: Standing[] = [
   { teamId: 'BJD', wins: 0, losses: 0, draws: 0, points: 0 }, // Season hasn't started yet

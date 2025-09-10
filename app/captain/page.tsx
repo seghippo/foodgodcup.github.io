@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/auth';
 import { teams, schedule, matchResults } from '@/lib/data';
 import DetailedScoreSubmission from '@/components/DetailedScoreSubmission';
 import ScoreModification from '@/components/ScoreModification';
+import CreateGameForm from '@/components/CreateGameForm';
 
 export default function CaptainPage() {
   const { t, getTeamName } = useLanguage();
@@ -14,6 +15,7 @@ export default function CaptainPage() {
   const router = useRouter();
   const [selectedGame, setSelectedGame] = useState<string>('');
   const [submittedResults, setSubmittedResults] = useState(matchResults);
+  const [currentSchedule, setCurrentSchedule] = useState(schedule);
 
   // Redirect to auth if not authenticated
   useEffect(() => {
@@ -57,7 +59,7 @@ export default function CaptainPage() {
   }
 
   // Filter games that are completed or can have scores submitted
-  const availableGames = schedule.filter(game => 
+  const availableGames = currentSchedule.filter(game => 
     game.status === 'completed' || game.status === 'scheduled'
   );
 
@@ -78,6 +80,13 @@ export default function CaptainPage() {
     // For now, we'll just show a success message
     console.log(`Game ${gameId} date updated to ${newDate}`);
     // You could add a toast notification here
+  };
+
+  const handleGameCreated = (newGame: any) => {
+    // Update the current schedule state
+    setCurrentSchedule(prev => [...prev, newGame]);
+    // Select the newly created game
+    setSelectedGame(newGame.id);
   };
 
   return (
@@ -117,55 +126,70 @@ export default function CaptainPage() {
         </div>
       </div>
 
-      {/* Game Selection */}
-      <div className="card">
-        <h2 className="text-xl font-semibold mb-4">{t('captain.selectGame')}</h2>
-        <div className="grid gap-3">
-          {availableGames.map(game => {
-            const homeTeam = teams.find(t => t.id === game.home);
-            const awayTeam = teams.find(t => t.id === game.away);
-            
-            if (!homeTeam || !awayTeam) return null;
+      {/* Game Selection or Create Game */}
+      {availableGames.length === 0 ? (
+        <CreateGameForm 
+          userTeamId={user.teamId} 
+          onGameCreated={handleGameCreated}
+        />
+      ) : (
+        <div className="card">
+          <h2 className="text-xl font-semibold mb-4">{t('captain.selectGame')}</h2>
+          <div className="grid gap-3">
+            {availableGames.map(game => {
+              const homeTeam = teams.find(t => t.id === game.home);
+              const awayTeam = teams.find(t => t.id === game.away);
+              
+              if (!homeTeam || !awayTeam) return null;
 
-            return (
-              <div
-                key={game.id}
-                className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                  selectedGame === game.id
-                    ? 'border-league-primary bg-league-primary/5'
-                    : 'border-slate-200 dark:border-slate-700 hover:border-league-primary/50'
-                }`}
-                onClick={() => setSelectedGame(game.id)}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="text-center">
-                      <div className="font-semibold">{getTeamName(homeTeam)}</div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400">vs</div>
-                      <div className="font-semibold">{getTeamName(awayTeam)}</div>
+              return (
+                <div
+                  key={game.id}
+                  className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                    selectedGame === game.id
+                      ? 'border-league-primary bg-league-primary/5'
+                      : 'border-slate-200 dark:border-slate-700 hover:border-league-primary/50'
+                  }`}
+                  onClick={() => setSelectedGame(game.id)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="text-center">
+                        <div className="font-semibold">{getTeamName(homeTeam)}</div>
+                        <div className="text-sm text-slate-600 dark:text-slate-400">vs</div>
+                        <div className="font-semibold">{getTeamName(awayTeam)}</div>
+                      </div>
+                      <div className="text-sm text-slate-600 dark:text-slate-400">
+                        {new Date(game.date).toLocaleDateString()}
+                      </div>
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
-                      {new Date(game.date).toLocaleDateString()}
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-1 rounded text-xs ${
+                        game.status === 'completed' 
+                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                          : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                      }`}>
+                        {t(`schedule.${game.status}`)}
+                      </span>
+                      {selectedGame === game.id && (
+                        <span className="text-league-primary">✓</span>
+                      )}
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2 py-1 rounded text-xs ${
-                      game.status === 'completed' 
-                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                    }`}>
-                      {t(`schedule.${game.status}`)}
-                    </span>
-                    {selectedGame === game.id && (
-                      <span className="text-league-primary">✓</span>
-                    )}
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+          
+          {/* Add Create Game Button */}
+          <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+            <CreateGameForm 
+              userTeamId={user.teamId} 
+              onGameCreated={handleGameCreated}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Score Submission Form */}
       {selectedGame && (
