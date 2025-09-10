@@ -84,6 +84,18 @@ export default function CaptainPage() {
 
   const handleScoreSubmit = (result: any) => {
     setSubmittedResults(prev => [...prev, result]);
+    
+    // Update game status to completed when results are submitted
+    const gameIndex = currentSchedule.findIndex(game => game.id === result.gameId);
+    if (gameIndex !== -1) {
+      const updatedSchedule = [...currentSchedule];
+      updatedSchedule[gameIndex] = { ...updatedSchedule[gameIndex], status: 'completed' };
+      setCurrentSchedule(updatedSchedule);
+      
+      // Update the global schedule as well
+      updateGameInfo(result.gameId, { status: 'completed' });
+      setScheduleKey(prev => prev + 1);
+    }
   };
 
   const handleScoreUpdate = (updatedResult: any) => {

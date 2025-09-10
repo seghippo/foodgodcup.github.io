@@ -269,7 +269,7 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
           };
         }),
         submittedAt: new Date().toISOString(),
-        status: 'pending' // Reset to pending for re-approval
+        status: 'approved' // Auto-approve captain submissions
       };
       
       onScoreUpdate(updatedResult);

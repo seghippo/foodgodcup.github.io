@@ -191,7 +191,7 @@ export default function DetailedScoreSubmission({ gameId, onScoreSubmit, onDateU
         awayTotalScore,
         submittedBy: 'CAPTAIN_ID', // This would come from authentication
         submittedAt: new Date().toISOString(),
-        status: 'pending' as const,
+        status: 'approved' as const,
         matchLines: processedMatchLines
       };
 
