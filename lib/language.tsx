@@ -175,6 +175,11 @@ const translations = {
     'captain.gameDeleted': 'Game deleted successfully!',
     'captain.gameDeleteFailed': 'Failed to delete game. Please try again.',
     'captain.delete': 'Delete',
+    'captain.editGame': 'Edit Game',
+    'captain.gameUpdated': 'Game updated successfully!',
+    'captain.gameUpdateFailed': 'Failed to update game. Please try again.',
+    'captain.save': 'Save',
+    'captain.updating': 'Updating...',
     
     // Authentication
     'auth.welcome': 'Welcome Captain',
@@ -377,6 +382,11 @@ const translations = {
     'captain.gameDeleted': '比赛删除成功！',
     'captain.gameDeleteFailed': '删除比赛失败。请重试。',
     'captain.delete': '删除',
+    'captain.editGame': '编辑比赛',
+    'captain.gameUpdated': '比赛更新成功！',
+    'captain.gameUpdateFailed': '更新比赛失败。请重试。',
+    'captain.save': '保存',
+    'captain.updating': '更新中...',
     
     // Authentication
     'auth.welcome': '欢迎队长',

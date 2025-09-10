@@ -326,6 +326,16 @@ export function removeGameFromSchedule(gameId: string): boolean {
   return false;
 }
 
+// Function to update game information
+export function updateGameInfo(gameId: string, updates: Partial<Game>): boolean {
+  const index = schedule.findIndex(game => game.id === gameId);
+  if (index !== -1) {
+    schedule[index] = { ...schedule[index], ...updates };
+    return true;
+  }
+  return false;
+}
+
 export const standings: Standing[] = [
   { teamId: 'BJD', wins: 0, losses: 0, draws: 0, points: 0 }, // Season hasn't started yet
   { teamId: 'DND', wins: 0, losses: 0, draws: 0, points: 0 }, // Season hasn't started yet

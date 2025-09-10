@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/lib/language';
 import { useAuth } from '@/lib/auth';
-import { teams, schedule, matchResults, removeGameFromSchedule } from '@/lib/data';
+import { teams, schedule, matchResults, removeGameFromSchedule, updateGameInfo } from '@/lib/data';
 import DetailedScoreSubmission from '@/components/DetailedScoreSubmission';
 import ScoreModification from '@/components/ScoreModification';
 import CreateGameForm from '@/components/CreateGameForm';
+import EditGameForm from '@/components/EditGameForm';
 
 export default function CaptainPage() {
   const { t, getTeamName } = useLanguage();
@@ -18,6 +19,7 @@ export default function CaptainPage() {
   const [currentSchedule, setCurrentSchedule] = useState(schedule);
   const [gameToDelete, setGameToDelete] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [gameToEdit, setGameToEdit] = useState<string | null>(null);
 
   // Redirect to auth if not authenticated
   useEffect(() => {
@@ -134,6 +136,38 @@ export default function CaptainPage() {
     setGameToDelete(null);
   };
 
+  const handleEditGame = (gameId: string) => {
+    setGameToEdit(gameId);
+  };
+
+  const handleGameUpdated = (updatedGame: any) => {
+    try {
+      // Update in schedule
+      const success = updateGameInfo(updatedGame.id, updatedGame);
+      if (success) {
+        // Update current schedule state
+        setCurrentSchedule(prev => 
+          prev.map(game => game.id === updatedGame.id ? updatedGame : game)
+        );
+        
+        // Clear edit mode
+        setGameToEdit(null);
+        
+        // Show success message
+        alert(t('captain.gameUpdated'));
+      } else {
+        alert(t('captain.gameUpdateFailed'));
+      }
+    } catch (error) {
+      console.error('Error updating game:', error);
+      alert(t('captain.gameUpdateFailed'));
+    }
+  };
+
+  const cancelEditGame = () => {
+    setGameToEdit(null);
+  };
+
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -222,6 +256,16 @@ export default function CaptainPage() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
+                          handleEditGame(game.id);
+                        }}
+                        className="px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded transition-colors"
+                        title={t('captain.editGame')}
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
                           handleDeleteGame(game.id);
                         }}
                         className="px-2 py-1 text-xs bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 rounded transition-colors"
@@ -244,6 +288,15 @@ export default function CaptainPage() {
             />
           </div>
         </div>
+      )}
+
+      {/* Edit Game Form */}
+      {gameToEdit && (
+        <EditGameForm
+          game={currentSchedule.find(game => game.id === gameToEdit)!}
+          onGameUpdated={handleGameUpdated}
+          onCancel={cancelEditGame}
+        />
       )}
 
       {/* Score Submission Form */}
