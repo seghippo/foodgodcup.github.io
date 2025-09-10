@@ -152,6 +152,12 @@ const translations = {
     'captain.matchType': 'Match Type',
     'captain.doubles': 'Doubles',
     'captain.singles': 'Singles',
+    'captain.unsavedChanges': 'You have unsaved changes. Do you want to save them?',
+    'captain.saveBeforeLeave': 'Save before leaving?',
+    'captain.discardChanges': 'Discard Changes',
+    'captain.keepEditing': 'Keep Editing',
+    'captain.changesSaved': 'Changes saved successfully!',
+    'captain.saveFailed': 'Failed to save changes. Please try again.',
     
     // Authentication
     'auth.welcome': 'Welcome Captain',
@@ -331,6 +337,12 @@ const translations = {
     'captain.matchType': '比赛类型',
     'captain.doubles': '双打',
     'captain.singles': '单打',
+    'captain.unsavedChanges': '您有未保存的更改。是否要保存它们？',
+    'captain.saveBeforeLeave': '离开前保存？',
+    'captain.discardChanges': '放弃更改',
+    'captain.keepEditing': '继续编辑',
+    'captain.changesSaved': '更改保存成功！',
+    'captain.saveFailed': '保存更改失败。请重试。',
     
     // Authentication
     'auth.welcome': '欢迎队长',

@@ -31,6 +31,9 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [originalMatchLines, setOriginalMatchLines] = useState<MatchLineForm[]>([]);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   // Find the existing match result
   const existingResult = matchResults.find(mr => mr.gameId === gameId);
@@ -51,8 +54,18 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
         }))
       }));
       setMatchLines(formLines);
+      setOriginalMatchLines(JSON.parse(JSON.stringify(formLines))); // Deep copy
+      setHasUnsavedChanges(false);
     }
   }, [existingResult]);
+
+  // Track changes to detect unsaved modifications
+  useEffect(() => {
+    if (originalMatchLines.length > 0) {
+      const hasChanges = JSON.stringify(matchLines) !== JSON.stringify(originalMatchLines);
+      setHasUnsavedChanges(hasChanges);
+    }
+  }, [matchLines, originalMatchLines]);
 
   if (!existingResult) {
     return (
@@ -260,20 +273,50 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
       };
       
       onScoreUpdate(updatedResult);
+      setOriginalMatchLines(JSON.parse(JSON.stringify(matchLines))); // Update original state
+      setHasUnsavedChanges(false);
       setIsEditing(false);
+      
+      // Show success message
+      alert(t('captain.changesSaved'));
     } catch (error) {
       console.error('Error updating scores:', error);
+      alert(t('captain.saveFailed'));
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDiscardChanges = () => {
+    if (window.confirm(t('captain.unsavedChanges'))) {
+      setMatchLines(JSON.parse(JSON.stringify(originalMatchLines))); // Reset to original
+      setHasUnsavedChanges(false);
+      setIsEditing(false);
+      setShowSaveDialog(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    if (hasUnsavedChanges) {
+      setShowSaveDialog(true);
+    } else {
+      setIsEditing(false);
     }
   };
 
   return (
     <div className="card">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">
-          {t('captain.modifyScores')} - {getTeamName(homeTeam)} vs {getTeamName(awayTeam)}
-        </h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-semibold">
+            {t('captain.modifyScores')} - {getTeamName(homeTeam)} vs {getTeamName(awayTeam)}
+          </h2>
+          {hasUnsavedChanges && (
+            <span className="px-2 py-1 text-xs bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 rounded-full">
+              {t('captain.unsavedChanges')}
+            </span>
+          )}
+        </div>
         <div className="flex gap-2">
           {!isEditing ? (
             <>
@@ -299,7 +342,7 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
           ) : (
             <>
               <button
-                onClick={() => setIsEditing(false)}
+                onClick={handleCancelEdit}
                 className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
               >
                 {t('captain.cancel')}
@@ -591,6 +634,39 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
           </div>
         ))}
       </div>
+
+      {/* Save Dialog */}
+      {showSaveDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">{t('captain.saveBeforeLeave')}</h3>
+            <p className="text-slate-600 dark:text-slate-400 mb-6">
+              {t('captain.unsavedChanges')}
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={handleDiscardChanges}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+              >
+                {t('captain.discardChanges')}
+              </button>
+              <button
+                onClick={() => setShowSaveDialog(false)}
+                className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
+              >
+                {t('captain.keepEditing')}
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg transition-colors"
+              >
+                {isSubmitting ? t('captain.submitting') : t('captain.saveChanges')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

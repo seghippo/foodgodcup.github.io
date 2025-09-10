@@ -22,6 +22,23 @@ export default function CaptainPage() {
     }
   }, [isAuthenticated, isLoading, router]);
 
+  // Warn user before leaving page with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // This will show a browser confirmation dialog
+      e.preventDefault();
+      e.returnValue = '';
+    };
+
+    // Add event listener when component mounts
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Cleanup event listener when component unmounts
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
   // Show loading while checking authentication
   if (isLoading) {
     return (
