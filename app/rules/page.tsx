@@ -207,6 +207,71 @@ export default function RulesPage() {
                 <p className="text-sm">{t('rules.tennis.chapter7.club.desc')}</p>
               </div>
             </div>
+
+            <div className="p-4 bg-gradient-to-r from-league-accent/10 to-league-highlight/10 rounded-xl border border-league-accent/20">
+              <h3 className="font-semibold text-league-primary dark:text-white mb-3">
+                {t('rules.tennis.etiquette.title')}
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                {t('rules.tennis.etiquette.subtitle')}
+              </p>
+              
+              <div className="space-y-4">
+                {/* Basic Etiquette */}
+                <div>
+                  <h4 className="font-medium text-league-primary dark:text-white mb-2">
+                    {t('rules.tennis.etiquette.basic.title')}
+                  </h4>
+                  <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-300">
+                    <li>• {t('rules.tennis.etiquette.basic.punctual')}</li>
+                    <li>• {t('rules.tennis.etiquette.basic.warmup')}</li>
+                    <li>• {t('rules.tennis.etiquette.basic.respect')}</li>
+                    <li>• {t('rules.tennis.etiquette.basic.emotions')}</li>
+                    <li>• {t('rules.tennis.etiquette.basic.ballReturn')}</li>
+                    <li>• {t('rules.tennis.etiquette.basic.crossing')}</li>
+                  </ul>
+                </div>
+
+                {/* Doubles Etiquette */}
+                <div>
+                  <h4 className="font-medium text-league-primary dark:text-white mb-2">
+                    {t('rules.tennis.etiquette.doubles.title')}
+                  </h4>
+                  <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-300">
+                    <li>• {t('rules.tennis.etiquette.doubles.teammates')}</li>
+                    <li>• {t('rules.tennis.etiquette.doubles.communication')}</li>
+                    <li>• {t('rules.tennis.etiquette.doubles.responsibility')}</li>
+                    <li>• {t('rules.tennis.etiquette.doubles.overhead')}</li>
+                    <li>• {t('rules.tennis.etiquette.doubles.disputes')}</li>
+                  </ul>
+                </div>
+
+                {/* Mixed Doubles */}
+                <div>
+                  <h4 className="font-medium text-league-primary dark:text-white mb-2">
+                    {t('rules.tennis.etiquette.mixed.title')}
+                  </h4>
+                  <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-300">
+                    <li>• {t('rules.tennis.etiquette.mixed.serving')}</li>
+                    <li>• {t('rules.tennis.etiquette.mixed.power')}</li>
+                    <li>• {t('rules.tennis.etiquette.mixed.tactics')}</li>
+                    <li>• {t('rules.tennis.etiquette.mixed.atmosphere')}</li>
+                  </ul>
+                </div>
+
+                {/* Post-Match Etiquette */}
+                <div>
+                  <h4 className="font-medium text-league-primary dark:text-white mb-2">
+                    {t('rules.tennis.etiquette.post.title')}
+                  </h4>
+                  <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-300">
+                    <li>• {t('rules.tennis.etiquette.post.greeting')}</li>
+                    <li>• {t('rules.tennis.etiquette.post.thanks')}</li>
+                    <li>• {t('rules.tennis.etiquette.post.cleanup')}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
