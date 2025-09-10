@@ -615,14 +615,41 @@ function saveMatchResultsToStorage(matchResults: MatchResult[]): void {
   }
 }
 
-// Export match results with localStorage persistence
+// Export match results with localStorage persistence (lazy loading)
 let _matchResults: MatchResult[] | null = null;
-export const matchResults: MatchResult[] = (() => {
-  if (_matchResults === null) {
-    _matchResults = getMatchResultsFromStorage();
+export const matchResults: MatchResult[] = new Proxy([], {
+  get(target, prop) {
+    if (_matchResults === null) {
+      _matchResults = getMatchResultsFromStorage();
+    }
+    return _matchResults[prop as keyof MatchResult[]];
+  },
+  set(target, prop, value) {
+    if (_matchResults === null) {
+      _matchResults = getMatchResultsFromStorage();
+    }
+    _matchResults[prop as keyof MatchResult[]] = value;
+    return true;
+  },
+  has(target, prop) {
+    if (_matchResults === null) {
+      _matchResults = getMatchResultsFromStorage();
+    }
+    return prop in _matchResults;
+  },
+  ownKeys(target) {
+    if (_matchResults === null) {
+      _matchResults = getMatchResultsFromStorage();
+    }
+    return Object.keys(_matchResults);
+  },
+  getOwnPropertyDescriptor(target, prop) {
+    if (_matchResults === null) {
+      _matchResults = getMatchResultsFromStorage();
+    }
+    return Object.getOwnPropertyDescriptor(_matchResults, prop);
   }
-  return _matchResults;
-})() as MatchResult[];
+});
 
 // Function to refresh match results from storage
 export function refreshMatchResultsFromStorage(): MatchResult[] {

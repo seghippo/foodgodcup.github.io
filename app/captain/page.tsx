@@ -173,7 +173,8 @@ export default function CaptainPage() {
           }
           
           // Remove any submitted results for this game
-          setSubmittedResults(prev => prev.filter(result => result.gameId !== gameToDelete));
+          const refreshedResults = refreshMatchResultsFromStorage();
+          setCurrentMatchResults(refreshedResults.filter(result => result.gameId !== gameToDelete));
           
           // Force re-render
           setScheduleKey(prev => prev + 1);
