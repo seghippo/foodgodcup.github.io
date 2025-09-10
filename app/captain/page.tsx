@@ -187,15 +187,23 @@ export default function CaptainPage() {
                     <div className="font-semibold">
                       {getTeamName(homeTeam)} {result.homeTotalScore} - {result.awayTotalScore} {getTeamName(awayTeam)}
                     </div>
-                    <span className={`px-2 py-1 rounded text-xs ${
-                      result.status === 'approved'
-                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-                        : result.status === 'pending'
-                        ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'
-                        : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-                    }`}>
-                      {result.status}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-1 rounded text-xs ${
+                        result.status === 'approved'
+                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                          : result.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'
+                          : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+                      }`}>
+                        {result.status}
+                      </span>
+                      <button
+                        onClick={() => setSelectedGame(result.gameId)}
+                        className="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                      >
+                        {t('captain.modifyResult')}
+                      </button>
+                    </div>
                   </div>
                   <div className="text-sm text-slate-600 dark:text-slate-400">
                     Submitted: {new Date(result.submittedAt).toLocaleString()}

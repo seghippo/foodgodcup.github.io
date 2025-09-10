@@ -30,6 +30,7 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
   const [matchLines, setMatchLines] = useState<MatchLineForm[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   // Find the existing match result
   const existingResult = matchResults.find(mr => mr.gameId === gameId);
@@ -226,12 +227,20 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
         </h2>
         <div className="flex gap-2">
           {!isEditing ? (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-            >
-              {t('captain.editScores')}
-            </button>
+            <>
+              <button
+                onClick={() => setShowDetails(!showDetails)}
+                className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors"
+              >
+                {showDetails ? t('captain.hideDetails') : t('captain.viewDetails')}
+              </button>
+              <button
+                onClick={() => setIsEditing(true)}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              >
+                {t('captain.editScores')}
+              </button>
+            </>
           ) : (
             <>
               <button
@@ -263,6 +272,84 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
           </div>
         </div>
       </div>
+
+      {/* Match Details Section */}
+      {showDetails && !isEditing && (
+        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <h3 className="text-lg font-semibold mb-4 text-blue-800 dark:text-blue-200">
+            {t('captain.matchDetails')}
+          </h3>
+          <div className="space-y-4">
+            {existingResult.matchLines.map((line, index) => (
+              <div key={line.id} className="p-3 bg-white dark:bg-slate-800 rounded-lg border border-blue-200 dark:border-blue-700">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-semibold text-blue-700 dark:text-blue-300">
+                    {t('captain.line')} {line.lineNumber} - {t(`captain.${line.matchType}`)}
+                  </h4>
+                  <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                    line.winner === 'home' 
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                      : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                  }`}>
+                    {line.winner === 'home' ? getTeamName(homeTeam) : getTeamName(awayTeam)} {t('captain.wins')}
+                  </span>
+                </div>
+                
+                {/* Players */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                  <div>
+                    <div className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">
+                      {getTeamName(homeTeam)} {t('captain.players')}
+                    </div>
+                    <div className="space-y-1">
+                      {line.homePlayers.map((playerId, playerIndex) => {
+                        const player = homeTeam.roster.find(p => p.id === playerId);
+                        return (
+                          <div key={playerIndex} className="text-sm">
+                            {player ? getPlayerName(player) : t('captain.noPlayer')}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">
+                      {getTeamName(awayTeam)} {t('captain.players')}
+                    </div>
+                    <div className="space-y-1">
+                      {line.awayPlayers.map((playerId, playerIndex) => {
+                        const player = awayTeam.roster.find(p => p.id === playerId);
+                        return (
+                          <div key={playerIndex} className="text-sm">
+                            {player ? getPlayerName(player) : t('captain.noPlayer')}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sets */}
+                <div>
+                  <div className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
+                    {t('captain.sets')}
+                  </div>
+                  <div className="flex gap-4">
+                    {line.sets.map((set, setIndex) => (
+                      <div key={setIndex} className="flex items-center gap-2">
+                        <span className="text-sm font-medium">{t('captain.set')} {set.setNumber}:</span>
+                        <span className="text-sm font-semibold">
+                          {set.homeScore} - {set.awayScore}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Match Lines */}
       <div className="space-y-6">

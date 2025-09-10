@@ -141,6 +141,11 @@ const translations = {
     'captain.currentDate': 'Current Date',
     'captain.scoresResetWarning': 'Scores will be automatically reset to zero for future games.',
     'captain.dateModified': 'Game date has been modified. You can now submit scores.',
+    'captain.modifyResult': 'Modify Result',
+    'captain.viewDetails': 'View Details',
+    'captain.hideDetails': 'Hide Details',
+    'captain.matchDetails': 'Match Details',
+    'captain.wins': 'Wins',
     
     // Authentication
     'auth.welcome': 'Welcome Captain',
@@ -309,6 +314,11 @@ const translations = {
     'captain.currentDate': '当前日期',
     'captain.scoresResetWarning': '未来比赛的分数将自动重置为零。',
     'captain.dateModified': '比赛日期已修改。您现在可以提交成绩了。',
+    'captain.modifyResult': '修改成绩',
+    'captain.viewDetails': '查看详情',
+    'captain.hideDetails': '隐藏详情',
+    'captain.matchDetails': '比赛详情',
+    'captain.wins': '获胜',
     
     // Authentication
     'auth.welcome': '欢迎队长',
