@@ -48,6 +48,7 @@ export function Navbar() {
           {link('/teams', t('nav.teams'))}
           {link('/schedule', t('nav.schedule'))}
           {link('/standings', t('nav.standings'))}
+          {link('/rules', t('nav.rules'))}
           {link('/blog', t('nav.blog'))}
           {link('/captain', t('nav.captain'))}
         </nav>
@@ -77,6 +78,7 @@ export function Navbar() {
             {link('/teams', t('nav.teams'))}
             {link('/schedule', t('nav.schedule'))}
             {link('/standings', t('nav.standings'))}
+            {link('/rules', t('nav.rules'))}
             {link('/blog', t('nav.blog'))}
             {link('/captain', t('nav.captain'))}
           </nav>
