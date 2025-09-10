@@ -50,7 +50,7 @@ export function Navbar() {
           {link('/standings', t('nav.standings'))}
           {link('/rules', t('nav.rules'))}
           {link('/blog', t('nav.blog'))}
-          {link('/captain', t('nav.captain'))}
+          {/* Temporarily hidden: {link('/captain', t('nav.captain'))} */}
         </nav>
 
 
@@ -80,7 +80,7 @@ export function Navbar() {
             {link('/standings', t('nav.standings'))}
             {link('/rules', t('nav.rules'))}
             {link('/blog', t('nav.blog'))}
-            {link('/captain', t('nav.captain'))}
+            {/* Temporarily hidden: {link('/captain', t('nav.captain'))} */}
           </nav>
         </div>
       )}
