@@ -316,6 +316,16 @@ export function addGameToSchedule(game: Game): void {
   schedule.push(game);
 }
 
+// Function to remove a game from the schedule
+export function removeGameFromSchedule(gameId: string): boolean {
+  const index = schedule.findIndex(game => game.id === gameId);
+  if (index !== -1) {
+    schedule.splice(index, 1);
+    return true;
+  }
+  return false;
+}
+
 export const standings: Standing[] = [
   { teamId: 'BJD', wins: 0, losses: 0, draws: 0, points: 0 }, // Season hasn't started yet
   { teamId: 'DND', wins: 0, losses: 0, draws: 0, points: 0 }, // Season hasn't started yet

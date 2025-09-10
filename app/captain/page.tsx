@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/lib/language';
 import { useAuth } from '@/lib/auth';
-import { teams, schedule, matchResults } from '@/lib/data';
+import { teams, schedule, matchResults, removeGameFromSchedule } from '@/lib/data';
 import DetailedScoreSubmission from '@/components/DetailedScoreSubmission';
 import ScoreModification from '@/components/ScoreModification';
 import CreateGameForm from '@/components/CreateGameForm';
@@ -16,6 +16,8 @@ export default function CaptainPage() {
   const [selectedGame, setSelectedGame] = useState<string>('');
   const [submittedResults, setSubmittedResults] = useState(matchResults);
   const [currentSchedule, setCurrentSchedule] = useState(schedule);
+  const [gameToDelete, setGameToDelete] = useState<string | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Redirect to auth if not authenticated
   useEffect(() => {
@@ -87,6 +89,49 @@ export default function CaptainPage() {
     setCurrentSchedule(prev => [...prev, newGame]);
     // Select the newly created game
     setSelectedGame(newGame.id);
+  };
+
+  const handleDeleteGame = (gameId: string) => {
+    setGameToDelete(gameId);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDeleteGame = () => {
+    if (gameToDelete) {
+      try {
+        // Remove from schedule
+        const success = removeGameFromSchedule(gameToDelete);
+        if (success) {
+          // Update current schedule state
+          setCurrentSchedule(prev => prev.filter(game => game.id !== gameToDelete));
+          
+          // Clear selected game if it was the deleted one
+          if (selectedGame === gameToDelete) {
+            setSelectedGame('');
+          }
+          
+          // Remove any submitted results for this game
+          setSubmittedResults(prev => prev.filter(result => result.gameId !== gameToDelete));
+          
+          // Show success message
+          alert(t('captain.gameDeleted'));
+        } else {
+          alert(t('captain.gameDeleteFailed'));
+        }
+      } catch (error) {
+        console.error('Error deleting game:', error);
+        alert(t('captain.gameDeleteFailed'));
+      }
+    }
+    
+    // Close dialog
+    setShowDeleteDialog(false);
+    setGameToDelete(null);
+  };
+
+  const cancelDeleteGame = () => {
+    setShowDeleteDialog(false);
+    setGameToDelete(null);
   };
 
   return (
@@ -174,6 +219,16 @@ export default function CaptainPage() {
                       {selectedGame === game.id && (
                         <span className="text-league-primary">✓</span>
                       )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteGame(game.id);
+                        }}
+                        className="px-2 py-1 text-xs bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 rounded transition-colors"
+                        title={t('captain.deleteGame')}
+                      >
+                        🗑️
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -252,6 +307,32 @@ export default function CaptainPage() {
                 </div>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">{t('captain.deleteGame')}</h3>
+            <p className="text-slate-600 dark:text-slate-400 mb-6">
+              {t('captain.confirmDeleteGame')}
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={cancelDeleteGame}
+                className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
+              >
+                {t('captain.cancel')}
+              </button>
+              <button
+                onClick={confirmDeleteGame}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+              >
+                {t('captain.delete')}
+              </button>
+            </div>
           </div>
         </div>
       )}

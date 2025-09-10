@@ -170,6 +170,11 @@ const translations = {
     'captain.noGamesScheduled': 'No games scheduled yet. Create your first game!',
     'captain.homeTeam': 'Home Team',
     'captain.creating': 'Creating...',
+    'captain.deleteGame': 'Delete Game',
+    'captain.confirmDeleteGame': 'Are you sure you want to delete this game?',
+    'captain.gameDeleted': 'Game deleted successfully!',
+    'captain.gameDeleteFailed': 'Failed to delete game. Please try again.',
+    'captain.delete': 'Delete',
     
     // Authentication
     'auth.welcome': 'Welcome Captain',
@@ -367,6 +372,11 @@ const translations = {
     'captain.noGamesScheduled': '还没有安排比赛。创建您的第一场比赛！',
     'captain.homeTeam': '主队',
     'captain.creating': '创建中...',
+    'captain.deleteGame': '删除比赛',
+    'captain.confirmDeleteGame': '您确定要删除这场比赛吗？',
+    'captain.gameDeleted': '比赛删除成功！',
+    'captain.gameDeleteFailed': '删除比赛失败。请重试。',
+    'captain.delete': '删除',
     
     // Authentication
     'auth.welcome': '欢迎队长',
