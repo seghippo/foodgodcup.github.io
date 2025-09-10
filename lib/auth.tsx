@@ -33,16 +33,21 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false);
 
   // Check for existing session on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem('tennis-club-user');
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error('Error parsing saved user:', error);
-        localStorage.removeItem('tennis-club-user');
+    setIsClient(true);
+    
+    if (typeof window !== 'undefined') {
+      const savedUser = localStorage.getItem('tennis-club-user');
+      if (savedUser) {
+        try {
+          setUser(JSON.parse(savedUser));
+        } catch (error) {
+          console.error('Error parsing saved user:', error);
+          localStorage.removeItem('tennis-club-user');
+        }
       }
     }
     setIsLoading(false);
@@ -87,12 +92,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       let foundUser = mockUsers.find(u => u.email === email);
       
       // If not found in mock users, check registered users in localStorage
-      if (!foundUser) {
+      if (!foundUser && typeof window !== 'undefined') {
         try {
           const registeredUsers = localStorage.getItem('tennis-club-registered-users');
+          console.log('Registered users from localStorage:', registeredUsers);
           if (registeredUsers) {
             const users: User[] = JSON.parse(registeredUsers);
+            console.log('Parsed registered users:', users);
             foundUser = users.find(u => u.email === email);
+            console.log('Found user in registered users:', foundUser);
           }
         } catch (error) {
           console.error('Error loading registered users:', error);
@@ -101,7 +109,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       if (foundUser && password === 'password123') { // Mock password
         setUser(foundUser);
-        localStorage.setItem('tennis-club-user', JSON.stringify(foundUser));
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('tennis-club-user', JSON.stringify(foundUser));
+        }
         setIsLoading(false);
         return true;
       } else {
@@ -144,30 +154,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
 
       // Save to registered users list in localStorage
-      try {
-        const existingUsers = localStorage.getItem('tennis-club-registered-users');
-        let registeredUsers: User[] = [];
-        
-        if (existingUsers) {
-          registeredUsers = JSON.parse(existingUsers);
+      if (typeof window !== 'undefined') {
+        try {
+          const existingUsers = localStorage.getItem('tennis-club-registered-users');
+          let registeredUsers: User[] = [];
+          
+          if (existingUsers) {
+            registeredUsers = JSON.parse(existingUsers);
+          }
+          
+          // Check if user already exists
+          const userExists = registeredUsers.some(u => u.email === userData.email);
+          if (userExists) {
+            console.log('User already exists:', userData.email);
+            setIsLoading(false);
+            return false; // User already exists
+          }
+          
+          registeredUsers.push(newUser);
+          localStorage.setItem('tennis-club-registered-users', JSON.stringify(registeredUsers));
+          console.log('Saved new user to localStorage:', newUser);
+          console.log('All registered users:', registeredUsers);
+        } catch (error) {
+          console.error('Error saving registered user:', error);
         }
-        
-        // Check if user already exists
-        const userExists = registeredUsers.some(u => u.email === userData.email);
-        if (userExists) {
-          setIsLoading(false);
-          return false; // User already exists
-        }
-        
-        registeredUsers.push(newUser);
-        localStorage.setItem('tennis-club-registered-users', JSON.stringify(registeredUsers));
-      } catch (error) {
-        console.error('Error saving registered user:', error);
       }
 
       // Set as current user and save session
       setUser(newUser);
-      localStorage.setItem('tennis-club-user', JSON.stringify(newUser));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('tennis-club-user', JSON.stringify(newUser));
+      }
       setIsLoading(false);
       return true;
     } catch (error) {
@@ -179,7 +196,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('tennis-club-user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('tennis-club-user');
+    }
   };
 
   const value: AuthContextType = {
