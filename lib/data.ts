@@ -36,7 +36,32 @@ export type Game = {
 };
 
 export type Standing = { teamId: string; wins: number; losses: number; draws: number; points: number };
+export type PlayerStanding = { 
+  playerId: string; 
+  playerName: string; 
+  playerNameEn: string;
+  teamId: string; 
+  teamName: string;
+  teamNameEn: string;
+  wins: number; 
+  losses: number; 
+  draws: number; 
+  points: number;
+  gamesPlayed: number;
+};
 export type CulinaryStanding = { teamId: string; points: number; round1: number; round2: number; round3: number };
+export type CulinaryPlayerStanding = { 
+  playerId: string; 
+  playerName: string; 
+  playerNameEn: string;
+  teamId: string; 
+  teamName: string;
+  teamNameEn: string;
+  points: number; 
+  round1: number; 
+  round2: number; 
+  round3: number;
+};
 
 export type MatchLine = {
   id: string;
@@ -310,6 +335,92 @@ export const culinaryStandings: CulinaryStanding[] = [
   { teamId: 'LGN', points: 2, round1: 1, round2: 0, round3: 1 }, // Middle, no points, middle
   { teamId: 'HBR', points: 0, round1: 0, round2: 0, round3: 0 }  // No points in all rounds
 ];
+
+// Function to generate individual player standings from team standings and player data
+export function generatePlayerStandings(): PlayerStanding[] {
+  const playerStandings: PlayerStanding[] = [];
+  
+  teams.forEach(team => {
+    team.roster.forEach(player => {
+      playerStandings.push({
+        playerId: player.id,
+        playerName: player.name,
+        playerNameEn: player.nameEn,
+        teamId: team.id,
+        teamName: team.name,
+        teamNameEn: team.nameEn,
+        wins: player.wins,
+        losses: player.losses,
+        draws: 0, // Players don't have draws in tennis
+        points: player.wins * 3, // 3 points per win
+        gamesPlayed: player.wins + player.losses
+      });
+    });
+  });
+  
+  // Sort by points (wins * 3), then by wins, then by games played
+  return playerStandings.sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points;
+    if (b.wins !== a.wins) return b.wins - a.wins;
+    return b.gamesPlayed - a.gamesPlayed;
+  });
+}
+
+// Function to generate culinary player standings (top 3 players per round)
+export function generateCulinaryPlayerStandings(): CulinaryPlayerStanding[] {
+  const culinaryPlayerStandings: CulinaryPlayerStanding[] = [];
+  
+  // Sample data for top 3 players in each round
+  const round1Top3 = [
+    { playerId: 'BJD_P1', playerName: '王涤', playerNameEn: 'Wang Di', teamId: 'BJD', teamName: '北京烤鸭', teamNameEn: 'Beijing Roast Duck', points: 3 },
+    { playerId: 'JZH_P1', playerName: 'Sophia', playerNameEn: 'Sophia', teamId: 'JZH', teamName: '江浙沪狮子头', teamNameEn: 'JZH Lion Head', points: 3 },
+    { playerId: 'DND_P1', playerName: '胡哥', playerNameEn: 'Hu Ge', teamId: 'DND', teamName: '东北炖粉条', teamNameEn: 'Northeast Stewed Noodles', points: 1 }
+  ];
+  
+  const round2Top3 = [
+    { playerId: 'BJD_P2', playerName: '王涤', playerNameEn: 'Wang Di', teamId: 'BJD', teamName: '北京烤鸭', teamNameEn: 'Beijing Roast Duck', points: 3 },
+    { playerId: 'DND_P2', playerName: '胡哥', playerNameEn: 'Hu Ge', teamId: 'DND', teamName: '东北炖粉条', teamNameEn: 'Northeast Stewed Noodles', points: 3 },
+    { playerId: 'JZH_P2', playerName: 'Sophia', playerNameEn: 'Sophia', teamId: 'JZH', teamName: '江浙沪狮子头', teamNameEn: 'JZH Lion Head', points: 1 }
+  ];
+  
+  const round3Top3 = [
+    { playerId: 'BJD_P3', playerName: '王涤', playerNameEn: 'Wang Di', teamId: 'BJD', teamName: '北京烤鸭', teamNameEn: 'Beijing Roast Duck', points: 3 },
+    { playerId: 'JZH_P3', playerName: 'Sophia', playerNameEn: 'Sophia', teamId: 'JZH', teamName: '江浙沪狮子头', teamNameEn: 'JZH Lion Head', points: 3 },
+    { playerId: 'DND_P3', playerName: '胡哥', playerNameEn: 'Hu Ge', teamId: 'DND', teamName: '东北炖粉条', teamNameEn: 'Northeast Stewed Noodles', points: 1 }
+  ];
+  
+  // Combine all rounds and calculate total points
+  const allPlayers = new Map<string, CulinaryPlayerStanding>();
+  
+  [round1Top3, round2Top3, round3Top3].forEach((round, roundIndex) => {
+    round.forEach(player => {
+      const key = player.playerId;
+      if (allPlayers.has(key)) {
+        const existing = allPlayers.get(key)!;
+        existing.points += player.points;
+        if (roundIndex === 0) existing.round1 = player.points;
+        else if (roundIndex === 1) existing.round2 = player.points;
+        else if (roundIndex === 2) existing.round3 = player.points;
+      } else {
+        allPlayers.set(key, {
+          playerId: player.playerId,
+          playerName: player.playerName,
+          playerNameEn: player.playerNameEn,
+          teamId: player.teamId,
+          teamName: player.teamName,
+          teamNameEn: player.teamNameEn,
+          points: player.points,
+          round1: roundIndex === 0 ? player.points : 0,
+          round2: roundIndex === 1 ? player.points : 0,
+          round3: roundIndex === 2 ? player.points : 0
+        });
+      }
+    });
+  });
+  
+  // Convert to array and sort by total points
+  return Array.from(allPlayers.values()).sort((a, b) => b.points - a.points);
+}
 
 // Sample match results (captain submissions)
 export const matchResults: MatchResult[] = [
