@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/lib/language';
 import { useAuth } from '@/lib/auth';
-import { teams, schedule, matchResults, removeGameFromSchedule, updateGameInfo, refreshScheduleFromStorage } from '@/lib/data';
+import { teams, schedule, matchResults, removeGameFromSchedule, updateGameInfo, refreshScheduleFromStorage, addMatchResult, updateMatchResult, refreshMatchResultsFromStorage } from '@/lib/data';
 import DetailedScoreSubmission from '@/components/DetailedScoreSubmission';
 import ScoreModification from '@/components/ScoreModification';
 import CreateGameForm from '@/components/CreateGameForm';
@@ -43,17 +43,20 @@ export default function CaptainPage() {
     }
   };
   const [selectedGame, setSelectedGame] = useState<string>('');
-  const [submittedResults, setSubmittedResults] = useState(matchResults);
+  const [currentMatchResults, setCurrentMatchResults] = useState(matchResults);
   const [currentSchedule, setCurrentSchedule] = useState(schedule);
   const [scheduleKey, setScheduleKey] = useState(0); // Key to force re-render when schedule changes
   const [gameToDelete, setGameToDelete] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [gameToEdit, setGameToEdit] = useState<string | null>(null);
 
-  // Refresh schedule from localStorage when component mounts
+  // Refresh schedule and match results from localStorage when component mounts
   useEffect(() => {
     const refreshedSchedule = refreshScheduleFromStorage();
     setCurrentSchedule(refreshedSchedule);
+    
+    const refreshedResults = refreshMatchResultsFromStorage();
+    setCurrentMatchResults(refreshedResults);
   }, []);
 
   // Redirect to auth if not authenticated
@@ -103,7 +106,12 @@ export default function CaptainPage() {
   );
 
   const handleScoreSubmit = (result: any) => {
-    setSubmittedResults(prev => [...prev, result]);
+    // Add to persistent storage
+    addMatchResult(result);
+    
+    // Refresh local state
+    const refreshedResults = refreshMatchResultsFromStorage();
+    setCurrentMatchResults(refreshedResults);
     
     // Update game status to completed when results are submitted
     const gameIndex = currentSchedule.findIndex(game => game.id === result.gameId);
@@ -119,11 +127,12 @@ export default function CaptainPage() {
   };
 
   const handleScoreUpdate = (updatedResult: any) => {
-    setSubmittedResults(prev => 
-      prev.map(result => 
-        result.id === updatedResult.id ? updatedResult : result
-      )
-    );
+    // Update in persistent storage
+    updateMatchResult(updatedResult.id, updatedResult);
+    
+    // Refresh local state
+    const refreshedResults = refreshMatchResultsFromStorage();
+    setCurrentMatchResults(refreshedResults);
   };
 
   const handleDateUpdate = (gameId: string, newDate: string) => {
@@ -361,7 +370,7 @@ export default function CaptainPage() {
       {selectedGame && (
         <>
           {/* Check if there's an existing result for this game */}
-          {submittedResults.find(result => result.gameId === selectedGame) ? (
+          {currentMatchResults.find(result => result.gameId === selectedGame) ? (
             <ScoreModification 
               gameId={selectedGame} 
               onScoreUpdate={handleScoreUpdate}
@@ -378,11 +387,11 @@ export default function CaptainPage() {
       )}
 
       {/* Submitted Results */}
-      {submittedResults.length > 0 && (
+      {currentMatchResults.length > 0 && (
         <div className="card">
           <h2 className="text-xl font-semibold mb-4">{t('captain.submittedResults')}</h2>
           <div className="space-y-3">
-            {submittedResults.map(result => {
+            {currentMatchResults.map(result => {
               const homeTeam = teams.find(t => t.id === result.homeTeamId);
               const awayTeam = teams.find(t => t.id === result.awayTeamId);
               

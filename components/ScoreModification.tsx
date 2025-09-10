@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/lib/language';
-import { teams, matchResults, schedule, type MatchResult, type MatchLine } from '@/lib/data';
+import { teams, matchResults, schedule, type MatchResult, type MatchLine, refreshMatchResultsFromStorage } from '@/lib/data';
 import { isGameDateInFuture } from '@/lib/dateUtils';
 import GameDateModifier from './GameDateModifier';
 
@@ -35,8 +35,9 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
   const [originalMatchLines, setOriginalMatchLines] = useState<MatchLineForm[]>([]);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
 
-  // Find the existing match result
-  const existingResult = matchResults.find(mr => mr.gameId === gameId);
+  // Find the existing match result (refresh from storage to get latest)
+  const currentMatchResults = refreshMatchResultsFromStorage();
+  const existingResult = currentMatchResults.find(mr => mr.gameId === gameId);
   
   useEffect(() => {
     if (existingResult) {

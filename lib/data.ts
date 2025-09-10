@@ -496,8 +496,8 @@ export function generateCulinaryPlayerStandings(): CulinaryPlayerStanding[] {
   return Array.from(allPlayers.values()).sort((a, b) => b.points - a.points);
 }
 
-// Sample match results (captain submissions)
-export const matchResults: MatchResult[] = [
+// Default match results (preseason game)
+const defaultMatchResults: MatchResult[] = [
   // Example: Preseason game result
   {
     id: 'MR001',
@@ -576,4 +576,80 @@ export function getPostBySlug(slug: string) {
 
 export function latestPost() {
   return posts.slice().sort((a, b) => +new Date(b.date) - +new Date(a.date))[0];
+}
+
+// Function to get match results from localStorage or return default
+function getMatchResultsFromStorage(): MatchResult[] {
+  if (typeof window === 'undefined') {
+    return defaultMatchResults; // Server-side rendering
+  }
+  
+  try {
+    const stored = localStorage.getItem('tennis-match-results');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Ensure we always have the preseason game result
+      const hasPreseason = parsed.some((result: MatchResult) => result.gameId === 'P1');
+      if (!hasPreseason) {
+        parsed.unshift(defaultMatchResults[0]);
+      }
+      return parsed;
+    }
+  } catch (error) {
+    console.error('Error loading match results from localStorage:', error);
+  }
+  
+  return defaultMatchResults;
+}
+
+// Function to save match results to localStorage
+function saveMatchResultsToStorage(matchResults: MatchResult[]): void {
+  if (typeof window === 'undefined') {
+    return; // Server-side rendering
+  }
+  
+  try {
+    localStorage.setItem('tennis-match-results', JSON.stringify(matchResults));
+  } catch (error) {
+    console.error('Error saving match results to localStorage:', error);
+  }
+}
+
+// Export match results with localStorage persistence
+export const matchResults: MatchResult[] = getMatchResultsFromStorage();
+
+// Function to refresh match results from storage
+export function refreshMatchResultsFromStorage(): MatchResult[] {
+  const refreshedResults = getMatchResultsFromStorage();
+  matchResults.length = 0;
+  matchResults.push(...refreshedResults);
+  return refreshedResults;
+}
+
+// Function to add a new match result
+export function addMatchResult(result: MatchResult): void {
+  matchResults.push(result);
+  saveMatchResultsToStorage(matchResults);
+}
+
+// Function to update an existing match result
+export function updateMatchResult(resultId: string, updates: Partial<MatchResult>): boolean {
+  const index = matchResults.findIndex(result => result.id === resultId);
+  if (index !== -1) {
+    matchResults[index] = { ...matchResults[index], ...updates };
+    saveMatchResultsToStorage(matchResults);
+    return true;
+  }
+  return false;
+}
+
+// Function to remove a match result
+export function removeMatchResult(resultId: string): boolean {
+  const index = matchResults.findIndex(result => result.id === resultId);
+  if (index !== -1) {
+    matchResults.splice(index, 1);
+    saveMatchResultsToStorage(matchResults);
+    return true;
+  }
+  return false;
 }
