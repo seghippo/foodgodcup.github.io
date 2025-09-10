@@ -107,6 +107,32 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
     }));
   };
 
+  const addMatchLine = () => {
+    const newLineNumber = matchLines.length + 1;
+    const newLine: MatchLineForm = {
+      id: `ML${Date.now()}`, // Generate unique ID
+      lineNumber: newLineNumber,
+      matchType: 'doubles',
+      homePlayers: ['', ''],
+      awayPlayers: ['', ''],
+      sets: [
+        { setNumber: 1, homeScore: 0, awayScore: 0 }
+      ]
+    };
+    setMatchLines(prev => [...prev, newLine]);
+  };
+
+  const removeMatchLine = (lineIndex: number) => {
+    if (matchLines.length <= 1) {
+      // Don't allow removing the last match line
+      return;
+    }
+    
+    if (window.confirm(t('captain.confirmRemoveLine'))) {
+      setMatchLines(prev => prev.filter((_, index) => index !== lineIndex));
+    }
+  };
+
   const removeSet = (lineIndex: number, setIndex: number) => {
     setMatchLines(prev => prev.map((line, index) => {
       if (index === lineIndex) {
@@ -146,6 +172,29 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
         } else {
           newLine.awayPlayers = [...line.awayPlayers];
           newLine.awayPlayers[playerIndex] = playerId;
+        }
+        return newLine;
+      }
+      return line;
+    }));
+  };
+
+  const updateMatchType = (lineIndex: number, matchType: 'doubles' | 'singles') => {
+    setMatchLines(prev => prev.map((line, index) => {
+      if (index === lineIndex) {
+        const newLine = { ...line, matchType };
+        // Adjust player arrays based on match type
+        if (matchType === 'singles') {
+          newLine.homePlayers = line.homePlayers.slice(0, 1);
+          newLine.awayPlayers = line.awayPlayers.slice(0, 1);
+        } else {
+          // Ensure we have 2 players for doubles
+          if (newLine.homePlayers.length < 2) {
+            newLine.homePlayers = [...newLine.homePlayers, ''];
+          }
+          if (newLine.awayPlayers.length < 2) {
+            newLine.awayPlayers = [...newLine.awayPlayers, ''];
+          }
         }
         return newLine;
       }
@@ -233,6 +282,12 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
                 className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors"
               >
                 {showDetails ? t('captain.hideDetails') : t('captain.viewDetails')}
+              </button>
+              <button
+                onClick={addMatchLine}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+              >
+                {t('captain.addMatchLine')}
               </button>
               <button
                 onClick={() => setIsEditing(true)}
@@ -359,17 +414,42 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
               <h3 className="font-semibold">
                 {t('captain.line')} {line.lineNumber} - {t(`captain.${line.matchType}`)}
               </h3>
-              {isEditing && (
-                <div className="flex gap-2">
+              <div className="flex gap-2">
+                {matchLines.length > 1 && (
+                  <button
+                    onClick={() => removeMatchLine(lineIndex)}
+                    className="px-3 py-1 text-sm bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 rounded transition-colors"
+                  >
+                    {t('captain.removeMatchLine')}
+                  </button>
+                )}
+                {isEditing && (
                   <button
                     onClick={() => addSet(lineIndex)}
                     className="px-3 py-1 text-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded transition-colors"
                   >
                     {t('captain.addSet')}
                   </button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
+
+            {/* Match Type Selector */}
+            {isEditing && (
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  {t('captain.matchType')}
+                </label>
+                <select
+                  value={line.matchType}
+                  onChange={(e) => updateMatchType(lineIndex, e.target.value as 'doubles' | 'singles')}
+                  className="w-full md:w-auto p-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800"
+                >
+                  <option value="doubles">{t('captain.doubles')}</option>
+                  <option value="singles">{t('captain.singles')}</option>
+                </select>
+              </div>
+            )}
 
             {/* Players */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">

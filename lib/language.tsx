@@ -146,6 +146,12 @@ const translations = {
     'captain.hideDetails': 'Hide Details',
     'captain.matchDetails': 'Match Details',
     'captain.wins': 'Wins',
+    'captain.addMatchLine': 'Add Match Line',
+    'captain.removeMatchLine': 'Remove Match Line',
+    'captain.confirmRemoveLine': 'Are you sure you want to remove this match line?',
+    'captain.matchType': 'Match Type',
+    'captain.doubles': 'Doubles',
+    'captain.singles': 'Singles',
     
     // Authentication
     'auth.welcome': 'Welcome Captain',
@@ -319,6 +325,12 @@ const translations = {
     'captain.hideDetails': '隐藏详情',
     'captain.matchDetails': '比赛详情',
     'captain.wins': '获胜',
+    'captain.addMatchLine': '添加比赛线',
+    'captain.removeMatchLine': '删除比赛线',
+    'captain.confirmRemoveLine': '确定要删除这条比赛线吗？',
+    'captain.matchType': '比赛类型',
+    'captain.doubles': '双打',
+    'captain.singles': '单打',
     
     // Authentication
     'auth.welcome': '欢迎队长',
