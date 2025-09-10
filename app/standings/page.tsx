@@ -37,11 +37,6 @@ export default function StandingsPage() {
         </div>
         
         <div className="card overflow-x-auto">
-          <div className="mb-4 p-3 bg-gradient-to-r from-league-accent/10 to-league-highlight/10 rounded-xl border border-league-accent/20">
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              <strong>{t('standings.tennisScoring')}</strong> {t('standings.tennisScoringDesc')}
-            </p>
-          </div>
           
           <table className="w-full text-left">
             <thead className="text-sm text-slate-500">
