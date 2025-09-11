@@ -125,6 +125,137 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* About Us Section */}
+      <section className="card">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 bg-gradient-to-br from-league-gold to-yellow-500 rounded-xl flex items-center justify-center">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-league-primary dark:text-white">{t('about.title')}</h2>
+        </div>
+        
+        <div className="space-y-6">
+          <div className="text-center mb-8">
+            <h3 className="text-lg font-semibold text-league-primary dark:text-white mb-2">{t('about.subtitle')}</h3>
+          </div>
+          
+          {/* Chapter 1: Purpose and Significance */}
+          <div className="p-4 bg-gradient-to-r from-league-accent/10 to-league-highlight/10 rounded-xl border border-league-accent/20">
+            <h4 className="font-semibold text-league-primary dark:text-white mb-3">{t('about.chapter1.title')}</h4>
+            <div className="space-y-3">
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter1.purpose.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter1.purpose.content')}</p>
+              </div>
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter1.significance.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter1.significance.content')}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Chapter 2: Organizational Framework */}
+          <div className="p-4 bg-gradient-to-r from-league-success/10 to-emerald-500/10 rounded-xl border border-league-success/20">
+            <h4 className="font-semibold text-league-primary dark:text-white mb-3">{t('about.chapter2.title')}</h4>
+            <div className="space-y-3">
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter2.organizer.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter2.organizer.content')}</p>
+              </div>
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter2.host.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter2.host.content')}</p>
+              </div>
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter2.teams.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300 mb-2">{t('about.chapter2.teams.content')}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter2.teams.list')}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Chapter 3: Tennis Competition */}
+          <div className="p-4 bg-gradient-to-r from-league-info/10 to-blue-500/10 rounded-xl border border-league-info/20">
+            <h4 className="font-semibold text-league-primary dark:text-white mb-3">{t('about.chapter3.title')}</h4>
+            <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter3.content')}</p>
+          </div>
+
+          {/* Chapter 4: Comprehensive Activities */}
+          <div className="p-4 bg-gradient-to-r from-league-warning/10 to-orange-500/10 rounded-xl border border-league-warning/20">
+            <h4 className="font-semibold text-league-primary dark:text-white mb-3">{t('about.chapter4.title')}</h4>
+            <div className="space-y-3">
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter4.culinary.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter4.culinary.content')}</p>
+              </div>
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter4.celebration.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter4.celebration.content')}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Chapter 5: Member Affiliation and Participation */}
+          <div className="p-4 bg-gradient-to-r from-league-primary/10 to-league-secondary/10 rounded-xl border border-league-primary/20">
+            <h4 className="font-semibold text-league-primary dark:text-white mb-3">{t('about.chapter5.title')}</h4>
+            <div className="space-y-3">
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter5.affiliation.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter5.affiliation.content')}</p>
+              </div>
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter5.participation.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter5.participation.content')}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Chapter 6: Awards */}
+          <div className="p-4 bg-gradient-to-r from-league-gold/10 to-yellow-500/10 rounded-xl border border-league-gold/20">
+            <h4 className="font-semibold text-league-primary dark:text-white mb-3">{t('about.chapter6.title')}</h4>
+            <div className="space-y-3">
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter6.main.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter6.main.content')}</p>
+              </div>
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter6.round.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter6.round.content')}</p>
+              </div>
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter6.individual.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter6.individual.content')}</p>
+              </div>
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter6.trophy.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter6.trophy.content')}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Chapter 7: Supplementary Provisions */}
+          <div className="p-4 bg-gradient-to-r from-slate-100/50 to-slate-200/50 dark:from-slate-800/50 dark:to-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-700">
+            <h4 className="font-semibold text-league-primary dark:text-white mb-3">{t('about.chapter7.title')}</h4>
+            <div className="space-y-3">
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter7.interpretation.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter7.interpretation.content')}</p>
+              </div>
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter7.adjustment.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter7.adjustment.content')}</p>
+              </div>
+              <div>
+                <h5 className="font-medium text-league-primary dark:text-white mb-1">{t('about.chapter7.implementation.title')}</h5>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{t('about.chapter7.implementation.content')}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Main Content Grid */}
       <section className="grid lg:grid-cols-3 gap-8">
         {/* Latest Blog Post */}
