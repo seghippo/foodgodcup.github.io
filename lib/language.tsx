@@ -27,6 +27,7 @@ const translations = {
   en: {
     // Navigation
     'nav.home': 'Home',
+    'nav.about': 'About Us',
     'nav.teams': 'Teams',
     'nav.schedule': 'Schedule',
     'nav.standings': 'Standings',
@@ -124,6 +125,7 @@ const translations = {
     'about.chapter7.adjustment.content': 'All activities are adjusted and arranged by the organizing committee based on actual circumstances.',
     'about.chapter7.implementation.title': 'Implementation',
     'about.chapter7.implementation.content': 'Matters not covered herein are discussed and decided by the organizing committee. Once conclusions and activity arrangements are discussed and passed, everyone is expected to strictly implement them.',
+    'about.learnMore': 'Learn More',
     'rules.tennis.title': 'Tennis Competition Rules',
     'rules.tennis.chapter1.title': 'Chapter 1: Match Format',
     'rules.tennis.chapter1.rule1': 'Matches use 4 doubles lines as standard. Teams can flexibly adjust based on court and personnel availability, but minimum 3 lines must be played.',
@@ -366,6 +368,7 @@ const translations = {
   zh: {
     // Navigation
     'nav.home': '首页',
+    'nav.about': '关于我们',
     'nav.teams': '队伍',
     'nav.schedule': '赛程',
     'nav.standings': '排名',
@@ -463,6 +466,7 @@ const translations = {
     'about.chapter7.adjustment.content': '所有活动根据实际情况由组委会进行调整安排部署。',
     'about.chapter7.implementation.title': '执行',
     'about.chapter7.implementation.content': '未尽事宜经组委会协商讨论，一旦讨论并通过的结论和活动安排，望大家严格执行。',
+    'about.learnMore': '了解更多',
     'rules.tennis.title': '网球比赛规则',
     'rules.tennis.chapter1.title': '第一章 比赛形式',
     'rules.tennis.chapter1.rule1': '比赛采用4条双打线为基准。双方可根据场地和人员情况灵活调整（增减对抗项目），但出场总线数不得少于3条',
