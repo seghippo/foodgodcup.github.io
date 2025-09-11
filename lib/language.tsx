@@ -728,11 +728,10 @@ const translations = {
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<Language>('zh');
-  const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState(true);
 
   // Load language from localStorage on mount
   useEffect(() => {
-    setIsClient(true);
     const savedLanguage = localStorage.getItem('language') as Language;
     if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'zh')) {
       setLanguage(savedLanguage);

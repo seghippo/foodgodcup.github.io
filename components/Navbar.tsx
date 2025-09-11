@@ -76,7 +76,6 @@ export function Navbar() {
         <div className="md:hidden border-t border-slate-200/50 dark:border-slate-700/50 bg-white/95 dark:bg-league-primary/95 backdrop-blur-md">
           <nav className="container max-w-7xl py-4 space-y-2">
             {link('/', t('nav.home'))}
-            {link('/about', t('nav.about'))}
             {link('/teams', t('nav.teams'))}
             {link('/schedule', t('nav.schedule'))}
             {link('/standings', t('nav.standings'))}
