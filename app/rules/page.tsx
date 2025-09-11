@@ -90,6 +90,32 @@ export default function RulesPage() {
               </div>
             </div>
 
+            <div className="p-4 bg-gradient-to-r from-league-info/10 to-blue-500/10 rounded-xl border border-league-info/20">
+              <h3 className="font-semibold text-league-primary dark:text-white mb-3">
+                {t('rules.tennis.chapter4.title')}
+              </h3>
+              <div className="space-y-2 text-slate-600 dark:text-slate-300">
+                <div className="ml-4 space-y-1 text-sm">
+                  <p>1. {t('rules.tennis.chapter4.rule1')}</p>
+                  <p>2. {t('rules.tennis.chapter4.rule2')}</p>
+                  <p>3. {t('rules.tennis.chapter4.rule3')}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-gradient-to-r from-league-warning/10 to-orange-500/10 rounded-xl border border-league-warning/20">
+              <h3 className="font-semibold text-league-primary dark:text-white mb-3">
+                {t('rules.tennis.chapter5.title')}
+              </h3>
+              <div className="space-y-2 text-slate-600 dark:text-slate-300">
+                <div className="ml-4 space-y-1 text-sm">
+                  <p>1. {t('rules.tennis.chapter5.rule1')}</p>
+                  <p>2. {t('rules.tennis.chapter5.rule2')}</p>
+                  <p>3. {t('rules.tennis.chapter5.rule3')}</p>
+                </div>
+              </div>
+            </div>
+
             <div className="p-4 bg-gradient-to-r from-league-success/10 to-emerald-500/10 rounded-xl border border-league-success/20">
               <h3 className="font-semibold text-league-primary dark:text-white mb-3">
                 {t('rules.tennis.chapter6.title')}
