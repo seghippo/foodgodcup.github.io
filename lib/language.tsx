@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useLayoutEffect } from 'react';
 
 type Language = 'en' | 'zh';
 
@@ -730,13 +730,19 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<Language>('zh');
   const [isClient, setIsClient] = useState(false);
 
-  // Load language from localStorage on mount
+  // Use useEffect with a small timeout to ensure this runs after component mounts
   useEffect(() => {
-    setIsClient(true);
-    const savedLanguage = localStorage.getItem('language') as Language;
-    if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'zh')) {
-      setLanguage(savedLanguage);
-    }
+    const timer = setTimeout(() => {
+      setIsClient(true);
+      if (typeof window !== 'undefined') {
+        const savedLanguage = localStorage.getItem('language') as Language;
+        if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'zh')) {
+          setLanguage(savedLanguage);
+        }
+      }
+    }, 0);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   // Save language to localStorage when it changes
@@ -747,6 +753,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   }, [language, isClient]);
 
   const t = (key: string): string => {
+    // Always try to get the translation, fallback to key if not found
     return translations[language][key as keyof typeof translations[typeof language]] || key;
   };
 
