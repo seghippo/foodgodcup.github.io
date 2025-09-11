@@ -29,63 +29,7 @@ export default function RulesPage() {
       </div>
 
       {/* Rules Grid */}
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* Culinary Competition Rules */}
-        <div className="card">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-league-gold to-yellow-500 rounded-xl flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-league-primary dark:text-white">
-              {t('rules.culinary.title')}
-            </h2>
-          </div>
-          
-          <div className="space-y-4">
-            <div className="p-4 bg-gradient-to-r from-league-gold/10 to-yellow-500/10 rounded-xl border border-league-gold/20">
-              <h3 className="font-semibold text-league-primary dark:text-white mb-2">
-                {t('rules.culinary.scoring.title')}
-              </h3>
-              <ul className="space-y-2 text-slate-600 dark:text-slate-300">
-                <li className="flex items-center gap-2">
-                  <span className="w-6 h-6 bg-league-gold rounded-full flex items-center justify-center text-white text-sm font-bold">1</span>
-                  {t('rules.culinary.scoring.first')}
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-6 h-6 bg-league-silver rounded-full flex items-center justify-center text-white text-sm font-bold">2</span>
-                  {t('rules.culinary.scoring.second')}
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-6 h-6 bg-league-bronze rounded-full flex items-center justify-center text-white text-sm font-bold">3</span>
-                  {t('rules.culinary.scoring.third')}
-                </li>
-              </ul>
-            </div>
-
-            <div className="p-4 bg-gradient-to-r from-league-accent/10 to-league-highlight/10 rounded-xl border border-league-accent/20">
-              <h3 className="font-semibold text-league-primary dark:text-white mb-2">
-                {t('rules.culinary.rounds.title')}
-              </h3>
-              <p className="text-slate-600 dark:text-slate-300">
-                {t('rules.culinary.rounds.description')}
-              </p>
-            </div>
-
-            <div className="p-4 bg-gradient-to-r from-league-success/10 to-emerald-500/10 rounded-xl border border-league-success/20">
-              <h3 className="font-semibold text-league-primary dark:text-white mb-2">
-                {t('rules.culinary.evaluation.title')}
-              </h3>
-              <ul className="space-y-1 text-slate-600 dark:text-slate-300">
-                <li>• {t('rules.culinary.evaluation.taste')}</li>
-                <li>• {t('rules.culinary.evaluation.presentation')}</li>
-                <li>• {t('rules.culinary.evaluation.creativity')}</li>
-                <li>• {t('rules.culinary.evaluation.authenticity')}</li>
-              </ul>
-            </div>
-          </div>
-        </div>
+      <div className="max-w-4xl mx-auto">
 
         {/* Tennis Competition Rules */}
         <div className="card">
@@ -123,21 +67,10 @@ export default function RulesPage() {
                 {t('rules.tennis.chapter2.title')}
               </h3>
               <div className="space-y-2 text-slate-600 dark:text-slate-300">
-                <p className="font-medium">{t('rules.tennis.chapter2.rating.title')}</p>
-                <p className="text-sm">{t('rules.tennis.chapter2.rating.desc')}</p>
                 <p className="font-medium">{t('rules.tennis.chapter2.order.title')}</p>
                 <div className="ml-4 space-y-1 text-sm">
                   <p>• {t('rules.tennis.chapter2.order.mens')}</p>
                   <p>• {t('rules.tennis.chapter2.order.mixed')}</p>
-                </div>
-                <p className="font-medium">{t('rules.tennis.chapter2.limits.title')}</p>
-                <div className="ml-4 space-y-1 text-sm">
-                  <p>• {t('rules.tennis.chapter2.limits.md1')}</p>
-                  <p>• {t('rules.tennis.chapter2.limits.md2')}</p>
-                  <p>• {t('rules.tennis.chapter2.limits.md3')}</p>
-                  <p>• {t('rules.tennis.chapter2.limits.wd')}</p>
-                  <p>• {t('rules.tennis.chapter2.limits.xd1')}</p>
-                  <p>• {t('rules.tennis.chapter2.limits.xd2')}</p>
                 </div>
               </div>
             </div>
