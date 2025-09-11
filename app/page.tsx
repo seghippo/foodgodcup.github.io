@@ -6,18 +6,7 @@ import { useLanguage } from '@/lib/language';
 
 export default function HomePage() {
   const latest = latestPost();
-  const { t, getPostTitle, getPostExcerpt, language, setLanguage, isClient } = useLanguage();
-  
-  if (!isClient) {
-    return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-league-primary mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  const { t, getPostTitle, getPostExcerpt, language, setLanguage } = useLanguage();
   
   // Count completed official matches (excluding preseason)
   const completedMatches = schedule.filter(game => game.status === 'completed' && !game.isPreseason).length;
