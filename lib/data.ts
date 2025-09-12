@@ -396,10 +396,14 @@ export function generatePlayerStandings(): PlayerStanding[] {
   
   teams.forEach(team => {
     team.roster.forEach(player => {
+      // 使用网名优先，如果没有网名则使用ID
+      const displayName = player.nickname || player.nicknameEn || player.id;
+      const displayNameEn = player.nicknameEn || player.nickname || player.id;
+      
       playerStandings.push({
         playerId: player.id,
-        playerName: player.name,
-        playerNameEn: player.nameEn,
+        playerName: displayName,
+        playerNameEn: displayNameEn,
         teamId: team.id,
         teamName: team.name,
         teamNameEn: team.nameEn,
