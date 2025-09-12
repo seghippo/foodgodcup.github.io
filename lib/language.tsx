@@ -774,7 +774,12 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const getPlayerName = (player: any): string => {
     if (!player) return '';
-    return language === 'en' ? (player.nameEn || player.name) : player.name;
+    // 优先显示网名，如果没有网名则显示ID
+    if (language === 'en') {
+      return player.nicknameEn || player.nickname || player.id;
+    } else {
+      return player.nickname || player.nicknameEn || player.id;
+    }
   };
 
   const getPlayerPosition = (player: any): string => {
