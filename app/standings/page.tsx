@@ -1,10 +1,10 @@
 'use client';
 
-import { standings, teamsById, generatePlayerStandings } from '@/lib/data';
+import { standings, teamsById, generatePlayerStandings, teams } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
 
 export default function StandingsPage() {
-  const { t, getTeamName } = useLanguage();
+  const { t, getTeamName, getPlayerName, language } = useLanguage();
 
   // Generate individual player standings
   const playerStandings = generatePlayerStandings();
@@ -43,6 +43,10 @@ export default function StandingsPage() {
               {playerStandings.map((s, index) => {
                 const winPercentage = s.gamesPlayed > 0 ? (s.wins / s.gamesPlayed).toFixed(3) : '0.000';
                 
+                // Get the team and player data for language-aware display
+                const team = teams.find(t => t.id === s.teamId);
+                const player = team?.roster.find(p => p.id === s.playerId);
+                
                 return (
                   <tr key={s.playerId} className="border-t border-slate-200 dark:border-slate-800">
                     <td className="py-3 pr-4 font-medium">
@@ -56,11 +60,11 @@ export default function StandingsPage() {
                             {index + 1}
                           </div>
                         )}
-                        {s.playerName}
+                        {player ? getPlayerName(player) : s.playerName}
                       </div>
                     </td>
                     <td className="py-3 pr-4 text-sm text-slate-600 dark:text-slate-400">
-                      {s.teamName}
+                      {team ? getTeamName(team) : s.teamName}
                     </td>
                     <td className="py-3 pr-4">
                       <span className="px-2 py-1 rounded-lg text-xs font-medium bg-league-success/20 text-league-success">

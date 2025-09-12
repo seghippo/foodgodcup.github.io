@@ -52,6 +52,15 @@ export function Navbar() {
           {link('/rules', t('nav.rules'))}
           {link('/blog', t('nav.blog'))}
           {/* Temporarily hidden: {link('/captain', t('nav.captain'))} */}
+          
+          {/* Language Toggle */}
+          <button
+            onClick={() => setLanguage(language === 'en' ? 'zh' : 'en')}
+            className="px-3 py-1 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors focus-ring"
+            title={language === 'en' ? 'Switch to Chinese' : 'Switch to English'}
+          >
+            {language === 'en' ? '中文' : 'EN'}
+          </button>
         </nav>
 
 
@@ -82,6 +91,17 @@ export function Navbar() {
             {link('/rules', t('nav.rules'))}
             {link('/blog', t('nav.blog'))}
             {/* Temporarily hidden: {link('/captain', t('nav.captain'))} */}
+            
+            {/* Mobile Language Toggle */}
+            <button
+              onClick={() => {
+                setLanguage(language === 'en' ? 'zh' : 'en');
+                setIsMobileMenuOpen(false);
+              }}
+              className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors focus-ring"
+            >
+              {language === 'en' ? '中文' : 'English'}
+            </button>
           </nav>
         </div>
       )}
