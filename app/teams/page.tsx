@@ -44,9 +44,6 @@ export default function TeamsPage() {
                     <div className="text-xs text-slate-500 dark:text-slate-400">
                       {player.id}
                     </div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400">
-                      {getPlayerExperience(player)}
-                    </div>
                     <div className="flex gap-2 mt-1">
                       <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded">
                         {t('standings.wins')}: {player.wins}
