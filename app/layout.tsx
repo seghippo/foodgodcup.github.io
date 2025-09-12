@@ -17,11 +17,20 @@ export const metadata: Metadata = {
     title: '圣地亚哥华人网球俱乐部食神杯 - San Diego Chinese Tennis Club',
     description: 'Your premier destination for San Diego Chinese Tennis Club Food God Cup management, schedules, standings, and community updates.',
     type: 'website',
+    images: [
+      {
+        url: '/teamlogos.jpeg',
+        width: 1200,
+        height: 630,
+        alt: 'San Diego Chinese Tennis Club Food God Cup Teams',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: '圣地亚哥华人网球俱乐部食神杯 - San Diego Chinese Tennis Club',
     description: 'Your premier destination for San Diego Chinese Tennis Club Food God Cup management, schedules, standings, and community updates.',
+    images: ['/teamlogos.jpeg'],
   },
 };
 
