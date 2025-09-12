@@ -2,6 +2,8 @@
 
 A clean Next.js 14 (App Router) + Tailwind starter for a sports league: Teams, Schedule, Standings, and a Blog.
 
+<!-- Force rebuild: $(date) -->
+
 ## Quickstart
 
 ```bash
