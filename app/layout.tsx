@@ -16,17 +16,18 @@ export const metadata: Metadata = {
   robots: 'index, follow',
   other: {
     'wechat:description': '圣地亚哥华人网球俱乐部食神杯 - 网球比赛管理、赛程安排、排名统计和社区更新',
-    'wechat:image': '/teamlogos.jpeg',
+    'wechat:image': 'https://seghippo.github.io/foodgodcup.github.io/teamlogos.jpeg',
   },
   openGraph: {
     title: '圣地亚哥华人网球俱乐部食神杯 - San Diego Chinese Tennis Club',
     description: 'Your premier destination for San Diego Chinese Tennis Club Food God Cup management, schedules, standings, and community updates.',
     type: 'website',
+    url: 'https://seghippo.github.io/foodgodcup.github.io',
     images: [
       {
-        url: '/teamlogos.jpeg',
-        width: 1200,
-        height: 630,
+        url: 'https://seghippo.github.io/foodgodcup.github.io/teamlogos.jpeg',
+        width: 920,
+        height: 1388,
         alt: 'San Diego Chinese Tennis Club Food God Cup Teams',
       },
     ],
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: '圣地亚哥华人网球俱乐部食神杯 - San Diego Chinese Tennis Club',
     description: 'Your premier destination for San Diego Chinese Tennis Club Food God Cup management, schedules, standings, and community updates.',
-    images: ['/teamlogos.jpeg'],
+    images: ['https://seghippo.github.io/foodgodcup.github.io/teamlogos.jpeg'],
   },
 };
 
@@ -64,7 +65,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         
         {/* WeChat specific meta tags */}
         <meta name="wechat:description" content="圣地亚哥华人网球俱乐部食神杯 - 网球比赛管理、赛程安排、排名统计和社区更新" />
-        <meta name="wechat:image" content="/teamlogos.jpeg" />
+        <meta name="wechat:image" content="https://seghippo.github.io/foodgodcup.github.io/teamlogos.jpeg" />
+        <meta property="og:image" content="https://seghippo.github.io/foodgodcup.github.io/teamlogos.jpeg" />
+        <meta property="og:image:width" content="920" />
+        <meta property="og:image:height" content="1388" />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta name="twitter:image" content="https://seghippo.github.io/foodgodcup.github.io/teamlogos.jpeg" />
+        
+        {/* Additional WeChat compatibility */}
+        <meta name="description" content="圣地亚哥华人网球俱乐部食神杯 - 网球比赛管理、赛程安排、排名统计和社区更新" />
+        <meta name="keywords" content="网球, 圣地亚哥, 华人, 俱乐部, 食神杯, 比赛, 排名" />
+        <meta name="author" content="圣地亚哥华人网球俱乐部食神杯" />
       </head>
       <body className={`${inter.className} antialiased`}>
         <LanguageProvider>
