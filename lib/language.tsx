@@ -53,7 +53,7 @@ const translations = {
     'home.registrationDeadline': 'Registration Deadline',
     'home.registrationDeadlineDesc': 'Closes this Friday at 5pm',
     'home.openingDay': 'Opening Day',
-    'home.openingDayDesc': 'October 1st - Get ready!',
+    'home.openingDayDesc': 'September 27th - Get ready!',
     'home.refereeClinic': 'Referee Clinic',
     'home.refereeClinicDesc': 'Next Wednesday at 6pm',
     
@@ -402,7 +402,7 @@ const translations = {
     'home.registrationDeadline': '报名截止',
     'home.registrationDeadlineDesc': '本周五下午5点截止',
     'home.openingDay': '开幕日',
-    'home.openingDayDesc': '10月1日 - 准备就绪！',
+    'home.openingDayDesc': '9月27日 - 准备就绪！',
     'home.refereeClinic': '裁判培训',
     'home.refereeClinicDesc': '下周三晚上6点',
     

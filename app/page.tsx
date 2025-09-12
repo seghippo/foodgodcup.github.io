@@ -114,29 +114,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* About Us Preview */}
-      <section className="card">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-league-gold to-yellow-500 rounded-xl flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-league-primary dark:text-white">{t('about.title')}</h2>
-              <p className="text-slate-600 dark:text-slate-400">{t('about.subtitle')}</p>
-            </div>
-          </div>
-          <Link href="/about" className="btn-gold">
-            <span>{t('about.learnMore')}</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-        </div>
-      </section>
-
       {/* Main Content Grid */}
       <section className="grid lg:grid-cols-3 gap-8">
         {/* Latest Blog Post */}
@@ -182,6 +159,31 @@ export default function HomePage() {
                 <p className="text-slate-500 dark:text-slate-400">No posts yet. Check back soon!</p>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* About Us Preview */}
+        <div className="lg:col-span-2">
+          <div className="card">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-league-gold to-yellow-500 rounded-xl flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-league-primary dark:text-white">{t('about.title')}</h2>
+                  <p className="text-slate-600 dark:text-slate-400">{t('about.subtitle')}</p>
+                </div>
+              </div>
+              <Link href="/about" className="btn-gold">
+                <span>{t('about.learnMore')}</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -242,18 +244,6 @@ export default function HomePage() {
           <div className="card">
             <h3 className="text-xl font-bold text-league-primary dark:text-white mb-4">{t('home.importantUpdates')}</h3>
             <div className="space-y-3">
-              <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-league-warning/10 to-orange-500/10 rounded-xl border border-league-warning/20">
-                <div className="w-6 h-6 bg-league-warning rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="font-medium text-slate-900 dark:text-white">{t('home.registrationDeadline')}</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{t('home.registrationDeadlineDesc')}</p>
-                </div>
-              </div>
-              
               <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-league-success/10 to-emerald-500/10 rounded-xl border border-league-success/20">
                 <div className="w-6 h-6 bg-league-success rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
                   <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -263,18 +253,6 @@ export default function HomePage() {
                 <div>
                   <p className="font-medium text-slate-900 dark:text-white">{t('home.openingDay')}</p>
                   <p className="text-sm text-slate-600 dark:text-slate-400">{t('home.openingDayDesc')}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-league-info/10 to-blue-500/10 rounded-xl border border-league-info/20">
-                <div className="w-6 h-6 bg-league-info rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="font-medium text-slate-900 dark:text-white">{t('home.refereeClinic')}</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{t('home.refereeClinicDesc')}</p>
                 </div>
               </div>
             </div>
