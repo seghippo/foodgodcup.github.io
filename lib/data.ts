@@ -139,8 +139,8 @@ export const teams: Team[] = [
       { id: 'FJ07', name: 'Jim Chen', nameEn: 'Jim Chen', nickname: '福州捞化', nicknameEn: 'Fuzhou Soup', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
       { id: 'FJ08', name: 'Ian Huang', nameEn: 'Ian Huang', nickname: '鱼丸扁肉燕', nicknameEn: 'Fish Ball Wonton', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
       { id: 'FJ09', name: 'Isabella', nameEn: 'Isabella', nickname: '冰糖建莲羹', nicknameEn: 'Rock Sugar Lotus', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
-      { id: 'FJ10', name: 'Huli', nameEn: 'Huli', nickname: '待定5', nicknameEn: 'TBD5', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
-      { id: 'FJ11', name: 'Joi', nameEn: 'Joi', nickname: '待定6', nicknameEn: 'TBD6', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'FJ10', name: 'Huli', nameEn: 'Huli', nickname: '土笋冻', nicknameEn: 'Sea Worm Jelly', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
+      { id: 'FJ11', name: 'Joi', nameEn: 'Joi', nickname: '肉丸仔', nicknameEn: 'Meat Ball', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
       { id: 'FJ12', name: '海盺', nameEn: 'Hai Xin', nickname: '烧仙草', nicknameEn: 'Grass Jelly', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
       { id: 'FJ13', name: 'June', nameEn: 'June', nickname: '鳗鱼豆腐', nicknameEn: 'Eel Tofu', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 }
     ]
@@ -186,21 +186,21 @@ export const teams: Team[] = [
     arena: 'Guangdong Tennis Center',
     arenaEn: 'Guangdong Tennis Center',
     roster: [
-      { id: 'LG01', name: 'Michael', nameEn: 'Michael', nickname: '待定9', nicknameEn: 'TBD9', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'LG02', name: 'Frankie', nameEn: 'Frankie', nickname: '待定10', nicknameEn: 'TBD10', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'LG03', name: 'Ken', nameEn: 'Ken', nickname: '待定11', nicknameEn: 'TBD11', experience: '4.5级', experienceEn: '4.5 Level', wins: 0, losses: 0 },
-      { id: 'LG04', name: 'Phung', nameEn: 'Phung', nickname: '待定12', nicknameEn: 'TBD12', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'LG05', name: 'Bin', nameEn: 'Bin', nickname: '待定13', nicknameEn: 'TBD13', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
-      { id: 'LG06', name: 'Chan', nameEn: 'Chan', nickname: '待定14', nicknameEn: 'TBD14', experience: '4.5级', experienceEn: '4.5 Level', wins: 0, losses: 0 },
-      { id: 'LG07', name: 'Sheng', nameEn: 'Sheng', nickname: '待定15', nicknameEn: 'TBD15', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'LG08', name: 'Roy', nameEn: 'Roy', nickname: '待定16', nicknameEn: 'TBD16', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'LG09', name: 'Byung', nameEn: 'Byung', nickname: '待定17', nicknameEn: 'TBD17', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'LG10', name: 'Katrina', nameEn: 'Katrina', nickname: '待定18', nicknameEn: 'TBD18', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'LG11', name: 'Carrie', nameEn: 'Carrie', nickname: '待定19', nicknameEn: 'TBD19', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'LG12', name: 'Luke', nameEn: 'Luke', nickname: '待定20', nicknameEn: 'TBD20', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'LG13', name: 'Yunqiang', nameEn: 'Yunqiang', nickname: '待定21', nicknameEn: 'TBD21', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'LG14', name: 'Yuan', nameEn: 'Yuan', nickname: '待定22', nicknameEn: 'TBD22', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
-      { id: 'LG15', name: '谷哥', nameEn: '谷哥', nickname: '待定23', nicknameEn: 'TBD23', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 }
+      { id: 'LG01', name: 'Michael', nameEn: 'Michael', nickname: '老婆饼', nicknameEn: 'Wife Cake', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'LG02', name: 'Frankie', nameEn: 'Frankie', nickname: '云吞面', nicknameEn: 'Wonton Noodles', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'LG03', name: 'Ken', nameEn: 'Ken', nickname: '龙虎风', nicknameEn: 'Dragon Tiger Phoenix', experience: '4.5级', experienceEn: '4.5 Level', wins: 0, losses: 0 },
+      { id: 'LG04', name: 'Phung', nameEn: 'Phung', nickname: '煲仔饭', nicknameEn: 'Clay Pot Rice', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'LG05', name: 'Bin', nameEn: 'Bin', nickname: '艇仔粥', nicknameEn: 'Boat Congee', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
+      { id: 'LG06', name: 'Chan', nameEn: 'Chan', nickname: '椒盐猪排', nicknameEn: 'Salt Pepper Pork Chop', experience: '4.5级', experienceEn: '4.5 Level', wins: 0, losses: 0 },
+      { id: 'LG07', name: 'Sheng', nameEn: 'Sheng', nickname: '酥皮蛋挞', nicknameEn: 'Egg Tart', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'LG08', name: 'Roy', nameEn: 'Roy', nickname: '菠萝包', nicknameEn: 'Pineapple Bun', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'LG09', name: 'Byung', nameEn: 'Byung', nickname: '菠萝油', nicknameEn: 'Pineapple Butter', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'LG10', name: 'Katrina', nameEn: 'Katrina', nickname: '瑞士鸡翼', nicknameEn: 'Swiss Chicken Wings', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'LG11', name: 'Carrie', nameEn: 'Carrie', nickname: '老友粉', nicknameEn: 'Old Friend Noodles', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'LG12', name: 'Luke', nameEn: 'Luke', nickname: '滑蛋湿炒牛河', nicknameEn: 'Wet Fried Beef Noodles', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'LG13', name: 'Yunqiang', nameEn: 'Yunqiang', nickname: '桂林米粉', nicknameEn: 'Guilin Rice Noodles', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'LG14', name: 'Yuan', nameEn: 'Yuan', nickname: '柠檬鸭', nicknameEn: 'Lemon Duck', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
+      { id: 'LG15', name: '谷哥', nameEn: '谷哥', nickname: '糯米鸡', nicknameEn: 'Sticky Rice Chicken', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 }
     ]
   },
   { 
@@ -215,18 +215,18 @@ export const teams: Team[] = [
     arena: 'Tianjin Tennis Club',
     arenaEn: 'Tianjin Tennis Club',
     roster: [
-      { id: 'TJ01', name: 'Xuefeng', nameEn: 'Xuefeng', nickname: '待定71', nicknameEn: 'TBD71', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'TJ02', name: 'Liu Yuan', nameEn: 'Liu Yuan', nickname: '待定72', nicknameEn: 'TBD72', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'TJ03', name: 'Han Peng', nameEn: 'Han Peng', nickname: '待定73', nicknameEn: 'TBD73', experience: '3.0级', experienceEn: '3.0 Level', wins: 0, losses: 0 },
-      { id: 'TJ04', name: 'Wang XZ', nameEn: 'Wang XZ', nickname: '待定74', nicknameEn: 'TBD74', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
-      { id: 'TJ05', name: 'Jeff Yang', nameEn: 'Jeff Yang', nickname: '待定75', nicknameEn: 'TBD75', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'TJ06', name: 'Mike Yang', nameEn: 'Mike Yang', nickname: '待定76', nicknameEn: 'TBD76', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'TJ07', name: 'Dennis Du', nameEn: 'Dennis Du', nickname: '待定77', nicknameEn: 'TBD77', experience: '4.5级', experienceEn: '4.5 Level', wins: 0, losses: 0 },
-      { id: 'TJ08', name: 'Sharp Xiao', nameEn: 'Sharp Xiao', nickname: '待定78', nicknameEn: 'TBD78', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
-      { id: 'TJ09', name: 'Serena', nameEn: 'Serena', nickname: '待定79', nicknameEn: 'TBD79', experience: '4.5级', experienceEn: '4.5 Level', wins: 0, losses: 0 },
-      { id: 'TJ10', name: 'Lucy Liu', nameEn: 'Lucy Liu', nickname: '待定80', nicknameEn: 'TBD80', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
-      { id: 'TJ11', name: 'Jing Li', nameEn: 'Jing Li', nickname: '待定81', nicknameEn: 'TBD81', experience: '3.0级', experienceEn: '3.0 Level', wins: 0, losses: 0 },
-      { id: 'TJ12', name: 'Jing Dong', nameEn: 'Jing Dong', nickname: '待定82', nicknameEn: 'TBD82', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 }
+      { id: 'TJ01', name: 'Xuefeng', nameEn: 'Xuefeng', nickname: '18街麻花', nicknameEn: '18th Street Twist', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'TJ02', name: 'Liu Yuan', nameEn: 'Liu Yuan', nickname: '炸糕', nicknameEn: 'Fried Cake', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'TJ03', name: 'Han Peng', nameEn: 'Han Peng', nickname: '嘎巴菜', nicknameEn: 'Gaba Vegetable', experience: '3.0级', experienceEn: '3.0 Level', wins: 0, losses: 0 },
+      { id: 'TJ04', name: 'Wang XZ', nameEn: 'Wang XZ', nickname: '果篦儿', nicknameEn: 'Guo Bi Er', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
+      { id: 'TJ05', name: 'Jeff Yang', nameEn: 'Jeff Yang', nickname: '豆腐脑', nicknameEn: 'Tofu Pudding', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'TJ06', name: 'Mike Yang', nameEn: 'Mike Yang', nickname: '煎饼', nicknameEn: 'Jianbing', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'TJ07', name: 'Dennis Du', nameEn: 'Dennis Du', nickname: '打卤面', nicknameEn: 'Dalu Noodles', experience: '4.5级', experienceEn: '4.5 Level', wins: 0, losses: 0 },
+      { id: 'TJ08', name: 'Sharp Xiao', nameEn: 'Sharp Xiao', nickname: '八珍豆腐', nicknameEn: 'Eight Treasure Tofu', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
+      { id: 'TJ09', name: 'Serena', nameEn: 'Serena', nickname: '三鲜包子', nicknameEn: 'Three Fresh Buns', experience: '4.5级', experienceEn: '4.5 Level', wins: 0, losses: 0 },
+      { id: 'TJ10', name: 'Lucy Liu', nameEn: 'Lucy Liu', nickname: '皮皮虾', nicknameEn: 'Mantis Shrimp', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
+      { id: 'TJ11', name: 'Jing Li', nameEn: 'Jing Li', nickname: '豆根糖', nicknameEn: 'Bean Root Candy', experience: '3.0级', experienceEn: '3.0 Level', wins: 0, losses: 0 },
+      { id: 'TJ12', name: 'Jing Dong', nameEn: 'Jing Dong', nickname: '河螃蟹', nicknameEn: 'River Crab', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 }
     ]
   },
   { 
@@ -266,16 +266,16 @@ export const teams: Team[] = [
     arena: 'Hubei Tennis Center',
     arenaEn: 'Hubei Tennis Center',
     roster: [
-      { id: 'HB01', name: 'Roger', nameEn: 'Roger', nickname: '待定24', nicknameEn: 'TBD24', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
-      { id: 'HB02', name: 'Xiaobai', nameEn: 'Xiaobai', nickname: '待定25', nicknameEn: 'TBD25', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'HB03', name: 'Lijun', nameEn: 'Lijun', nickname: '待定26', nicknameEn: 'TBD26', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'HB04', name: '中微子', nameEn: '中微子', nickname: '待定27', nicknameEn: 'TBD27', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
-      { id: 'HB05', name: 'Henry CJ', nameEn: 'Henry CJ', nickname: '待定28', nicknameEn: 'TBD28', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'HB06', name: 'Zhou Tao', nameEn: 'Zhou Tao', nickname: '待定29', nicknameEn: 'TBD29', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'HB07', name: 'Jinghua', nameEn: 'Jinghua', nickname: '待定30', nicknameEn: 'TBD30', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
-      { id: 'HB08', name: 'Ke Shi', nameEn: 'Ke Shi', nickname: '待定31', nicknameEn: 'TBD31', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
-      { id: 'HB09', name: '陈萍', nameEn: '陈萍', nickname: '待定32', nicknameEn: 'TBD32', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
-      { id: 'HB10', name: 'Yonghui', nameEn: 'Yonghui', nickname: '待定33', nicknameEn: 'TBD33', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 }
+      { id: 'HB01', name: 'Roger', nameEn: 'Roger', nickname: '武昌鱼', nicknameEn: 'Wuchang Fish', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
+      { id: 'HB02', name: 'Xiaobai', nameEn: 'Xiaobai', nickname: '关山一盒酥', nicknameEn: 'Guanshan Crispy Box', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'HB03', name: 'Lijun', nameEn: 'Lijun', nickname: '新豌豆', nicknameEn: 'New Peas', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'HB04', name: '中微子', nameEn: '中微子', nickname: '豆皮', nicknameEn: 'Bean Skin', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
+      { id: 'HB05', name: 'Henry CJ', nameEn: 'Henry CJ', nickname: '卷蹄', nicknameEn: 'Rolled Hoof', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'HB06', name: 'Zhou Tao', nameEn: 'Zhou Tao', nickname: '鱼糕', nicknameEn: 'Fish Cake', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'HB07', name: 'Jinghua', nameEn: 'Jinghua', nickname: '小龙虾', nicknameEn: 'Crayfish', experience: '4.0级', experienceEn: '4.0 Level', wins: 0, losses: 0 },
+      { id: 'HB08', name: 'Ke Shi', nameEn: 'Ke Shi', nickname: '珍珠丸子', nicknameEn: 'Pearl Meatballs', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
+      { id: 'HB09', name: '陈萍', nameEn: '陈萍', nickname: '孝感米酒', nicknameEn: 'Xiaogan Rice Wine', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
+      { id: 'HB10', name: 'Yonghui', nameEn: 'Yonghui', nickname: '绿豆糍粑', nicknameEn: 'Green Bean Rice Cake', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 }
     ]
   }
 ];
