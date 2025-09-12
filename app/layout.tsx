@@ -13,6 +13,11 @@ export const metadata: Metadata = {
   description: 'Your premier destination for San Diego Chinese Tennis Club Food God Cup management, schedules, standings, and community updates. Experience the ultimate fusion of tennis excellence and culinary passion.',
   keywords: 'tennis, chinese, san diego, club, food god cup, sports, league, management, schedule, standings, teams, community',
   authors: [{ name: '圣地亚哥华人网球俱乐部食神杯 Team' }],
+  robots: 'index, follow',
+  other: {
+    'wechat:description': '圣地亚哥华人网球俱乐部食神杯 - 网球比赛管理、赛程安排、排名统计和社区更新',
+    'wechat:image': '/teamlogos.jpeg',
+  },
   openGraph: {
     title: '圣地亚哥华人网球俱乐部食神杯 - San Diego Chinese Tennis Club',
     description: 'Your premier destination for San Diego Chinese Tennis Club Food God Cup management, schedules, standings, and community updates.',
@@ -56,6 +61,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.json" />
+        
+        {/* WeChat specific meta tags */}
+        <meta name="wechat:description" content="圣地亚哥华人网球俱乐部食神杯 - 网球比赛管理、赛程安排、排名统计和社区更新" />
+        <meta name="wechat:image" content="/teamlogos.jpeg" />
       </head>
       <body className={`${inter.className} antialiased`}>
         <LanguageProvider>
