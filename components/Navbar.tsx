@@ -51,7 +51,7 @@ export function Navbar() {
           {link('/standings', t('nav.standings'))}
           {link('/rules', t('nav.rules'))}
           {link('/blog', t('nav.blog'))}
-          {/* Temporarily hidden: {link('/captain', t('nav.captain'))} */}
+          {link('/captain', t('nav.captain'))}
           
           {/* Language Toggle */}
           <button
@@ -90,7 +90,7 @@ export function Navbar() {
             {link('/standings', t('nav.standings'))}
             {link('/rules', t('nav.rules'))}
             {link('/blog', t('nav.blog'))}
-            {/* Temporarily hidden: {link('/captain', t('nav.captain'))} */}
+            {link('/captain', t('nav.captain'))}
             
             {/* Mobile Language Toggle */}
             <button
