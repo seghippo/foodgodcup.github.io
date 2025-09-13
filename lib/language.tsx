@@ -324,6 +324,8 @@ const translations = {
     'captain.gameUpdateFailed': 'Failed to update game. Please try again.',
     'captain.save': 'Save',
     'captain.updating': 'Updating...',
+    'captain.refreshData': 'Refresh Data',
+    'captain.dataRefreshed': 'Data refreshed successfully!',
     
     // Authentication
     'auth.welcome': 'Welcome Captain',
@@ -675,6 +677,8 @@ const translations = {
     'captain.gameUpdateFailed': '更新比赛失败。请重试。',
     'captain.save': '保存',
     'captain.updating': '更新中...',
+    'captain.refreshData': '刷新数据',
+    'captain.dataRefreshed': '数据刷新成功！',
     
     // Authentication
     'auth.welcome': '欢迎队长',

@@ -152,6 +152,20 @@ export default function CaptainPage() {
     setScheduleKey(prev => prev + 1);
   };
 
+  const handleRefreshData = () => {
+    // Force refresh all data from localStorage
+    const refreshedSchedule = refreshScheduleFromStorage();
+    setCurrentSchedule(refreshedSchedule);
+    
+    const refreshedResults = refreshMatchResultsFromStorage();
+    setCurrentMatchResults(refreshedResults);
+    
+    // Force re-render
+    setScheduleKey(prev => prev + 1);
+    
+    alert(t('captain.dataRefreshed') || 'Data refreshed successfully!');
+  };
+
   const handleDeleteGame = (gameId: string) => {
     setGameToDelete(gameId);
     setShowDeleteDialog(true);
@@ -259,15 +273,24 @@ export default function CaptainPage() {
               </p>
             </div>
           </div>
-          <button
-            onClick={() => {
-              logout();
-              router.push('/auth');
-            }}
-            className="px-4 py-2 text-sm bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 rounded-lg transition-colors"
-          >
-            {t('auth.logout')}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleRefreshData}
+              className="px-4 py-2 text-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-lg transition-colors"
+              title="Refresh data from storage"
+            >
+              🔄 {t('captain.refreshData') || 'Refresh'}
+            </button>
+            <button
+              onClick={() => {
+                logout();
+                router.push('/auth');
+              }}
+              className="px-4 py-2 text-sm bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 rounded-lg transition-colors"
+            >
+              {t('auth.logout')}
+            </button>
+          </div>
         </div>
       </div>
 
