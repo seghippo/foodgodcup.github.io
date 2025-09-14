@@ -7,7 +7,7 @@ interface Params { params: { slug: string } }
 
 export function generateStaticParams() {
   // Pre-render demo posts at build time
-  return ['shen-die-go-food-god-cup-introduction'].map((slug) => ({ slug }));
+  return ['meet-the-seven-teams', 'shen-die-go-food-god-cup-introduction'].map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Params) {
