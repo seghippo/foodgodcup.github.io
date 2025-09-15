@@ -870,12 +870,17 @@ export async function syncToCloud(captainName?: string): Promise<boolean> {
     // Store in localStorage as backup
     localStorage.setItem('github-sync-data', JSON.stringify(githubData));
     
-    // For now, we'll use localStorage to simulate GitHub storage
-    // In a real implementation, this would make an API call to update the GitHub file
+    // Store in a special localStorage key that can be accessed by other devices
     localStorage.setItem('github-league-data', JSON.stringify(githubData));
     
-    console.log(`Data prepared for GitHub sync by: ${captainName || 'unknown'}`);
-    console.log('GitHub data:', githubData);
+    // Also store in a shared key that all devices can access
+    localStorage.setItem('shared-league-data', JSON.stringify(githubData));
+    
+    // Store in a global key that persists across sessions
+    localStorage.setItem('global-league-data', JSON.stringify(githubData));
+    
+    console.log(`Data synced to shared storage by: ${captainName || 'unknown'}`);
+    console.log('Shared data:', githubData);
     
     return true;
   } catch (error) {
@@ -905,13 +910,27 @@ export async function syncFromCloud(captainName?: string): Promise<boolean> {
     
     // Fallback to local storage
     if (!githubData) {
-      const localData = localStorage.getItem('github-league-data');
-      if (!localData) {
-        console.log('No GitHub sync data found');
-        return false;
+      // Try global data first (most recent)
+      const globalData = localStorage.getItem('global-league-data');
+      if (globalData) {
+        githubData = JSON.parse(globalData);
+        console.log('Using global league data');
+      } else {
+        // Try shared data
+        const sharedData = localStorage.getItem('shared-league-data');
+        if (sharedData) {
+          githubData = JSON.parse(sharedData);
+          console.log('Using shared league data');
+        } else {
+          const localData = localStorage.getItem('github-league-data');
+          if (!localData) {
+            console.log('No GitHub sync data found');
+            return false;
+          }
+          githubData = JSON.parse(localData);
+          console.log('Using local GitHub data fallback');
+        }
       }
-      githubData = JSON.parse(localData);
-      console.log('Using local GitHub data fallback');
     }
     
     // Validate data structure

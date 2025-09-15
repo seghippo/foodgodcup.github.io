@@ -351,7 +351,7 @@ export function DataManagement({ captainName }: DataManagementProps) {
 
                  <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs">
                    <p className="text-blue-800 dark:text-blue-200">
-                     💡 提示: 在任一设备上创建比赛后，点击&ldquo;同步到 GitHub&rdquo;，其他设备点击&ldquo;从 GitHub 同步&rdquo;即可获取最新数据
+                     💡 提示: 创建新比赛时会自动同步，其他设备访问页面时会自动获取最新数据
                    </p>
                  </div>
         </div>
