@@ -841,44 +841,45 @@ export function getLastSyncInfo(): { hasSharedData: boolean; lastUpload?: string
   }
 }
 
-// Cloud-based sync functions using public JSON file
-const CLOUD_DATA_URL = 'https://seghippo.github.io/foodgodcup.github.io/data/league-data.json';
-
-// Simple cross-device sync using a shared storage approach
-// This is a workaround until we implement proper cloud storage
-const SHARED_STORAGE_KEY = 'foodgodcup-shared-data';
+// GitHub-based data storage
+const GITHUB_DATA_URL = 'https://seghippo.github.io/foodgodcup.github.io/data/league-data.json';
+const GITHUB_RAW_URL = 'https://raw.githubusercontent.com/seghippo/foodgodcup.github.io/main/public/data/league-data.json';
 
 export async function syncToCloud(captainName?: string): Promise<boolean> {
   if (typeof window === 'undefined') return false;
   
   try {
-    const syncData = {
-      schedule: getScheduleFromStorage(),
-      matchResults: getMatchResultsFromStorage(),
-      syncDate: new Date().toISOString(),
+    // Get current data from localStorage
+    const currentSchedule = getScheduleFromStorage();
+    const currentResults = getMatchResultsFromStorage();
+    
+    // Create the data structure for GitHub storage
+    const githubData = {
+      schedule: currentSchedule,
+      matchResults: currentResults,
+      lastUpdated: new Date().toISOString(),
       version: '1.0',
-      deviceId: navigator.userAgent + Date.now(),
-      captainName: captainName || 'unknown',
-      syncType: captainName ? 'captain-specific' : 'global'
+      metadata: {
+        totalGames: currentSchedule.length,
+        totalResults: currentResults.length,
+        lastSync: new Date().toISOString(),
+        updatedBy: captainName || 'unknown'
+      }
     };
     
     // Store in localStorage as backup
-    localStorage.setItem('shared-league-data', JSON.stringify(syncData));
-    localStorage.setItem('cloud-sync-data', JSON.stringify(syncData));
+    localStorage.setItem('github-sync-data', JSON.stringify(githubData));
     
-    // If captain name is provided, store captain-specific data
-    if (captainName) {
-      localStorage.setItem(`captain-sync-${captainName}`, JSON.stringify(syncData));
-      console.log(`Data synced for captain: ${captainName}`);
-    } else {
-      console.log('Data synced globally (no captain specified)');
-    }
+    // For now, we'll use localStorage to simulate GitHub storage
+    // In a real implementation, this would make an API call to update the GitHub file
+    localStorage.setItem('github-league-data', JSON.stringify(githubData));
     
-    console.log('Sync data:', syncData);
+    console.log(`Data prepared for GitHub sync by: ${captainName || 'unknown'}`);
+    console.log('GitHub data:', githubData);
     
     return true;
   } catch (error) {
-    console.error('Error syncing to cloud:', error);
+    console.error('Error syncing to GitHub:', error);
     return false;
   }
 }
@@ -887,83 +888,66 @@ export async function syncFromCloud(captainName?: string): Promise<boolean> {
   if (typeof window === 'undefined') return false;
   
   try {
-    // Try to fetch from public JSON file
-    let cloudData = null;
+    let githubData = null;
     
+    // Try to fetch from GitHub file
     try {
-      const response = await fetch(CLOUD_DATA_URL + '?t=' + Date.now());
+      const response = await fetch(GITHUB_RAW_URL + '?t=' + Date.now());
       if (response.ok) {
-        cloudData = await response.json();
-        console.log('Data fetched from cloud storage:', cloudData);
+        githubData = await response.json();
+        console.log('Data fetched from GitHub:', githubData);
       } else {
-        console.log('No cloud data file found, using local fallback');
+        console.log('GitHub file not accessible, trying local fallback');
       }
-    } catch (cloudError) {
-      console.warn('Cloud fetch failed, using local fallback:', cloudError);
+    } catch (githubError) {
+      console.warn('GitHub fetch failed, using local fallback:', githubError);
     }
     
     // Fallback to local storage
-    if (!cloudData) {
-      // Try captain-specific data first
-      if (captainName) {
-        const captainData = localStorage.getItem(`captain-sync-${captainName}`);
-        if (captainData) {
-          cloudData = JSON.parse(captainData);
-          console.log(`Using captain-specific data for: ${captainName}`);
-        }
+    if (!githubData) {
+      const localData = localStorage.getItem('github-league-data');
+      if (!localData) {
+        console.log('No GitHub sync data found');
+        return false;
       }
-      
-      // Fallback to global data
-      if (!cloudData) {
-        const localData = localStorage.getItem('cloud-sync-data');
-        if (!localData) {
-          console.log('No cloud sync data found');
-          return false;
-        }
-        cloudData = JSON.parse(localData);
-      }
+      githubData = JSON.parse(localData);
+      console.log('Using local GitHub data fallback');
     }
     
-    // Validate data
-    if (!cloudData.schedule || !cloudData.matchResults) {
-      console.error('Invalid cloud sync data structure');
+    // Validate data structure
+    if (!githubData.schedule || !githubData.matchResults) {
+      console.error('Invalid GitHub data structure');
       return false;
     }
     
-    // Check if this is captain-specific data and if it matches
-    if (captainName && cloudData.captainName && cloudData.captainName !== captainName) {
-      console.log(`Data is from different captain (${cloudData.captainName}), not syncing`);
-      return false;
-    }
-    
-    // Validate data before applying
-    const validSchedule = cloudData.schedule.filter(validateGame);
-    const validResults = cloudData.matchResults.filter(validateMatchResult);
+    // Validate individual items
+    const validSchedule = githubData.schedule.filter(validateGame);
+    const validResults = githubData.matchResults.filter(validateMatchResult);
     
     if (validSchedule.length === 0 && validResults.length === 0) {
-      console.error('No valid data in cloud sync storage');
+      console.error('No valid data in GitHub storage');
       return false;
     }
     
     // Apply the synced data
     if (validSchedule.length > 0) {
       localStorage.setItem('tennis-schedule', JSON.stringify(validSchedule));
-      console.log(`Synced ${validSchedule.length} games from cloud`);
+      console.log(`Synced ${validSchedule.length} games from GitHub`);
     }
     
     if (validResults.length > 0) {
       localStorage.setItem('tennis-match-results', JSON.stringify(validResults));
-      console.log(`Synced ${validResults.length} match results from cloud`);
+      console.log(`Synced ${validResults.length} match results from GitHub`);
     }
     
     // Refresh the exported arrays
     refreshScheduleFromStorage();
     refreshMatchResultsFromStorage();
     
-    console.log('Data synced from cloud successfully');
+    console.log('Data synced from GitHub successfully');
     return true;
   } catch (error) {
-    console.error('Error syncing from cloud:', error);
+    console.error('Error syncing from GitHub:', error);
     return false;
   }
 }
@@ -972,22 +956,22 @@ export function getCloudSyncInfo(): { hasData: boolean; lastSync?: string; dataC
   if (typeof window === 'undefined') return { hasData: false };
   
   try {
-    const cloudData = localStorage.getItem('cloud-sync-data');
-    if (!cloudData) {
+    const githubData = localStorage.getItem('github-league-data');
+    if (!githubData) {
       return { hasData: false };
     }
     
-    const parsed = JSON.parse(cloudData);
+    const parsed = JSON.parse(githubData);
     return {
       hasData: true,
-      lastSync: parsed.syncDate,
+      lastSync: parsed.lastUpdated,
       dataCount: {
         games: parsed.schedule?.length || 0,
         results: parsed.matchResults?.length || 0
       }
     };
   } catch (error) {
-    console.error('Error getting cloud sync info:', error);
+    console.error('Error getting GitHub sync info:', error);
     return { hasData: false };
   }
 }

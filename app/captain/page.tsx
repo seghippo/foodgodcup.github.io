@@ -74,10 +74,10 @@ export default function CaptainPage() {
       }
     }
     
-    // Auto-sync: Check for cloud data on page load
+    // Auto-sync: Check for GitHub data on page load
     const cloudSyncInfo = getCloudSyncInfo();
     if (cloudSyncInfo.hasData) {
-      console.log('Cloud data detected, auto-syncing...');
+      console.log('GitHub data detected, auto-syncing...');
       syncFromCloud(user?.name).then(syncSuccess => {
         if (syncSuccess) {
           // Refresh data after sync
@@ -85,7 +85,21 @@ export default function CaptainPage() {
           setCurrentSchedule(newSchedule);
           const newResults = refreshMatchResultsFromStorage();
           setCurrentMatchResults(newResults);
-          console.log('Cloud auto-sync completed successfully');
+          console.log('GitHub auto-sync completed successfully');
+        }
+      });
+    } else {
+      // Always try to sync from GitHub on page load to get latest data
+      console.log('Attempting to sync from GitHub...');
+      syncFromCloud(user?.name).then(syncSuccess => {
+        if (syncSuccess) {
+          const newSchedule = refreshScheduleFromStorage();
+          setCurrentSchedule(newSchedule);
+          const newResults = refreshMatchResultsFromStorage();
+          setCurrentMatchResults(newResults);
+          console.log('GitHub sync completed successfully');
+        } else {
+          console.log('No GitHub data available or sync failed');
         }
       });
     }

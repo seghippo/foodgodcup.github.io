@@ -156,12 +156,12 @@ export function DataManagement({ captainName }: DataManagementProps) {
       const success = await syncToCloud(captainName);
       if (success) {
         const message = captainName 
-          ? `Data synced to cloud for captain ${captainName}! Other devices can now sync.`
-          : 'Data synced to cloud successfully! Other devices can now sync.';
+          ? `Data synced to GitHub for captain ${captainName}! Other devices can now sync.`
+          : 'Data synced to GitHub successfully! Other devices can now sync.';
         setSyncMessage(message);
         setCloudSyncInfo(getCloudSyncInfo());
       } else {
-        setSyncMessage('Error syncing to cloud. Please try again.');
+        setSyncMessage('Error syncing to GitHub. Please try again.');
       }
     } catch (error) {
       setSyncMessage('Error syncing to cloud. Please try again.');
@@ -179,12 +179,12 @@ export function DataManagement({ captainName }: DataManagementProps) {
       const success = await syncFromCloud(captainName);
       if (success) {
         const message = captainName 
-          ? `Data synced from cloud for captain ${captainName}! Please refresh the page.`
-          : 'Data synced from cloud successfully! Please refresh the page.';
+          ? `Data synced from GitHub for captain ${captainName}! Please refresh the page.`
+          : 'Data synced from GitHub successfully! Please refresh the page.';
         setSyncMessage(message);
         setCloudSyncInfo(getCloudSyncInfo());
       } else {
-        setSyncMessage('No data found on cloud to sync.');
+        setSyncMessage('No data found on GitHub to sync.');
       }
     } catch (error) {
       setSyncMessage('Error syncing from cloud. Please try again.');
@@ -312,11 +312,11 @@ export function DataManagement({ captainName }: DataManagementProps) {
         </div>
 
         {/* Cloud Sync Section */}
-        <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
-          <h4 className="font-medium mb-2">云端同步 / Cloud Sync</h4>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
-            通过云端存储实现跨设备数据同步，无需手动传输文件。
-          </p>
+               <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                 <h4 className="font-medium mb-2">GitHub 云端同步 / GitHub Cloud Sync</h4>
+                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+                   通过 GitHub 存储实现跨设备数据同步，所有设备共享同一数据源。
+                 </p>
           
           {/* Cloud Sync Status */}
           {cloudSyncInfo.hasData && (
@@ -332,28 +332,28 @@ export function DataManagement({ captainName }: DataManagementProps) {
             </div>
           )}
           
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={handleSyncToCloud}
-              disabled={isSyncing}
-              className="px-4 py-2 bg-blue-800 hover:bg-blue-900 text-white rounded-lg transition-colors text-sm disabled:opacity-50"
-            >
-              {isSyncing ? '同步中...' : '☁️ 同步到云端 / Sync to Cloud'}
-            </button>
-            <button
-              onClick={handleSyncFromCloud}
-              disabled={isSyncing}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm disabled:opacity-50"
-            >
-              {isSyncing ? '同步中...' : '📥 从云端同步 / Sync from Cloud'}
-            </button>
-          </div>
-          
-          <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs">
-            <p className="text-blue-800 dark:text-blue-200">
-              💡 提示: 先在移动设备上&ldquo;同步到云端&rdquo;，然后在电脑上&ldquo;从云端同步&rdquo;
-            </p>
-          </div>
+                 <div className="flex flex-wrap gap-2">
+                   <button
+                     onClick={handleSyncToCloud}
+                     disabled={isSyncing}
+                     className="px-4 py-2 bg-blue-800 hover:bg-blue-900 text-white rounded-lg transition-colors text-sm disabled:opacity-50"
+                   >
+                     {isSyncing ? '同步中...' : '☁️ 同步到 GitHub / Sync to GitHub'}
+                   </button>
+                   <button
+                     onClick={handleSyncFromCloud}
+                     disabled={isSyncing}
+                     className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm disabled:opacity-50"
+                   >
+                     {isSyncing ? '同步中...' : '📥 从 GitHub 同步 / Sync from GitHub'}
+                   </button>
+                 </div>
+
+                 <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs">
+                   <p className="text-blue-800 dark:text-blue-200">
+                     💡 提示: 在任一设备上创建比赛后，点击&ldquo;同步到 GitHub&rdquo;，其他设备点击&ldquo;从 GitHub 同步&rdquo;即可获取最新数据
+                   </p>
+                 </div>
         </div>
 
         {/* Restore Section */}

@@ -1,6 +1,11 @@
 {
   "schedule": [],
   "matchResults": [],
-  "syncDate": "2025-01-20T00:00:00.000Z",
-  "version": "1.0"
+  "lastUpdated": "",
+  "version": "1.0",
+  "metadata": {
+    "totalGames": 0,
+    "totalResults": 0,
+    "lastSync": ""
+  }
 }
