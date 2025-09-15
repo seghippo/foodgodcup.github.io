@@ -4,7 +4,11 @@ import { useState, useRef } from 'react';
 import { createFullBackup, restoreFromBackup, exportMatchResults, exportSchedule, uploadDataToShared, downloadLatestData, restoreFromSharedFile, getLastSyncInfo, syncToCloud, syncFromCloud, getCloudSyncInfo } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
 
-export function DataManagement() {
+interface DataManagementProps {
+  captainName?: string;
+}
+
+export function DataManagement({ captainName }: DataManagementProps) {
   const { t } = useLanguage();
   const [isRestoring, setIsRestoring] = useState(false);
   const [restoreMessage, setRestoreMessage] = useState('');
@@ -108,9 +112,12 @@ export function DataManagement() {
     setSyncMessage('');
 
     try {
-      const success = await syncToCloud();
+      const success = await syncToCloud(captainName);
       if (success) {
-        setSyncMessage('Data synced to cloud successfully! Other devices can now sync.');
+        const message = captainName 
+          ? `Data synced to cloud for captain ${captainName}! Other devices can now sync.`
+          : 'Data synced to cloud successfully! Other devices can now sync.';
+        setSyncMessage(message);
         setCloudSyncInfo(getCloudSyncInfo());
       } else {
         setSyncMessage('Error syncing to cloud. Please try again.');
@@ -128,9 +135,12 @@ export function DataManagement() {
     setSyncMessage('');
 
     try {
-      const success = await syncFromCloud();
+      const success = await syncFromCloud(captainName);
       if (success) {
-        setSyncMessage('Data synced from cloud successfully! Please refresh the page.');
+        const message = captainName 
+          ? `Data synced from cloud for captain ${captainName}! Please refresh the page.`
+          : 'Data synced from cloud successfully! Please refresh the page.';
+        setSyncMessage(message);
         setCloudSyncInfo(getCloudSyncInfo());
       } else {
         setSyncMessage('No data found on cloud to sync.');

@@ -78,7 +78,7 @@ export default function CaptainPage() {
     const cloudSyncInfo = getCloudSyncInfo();
     if (cloudSyncInfo.hasData) {
       console.log('Cloud data detected, auto-syncing...');
-      syncFromCloud().then(syncSuccess => {
+      syncFromCloud(user?.name).then(syncSuccess => {
         if (syncSuccess) {
           // Refresh data after sync
           const newSchedule = refreshScheduleFromStorage();
@@ -89,7 +89,7 @@ export default function CaptainPage() {
         }
       });
     }
-  }, []);
+  }, [user?.name]);
 
   // Redirect to auth if not authenticated
   useEffect(() => {
@@ -489,7 +489,7 @@ export default function CaptainPage() {
 
       {/* Data Management Section */}
       <div className="mt-8">
-        <DataManagement />
+        <DataManagement captainName={user?.name} />
       </div>
 
       {/* Delete Confirmation Dialog */}

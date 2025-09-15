@@ -753,7 +753,7 @@ export function getLastSyncInfo(): { hasSharedData: boolean; lastUpload?: string
 // Cloud-based sync functions using public JSON file
 const CLOUD_DATA_URL = 'https://seghippo.github.io/foodgodcup.github.io/data/league-data.json';
 
-export async function syncToCloud(): Promise<boolean> {
+export async function syncToCloud(captainName?: string): Promise<boolean> {
   if (typeof window === 'undefined') return false;
   
   try {
@@ -762,16 +762,23 @@ export async function syncToCloud(): Promise<boolean> {
       matchResults: getMatchResultsFromStorage(),
       syncDate: new Date().toISOString(),
       version: '1.0',
-      deviceId: navigator.userAgent + Date.now() // Simple device identifier
+      deviceId: navigator.userAgent + Date.now(), // Simple device identifier
+      captainName: captainName || 'unknown', // Track which captain synced
+      syncType: captainName ? 'captain-specific' : 'global'
     };
     
     // Store in localStorage as backup
     localStorage.setItem('shared-league-data', JSON.stringify(syncData));
     localStorage.setItem('cloud-sync-data', JSON.stringify(syncData));
     
-    // For now, we'll use a simple approach - store in localStorage
-    // The actual cloud sync will happen when the file is updated in the repository
-    console.log('Data prepared for cloud sync. File will be updated in repository.');
+    // If captain name is provided, store captain-specific data
+    if (captainName) {
+      localStorage.setItem(`captain-sync-${captainName}`, JSON.stringify(syncData));
+      console.log(`Data synced for captain: ${captainName}`);
+    } else {
+      console.log('Data synced globally (no captain specified)');
+    }
+    
     console.log('Sync data:', syncData);
     
     return true;
@@ -781,7 +788,7 @@ export async function syncToCloud(): Promise<boolean> {
   }
 }
 
-export async function syncFromCloud(): Promise<boolean> {
+export async function syncFromCloud(captainName?: string): Promise<boolean> {
   if (typeof window === 'undefined') return false;
   
   try {
@@ -802,17 +809,35 @@ export async function syncFromCloud(): Promise<boolean> {
     
     // Fallback to local storage
     if (!cloudData) {
-      const localData = localStorage.getItem('cloud-sync-data');
-      if (!localData) {
-        console.log('No cloud sync data found');
-        return false;
+      // Try captain-specific data first
+      if (captainName) {
+        const captainData = localStorage.getItem(`captain-sync-${captainName}`);
+        if (captainData) {
+          cloudData = JSON.parse(captainData);
+          console.log(`Using captain-specific data for: ${captainName}`);
+        }
       }
-      cloudData = JSON.parse(localData);
+      
+      // Fallback to global data
+      if (!cloudData) {
+        const localData = localStorage.getItem('cloud-sync-data');
+        if (!localData) {
+          console.log('No cloud sync data found');
+          return false;
+        }
+        cloudData = JSON.parse(localData);
+      }
     }
     
     // Validate data
     if (!cloudData.schedule || !cloudData.matchResults) {
       console.error('Invalid cloud sync data structure');
+      return false;
+    }
+    
+    // Check if this is captain-specific data and if it matches
+    if (captainName && cloudData.captainName && cloudData.captainName !== captainName) {
+      console.log(`Data is from different captain (${cloudData.captainName}), not syncing`);
       return false;
     }
     
