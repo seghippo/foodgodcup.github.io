@@ -539,6 +539,62 @@ export function restoreFromBackup(file: File): Promise<boolean> {
   });
 }
 
+export function exportMatchResults(): void {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const results = getMatchResultsFromStorage();
+    const exportData = {
+      matchResults: results,
+      exportDate: new Date().toISOString(),
+      totalResults: results.length,
+      version: '1.0'
+    };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `match-results-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    console.log('Match results exported successfully');
+  } catch (error) {
+    console.error('Error exporting match results:', error);
+  }
+}
+
+export function exportSchedule(): void {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const scheduleData = getScheduleFromStorage();
+    const exportData = {
+      schedule: scheduleData,
+      exportDate: new Date().toISOString(),
+      totalGames: scheduleData.length,
+      version: '1.0'
+    };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `schedule-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    console.log('Schedule exported successfully');
+  } catch (error) {
+    console.error('Error exporting schedule:', error);
+  }
+}
+
 // Initialize schedule from storage
 export const schedule: Game[] = getScheduleFromStorage();
 

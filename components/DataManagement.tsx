@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { createFullBackup, restoreFromBackup } from '@/lib/data';
+import { createFullBackup, restoreFromBackup, exportMatchResults, exportSchedule } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
 
 export function DataManagement() {
@@ -17,6 +17,28 @@ export function DataManagement() {
       setTimeout(() => setRestoreMessage(''), 3000);
     } catch (error) {
       setRestoreMessage('Error creating backup. Please try again.');
+      setTimeout(() => setRestoreMessage(''), 3000);
+    }
+  };
+
+  const handleExportMatchResults = () => {
+    try {
+      exportMatchResults();
+      setRestoreMessage('Match results exported successfully!');
+      setTimeout(() => setRestoreMessage(''), 3000);
+    } catch (error) {
+      setRestoreMessage('Error exporting match results. Please try again.');
+      setTimeout(() => setRestoreMessage(''), 3000);
+    }
+  };
+
+  const handleExportSchedule = () => {
+    try {
+      exportSchedule();
+      setRestoreMessage('Schedule exported successfully!');
+      setTimeout(() => setRestoreMessage(''), 3000);
+    } catch (error) {
+      setRestoreMessage('Error exporting schedule. Please try again.');
       setTimeout(() => setRestoreMessage(''), 3000);
     }
   };
@@ -52,18 +74,32 @@ export function DataManagement() {
       <h3 className="text-xl font-semibold mb-4">数据管理 / Data Management</h3>
       
       <div className="space-y-4">
-        {/* Backup Section */}
+        {/* Export Section */}
         <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
-          <h4 className="font-medium mb-2">创建备份 / Create Backup</h4>
+          <h4 className="font-medium mb-2">导出数据 / Export Data</h4>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
-            下载完整的联赛数据备份文件，包含所有队伍、赛程和比赛结果。
+            导出特定类型的数据文件，便于分析和备份。
           </p>
-          <button
-            onClick={handleCreateBackup}
-            className="btn-gold"
-          >
-            📥 下载备份 / Download Backup
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={handleCreateBackup}
+              className="btn-gold"
+            >
+              📥 完整备份 / Full Backup
+            </button>
+            <button
+              onClick={handleExportMatchResults}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm"
+            >
+              🏆 比赛结果 / Match Results
+            </button>
+            <button
+              onClick={handleExportSchedule}
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm"
+            >
+              📅 赛程安排 / Schedule
+            </button>
+          </div>
         </div>
 
         {/* Restore Section */}
