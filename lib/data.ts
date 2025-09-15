@@ -595,6 +595,97 @@ export function exportSchedule(): void {
   }
 }
 
+// Export all data for cross-device sync
+export function exportAllData(): void {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const allData = {
+      schedule: getScheduleFromStorage(),
+      matchResults: getMatchResultsFromStorage(),
+      exportDate: new Date().toISOString(),
+      version: '1.0'
+    };
+    
+    const dataStr = JSON.stringify(allData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `foodgodcup-all-data-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    console.log('All data exported successfully');
+  } catch (error) {
+    console.error('Error exporting all data:', error);
+  }
+}
+
+// Import all data from file
+export function importAllData(file: File): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined') {
+      resolve(false);
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+        
+        // Validate data structure
+        if (!data.schedule || !data.matchResults) {
+          console.error('Invalid data structure');
+          resolve(false);
+          return;
+        }
+        
+        // Validate individual items
+        const validSchedule = data.schedule.filter(validateGame);
+        const validResults = data.matchResults.filter(validateMatchResult);
+        
+        if (validSchedule.length === 0 && validResults.length === 0) {
+          console.error('No valid data found');
+          resolve(false);
+          return;
+        }
+        
+        // Apply the imported data
+        if (validSchedule.length > 0) {
+          localStorage.setItem('tennis-schedule', JSON.stringify(validSchedule));
+          console.log(`Imported ${validSchedule.length} games`);
+        }
+        
+        if (validResults.length > 0) {
+          localStorage.setItem('tennis-match-results', JSON.stringify(validResults));
+          console.log(`Imported ${validResults.length} match results`);
+        }
+        
+        // Refresh the exported arrays
+        refreshScheduleFromStorage();
+        refreshMatchResultsFromStorage();
+        
+        console.log('All data imported successfully');
+        resolve(true);
+      } catch (error) {
+        console.error('Error importing data:', error);
+        resolve(false);
+      }
+    };
+    
+    reader.onerror = () => {
+      console.error('Error reading file');
+      resolve(false);
+    };
+    
+    reader.readAsText(file);
+  });
+}
+
 // Data sync functions for cross-device compatibility
 export function uploadDataToShared(): void {
   if (typeof window === 'undefined') return;
@@ -753,6 +844,10 @@ export function getLastSyncInfo(): { hasSharedData: boolean; lastUpload?: string
 // Cloud-based sync functions using public JSON file
 const CLOUD_DATA_URL = 'https://seghippo.github.io/foodgodcup.github.io/data/league-data.json';
 
+// Simple cross-device sync using a shared storage approach
+// This is a workaround until we implement proper cloud storage
+const SHARED_STORAGE_KEY = 'foodgodcup-shared-data';
+
 export async function syncToCloud(captainName?: string): Promise<boolean> {
   if (typeof window === 'undefined') return false;
   
@@ -762,8 +857,8 @@ export async function syncToCloud(captainName?: string): Promise<boolean> {
       matchResults: getMatchResultsFromStorage(),
       syncDate: new Date().toISOString(),
       version: '1.0',
-      deviceId: navigator.userAgent + Date.now(), // Simple device identifier
-      captainName: captainName || 'unknown', // Track which captain synced
+      deviceId: navigator.userAgent + Date.now(),
+      captainName: captainName || 'unknown',
       syncType: captainName ? 'captain-specific' : 'global'
     };
     
@@ -796,12 +891,12 @@ export async function syncFromCloud(captainName?: string): Promise<boolean> {
     let cloudData = null;
     
     try {
-      const response = await fetch(CLOUD_DATA_URL + '?t=' + Date.now()); // Add cache busting
+      const response = await fetch(CLOUD_DATA_URL + '?t=' + Date.now());
       if (response.ok) {
         cloudData = await response.json();
         console.log('Data fetched from cloud storage:', cloudData);
       } else {
-        console.log('No cloud data file found, using local data');
+        console.log('No cloud data file found, using local fallback');
       }
     } catch (cloudError) {
       console.warn('Cloud fetch failed, using local fallback:', cloudError);

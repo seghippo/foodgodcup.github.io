@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { createFullBackup, restoreFromBackup, exportMatchResults, exportSchedule, uploadDataToShared, downloadLatestData, restoreFromSharedFile, getLastSyncInfo, syncToCloud, syncFromCloud, getCloudSyncInfo } from '@/lib/data';
+import { createFullBackup, restoreFromBackup, exportMatchResults, exportSchedule, exportAllData, importAllData, uploadDataToShared, downloadLatestData, restoreFromSharedFile, getLastSyncInfo, syncToCloud, syncFromCloud, getCloudSyncInfo } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
 
 interface DataManagementProps {
@@ -16,6 +16,8 @@ export function DataManagement({ captainName }: DataManagementProps) {
   const [syncInfo, setSyncInfo] = useState(getLastSyncInfo());
   const [cloudSyncInfo, setCloudSyncInfo] = useState(getCloudSyncInfo());
   const [isSyncing, setIsSyncing] = useState(false);
+  const [manualSyncData, setManualSyncData] = useState('');
+  const [showManualSync, setShowManualSync] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const sharedFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -49,6 +51,45 @@ export function DataManagement({ captainName }: DataManagementProps) {
     } catch (error) {
       setRestoreMessage('Error exporting schedule. Please try again.');
       setTimeout(() => setRestoreMessage(''), 3000);
+    }
+  };
+
+  const handleExportAllData = () => {
+    try {
+      exportAllData();
+      setRestoreMessage('All data exported successfully!');
+      setTimeout(() => setRestoreMessage(''), 3000);
+    } catch (error) {
+      setRestoreMessage('Error exporting all data. Please try again.');
+      setTimeout(() => setRestoreMessage(''), 3000);
+    }
+  };
+
+  const handleImportAllData = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsRestoring(true);
+    setRestoreMessage('');
+
+    try {
+      const success = await importAllData(file);
+      if (success) {
+        setRestoreMessage('All data imported successfully!');
+        // Refresh sync info
+        setSyncInfo(getLastSyncInfo());
+        setCloudSyncInfo(getCloudSyncInfo());
+      } else {
+        setRestoreMessage('Error importing data - invalid file format');
+      }
+    } catch (error) {
+      setRestoreMessage('Error importing data');
+    } finally {
+      setIsRestoring(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -209,6 +250,12 @@ export function DataManagement({ captainName }: DataManagementProps) {
             >
               📅 赛程安排 / Schedule
             </button>
+            <button
+              onClick={handleExportAllData}
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors text-sm"
+            >
+              📦 全部数据 / All Data
+            </button>
           </div>
         </div>
 
@@ -328,6 +375,32 @@ export function DataManagement({ captainName }: DataManagementProps) {
               🔄 正在恢复备份... / Restoring backup...
             </div>
           )}
+        </div>
+
+        {/* Import Data Section */}
+        <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+          <h4 className="font-medium mb-2">导入数据 / Import Data</h4>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+            从其他设备导出的数据文件导入联赛数据。支持跨设备同步！
+          </p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleImportAllData}
+            disabled={isRestoring}
+            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-600 file:text-white hover:file:bg-purple-700 disabled:opacity-50"
+          />
+          {isRestoring && (
+            <div className="mt-2 text-sm text-blue-600 dark:text-blue-400">
+              🔄 正在导入数据... / Importing data...
+            </div>
+          )}
+          <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs">
+            <p className="text-blue-800 dark:text-blue-200">
+              💡 使用说明：在手机上点击&ldquo;📦 全部数据&rdquo;导出文件，然后在电脑上选择该文件导入
+            </p>
+          </div>
         </div>
 
         {/* Status Messages */}
