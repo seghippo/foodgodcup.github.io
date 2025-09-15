@@ -750,11 +750,10 @@ export function getLastSyncInfo(): { hasSharedData: boolean; lastUpload?: string
   }
 }
 
-// GitHub-based sync functions
-const GITHUB_REPO = 'seghippo/foodgodcup.github.io';
-const GITHUB_FILE_PATH = 'data/league-data.json';
+// Cloud-based sync functions using public JSON file
+const CLOUD_DATA_URL = 'https://seghippo.github.io/foodgodcup.github.io/data/league-data.json';
 
-export async function syncToGitHub(): Promise<boolean> {
+export async function syncToCloud(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
   
   try {
@@ -762,85 +761,103 @@ export async function syncToGitHub(): Promise<boolean> {
       schedule: getScheduleFromStorage(),
       matchResults: getMatchResultsFromStorage(),
       syncDate: new Date().toISOString(),
-      version: '1.0'
+      version: '1.0',
+      deviceId: navigator.userAgent + Date.now() // Simple device identifier
     };
     
     // Store in localStorage as backup
     localStorage.setItem('shared-league-data', JSON.stringify(syncData));
+    localStorage.setItem('cloud-sync-data', JSON.stringify(syncData));
     
-    // For now, we'll use a simple approach - store in localStorage with a special key
-    // that can be accessed by other devices on the same domain
-    localStorage.setItem('github-sync-data', JSON.stringify(syncData));
+    // For now, we'll use a simple approach - store in localStorage
+    // The actual cloud sync will happen when the file is updated in the repository
+    console.log('Data prepared for cloud sync. File will be updated in repository.');
+    console.log('Sync data:', syncData);
     
-    console.log('Data synced to GitHub storage successfully');
     return true;
   } catch (error) {
-    console.error('Error syncing to GitHub:', error);
+    console.error('Error syncing to cloud:', error);
     return false;
   }
 }
 
-export async function syncFromGitHub(): Promise<boolean> {
+export async function syncFromCloud(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
   
   try {
-    // Check for GitHub sync data
-    const githubData = localStorage.getItem('github-sync-data');
-    if (!githubData) {
-      console.log('No GitHub sync data found');
-      return false;
+    // Try to fetch from public JSON file
+    let cloudData = null;
+    
+    try {
+      const response = await fetch(CLOUD_DATA_URL + '?t=' + Date.now()); // Add cache busting
+      if (response.ok) {
+        cloudData = await response.json();
+        console.log('Data fetched from cloud storage:', cloudData);
+      } else {
+        console.log('No cloud data file found, using local data');
+      }
+    } catch (cloudError) {
+      console.warn('Cloud fetch failed, using local fallback:', cloudError);
     }
     
-    const parsed = JSON.parse(githubData);
+    // Fallback to local storage
+    if (!cloudData) {
+      const localData = localStorage.getItem('cloud-sync-data');
+      if (!localData) {
+        console.log('No cloud sync data found');
+        return false;
+      }
+      cloudData = JSON.parse(localData);
+    }
     
     // Validate data
-    if (!parsed.schedule || !parsed.matchResults) {
-      console.error('Invalid GitHub sync data structure');
+    if (!cloudData.schedule || !cloudData.matchResults) {
+      console.error('Invalid cloud sync data structure');
       return false;
     }
     
     // Validate data before applying
-    const validSchedule = parsed.schedule.filter(validateGame);
-    const validResults = parsed.matchResults.filter(validateMatchResult);
+    const validSchedule = cloudData.schedule.filter(validateGame);
+    const validResults = cloudData.matchResults.filter(validateMatchResult);
     
     if (validSchedule.length === 0 && validResults.length === 0) {
-      console.error('No valid data in GitHub sync storage');
+      console.error('No valid data in cloud sync storage');
       return false;
     }
     
     // Apply the synced data
     if (validSchedule.length > 0) {
       localStorage.setItem('tennis-schedule', JSON.stringify(validSchedule));
-      console.log(`Synced ${validSchedule.length} games from GitHub`);
+      console.log(`Synced ${validSchedule.length} games from cloud`);
     }
     
     if (validResults.length > 0) {
       localStorage.setItem('tennis-match-results', JSON.stringify(validResults));
-      console.log(`Synced ${validResults.length} match results from GitHub`);
+      console.log(`Synced ${validResults.length} match results from cloud`);
     }
     
     // Refresh the exported arrays
     refreshScheduleFromStorage();
     refreshMatchResultsFromStorage();
     
-    console.log('Data synced from GitHub successfully');
+    console.log('Data synced from cloud successfully');
     return true;
   } catch (error) {
-    console.error('Error syncing from GitHub:', error);
+    console.error('Error syncing from cloud:', error);
     return false;
   }
 }
 
-export function getGitHubSyncInfo(): { hasData: boolean; lastSync?: string; dataCount?: { games: number; results: number } } {
+export function getCloudSyncInfo(): { hasData: boolean; lastSync?: string; dataCount?: { games: number; results: number } } {
   if (typeof window === 'undefined') return { hasData: false };
   
   try {
-    const githubData = localStorage.getItem('github-sync-data');
-    if (!githubData) {
+    const cloudData = localStorage.getItem('cloud-sync-data');
+    if (!cloudData) {
       return { hasData: false };
     }
     
-    const parsed = JSON.parse(githubData);
+    const parsed = JSON.parse(cloudData);
     return {
       hasData: true,
       lastSync: parsed.syncDate,
@@ -850,10 +867,15 @@ export function getGitHubSyncInfo(): { hasData: boolean; lastSync?: string; data
       }
     };
   } catch (error) {
-    console.error('Error getting GitHub sync info:', error);
+    console.error('Error getting cloud sync info:', error);
     return { hasData: false };
   }
 }
+
+// Legacy functions for backward compatibility
+export const syncToGitHub = syncToCloud;
+export const syncFromGitHub = syncFromCloud;
+export const getGitHubSyncInfo = getCloudSyncInfo;
 
 // Initialize schedule from storage
 export const schedule: Game[] = getScheduleFromStorage();

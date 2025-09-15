@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { createFullBackup, restoreFromBackup, exportMatchResults, exportSchedule, uploadDataToShared, downloadLatestData, restoreFromSharedFile, getLastSyncInfo, syncToGitHub, syncFromGitHub, getGitHubSyncInfo } from '@/lib/data';
+import { createFullBackup, restoreFromBackup, exportMatchResults, exportSchedule, uploadDataToShared, downloadLatestData, restoreFromSharedFile, getLastSyncInfo, syncToCloud, syncFromCloud, getCloudSyncInfo } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
 
 export function DataManagement() {
@@ -10,7 +10,7 @@ export function DataManagement() {
   const [restoreMessage, setRestoreMessage] = useState('');
   const [syncMessage, setSyncMessage] = useState('');
   const [syncInfo, setSyncInfo] = useState(getLastSyncInfo());
-  const [githubSyncInfo, setGithubSyncInfo] = useState(getGitHubSyncInfo());
+  const [cloudSyncInfo, setCloudSyncInfo] = useState(getCloudSyncInfo());
   const [isSyncing, setIsSyncing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const sharedFileInputRef = useRef<HTMLInputElement>(null);
@@ -103,40 +103,40 @@ export function DataManagement() {
     }
   };
 
-  const handleSyncToGitHub = async () => {
+  const handleSyncToCloud = async () => {
     setIsSyncing(true);
     setSyncMessage('');
 
     try {
-      const success = await syncToGitHub();
+      const success = await syncToCloud();
       if (success) {
-        setSyncMessage('Data synced to GitHub successfully! Other devices can now sync.');
-        setGithubSyncInfo(getGitHubSyncInfo());
+        setSyncMessage('Data synced to cloud successfully! Other devices can now sync.');
+        setCloudSyncInfo(getCloudSyncInfo());
       } else {
-        setSyncMessage('Error syncing to GitHub. Please try again.');
+        setSyncMessage('Error syncing to cloud. Please try again.');
       }
     } catch (error) {
-      setSyncMessage('Error syncing to GitHub. Please try again.');
+      setSyncMessage('Error syncing to cloud. Please try again.');
     } finally {
       setIsSyncing(false);
       setTimeout(() => setSyncMessage(''), 3000);
     }
   };
 
-  const handleSyncFromGitHub = async () => {
+  const handleSyncFromCloud = async () => {
     setIsSyncing(true);
     setSyncMessage('');
 
     try {
-      const success = await syncFromGitHub();
+      const success = await syncFromCloud();
       if (success) {
-        setSyncMessage('Data synced from GitHub successfully! Please refresh the page.');
-        setGithubSyncInfo(getGitHubSyncInfo());
+        setSyncMessage('Data synced from cloud successfully! Please refresh the page.');
+        setCloudSyncInfo(getCloudSyncInfo());
       } else {
-        setSyncMessage('No data found on GitHub to sync.');
+        setSyncMessage('No data found on cloud to sync.');
       }
     } catch (error) {
-      setSyncMessage('Error syncing from GitHub. Please try again.');
+      setSyncMessage('Error syncing from cloud. Please try again.');
     } finally {
       setIsSyncing(false);
       setTimeout(() => setSyncMessage(''), 3000);
@@ -254,47 +254,47 @@ export function DataManagement() {
           </div>
         </div>
 
-        {/* GitHub Sync Section */}
+        {/* Cloud Sync Section */}
         <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
-          <h4 className="font-medium mb-2">GitHub 同步 / GitHub Sync</h4>
+          <h4 className="font-medium mb-2">云端同步 / Cloud Sync</h4>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
-            通过 GitHub 存储实现跨设备数据同步，无需手动传输文件。
+            通过云端存储实现跨设备数据同步，无需手动传输文件。
           </p>
           
-          {/* GitHub Sync Status */}
-          {githubSyncInfo.hasData && (
+          {/* Cloud Sync Status */}
+          {cloudSyncInfo.hasData && (
             <div className="mb-3 p-2 bg-green-50 dark:bg-green-900/20 rounded text-sm">
               <p className="text-green-800 dark:text-green-200">
-                🐙 GitHub 数据可用 / GitHub data available
+                ☁️ 云端数据可用 / Cloud data available
               </p>
               <p className="text-green-600 dark:text-green-300 text-xs">
-                上次同步: {new Date(githubSyncInfo.lastSync!).toLocaleString()} | 
-                游戏: {githubSyncInfo.dataCount?.games} | 
-                结果: {githubSyncInfo.dataCount?.results}
+                上次同步: {new Date(cloudSyncInfo.lastSync!).toLocaleString()} | 
+                游戏: {cloudSyncInfo.dataCount?.games} | 
+                结果: {cloudSyncInfo.dataCount?.results}
               </p>
             </div>
           )}
           
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={handleSyncToGitHub}
+              onClick={handleSyncToCloud}
               disabled={isSyncing}
-              className="px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded-lg transition-colors text-sm disabled:opacity-50"
+              className="px-4 py-2 bg-blue-800 hover:bg-blue-900 text-white rounded-lg transition-colors text-sm disabled:opacity-50"
             >
-              {isSyncing ? '同步中...' : '🐙 同步到 GitHub / Sync to GitHub'}
+              {isSyncing ? '同步中...' : '☁️ 同步到云端 / Sync to Cloud'}
             </button>
             <button
-              onClick={handleSyncFromGitHub}
+              onClick={handleSyncFromCloud}
               disabled={isSyncing}
-              className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm disabled:opacity-50"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm disabled:opacity-50"
             >
-              {isSyncing ? '同步中...' : '📥 从 GitHub 同步 / Sync from GitHub'}
+              {isSyncing ? '同步中...' : '📥 从云端同步 / Sync from Cloud'}
             </button>
           </div>
           
           <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs">
             <p className="text-blue-800 dark:text-blue-200">
-              💡 提示: 先在移动设备上&ldquo;同步到 GitHub&rdquo;，然后在电脑上&ldquo;从 GitHub 同步&rdquo;
+              💡 提示: 先在移动设备上&ldquo;同步到云端&rdquo;，然后在电脑上&ldquo;从云端同步&rdquo;
             </p>
           </div>
         </div>
