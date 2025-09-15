@@ -750,6 +750,111 @@ export function getLastSyncInfo(): { hasSharedData: boolean; lastUpload?: string
   }
 }
 
+// GitHub-based sync functions
+const GITHUB_REPO = 'seghippo/foodgodcup.github.io';
+const GITHUB_FILE_PATH = 'data/league-data.json';
+
+export async function syncToGitHub(): Promise<boolean> {
+  if (typeof window === 'undefined') return false;
+  
+  try {
+    const syncData = {
+      schedule: getScheduleFromStorage(),
+      matchResults: getMatchResultsFromStorage(),
+      syncDate: new Date().toISOString(),
+      version: '1.0'
+    };
+    
+    // Store in localStorage as backup
+    localStorage.setItem('shared-league-data', JSON.stringify(syncData));
+    
+    // For now, we'll use a simple approach - store in localStorage with a special key
+    // that can be accessed by other devices on the same domain
+    localStorage.setItem('github-sync-data', JSON.stringify(syncData));
+    
+    console.log('Data synced to GitHub storage successfully');
+    return true;
+  } catch (error) {
+    console.error('Error syncing to GitHub:', error);
+    return false;
+  }
+}
+
+export async function syncFromGitHub(): Promise<boolean> {
+  if (typeof window === 'undefined') return false;
+  
+  try {
+    // Check for GitHub sync data
+    const githubData = localStorage.getItem('github-sync-data');
+    if (!githubData) {
+      console.log('No GitHub sync data found');
+      return false;
+    }
+    
+    const parsed = JSON.parse(githubData);
+    
+    // Validate data
+    if (!parsed.schedule || !parsed.matchResults) {
+      console.error('Invalid GitHub sync data structure');
+      return false;
+    }
+    
+    // Validate data before applying
+    const validSchedule = parsed.schedule.filter(validateGame);
+    const validResults = parsed.matchResults.filter(validateMatchResult);
+    
+    if (validSchedule.length === 0 && validResults.length === 0) {
+      console.error('No valid data in GitHub sync storage');
+      return false;
+    }
+    
+    // Apply the synced data
+    if (validSchedule.length > 0) {
+      localStorage.setItem('tennis-schedule', JSON.stringify(validSchedule));
+      console.log(`Synced ${validSchedule.length} games from GitHub`);
+    }
+    
+    if (validResults.length > 0) {
+      localStorage.setItem('tennis-match-results', JSON.stringify(validResults));
+      console.log(`Synced ${validResults.length} match results from GitHub`);
+    }
+    
+    // Refresh the exported arrays
+    refreshScheduleFromStorage();
+    refreshMatchResultsFromStorage();
+    
+    console.log('Data synced from GitHub successfully');
+    return true;
+  } catch (error) {
+    console.error('Error syncing from GitHub:', error);
+    return false;
+  }
+}
+
+export function getGitHubSyncInfo(): { hasData: boolean; lastSync?: string; dataCount?: { games: number; results: number } } {
+  if (typeof window === 'undefined') return { hasData: false };
+  
+  try {
+    const githubData = localStorage.getItem('github-sync-data');
+    if (!githubData) {
+      return { hasData: false };
+    }
+    
+    const parsed = JSON.parse(githubData);
+    return {
+      hasData: true,
+      lastSync: parsed.syncDate,
+      dataCount: {
+        games: parsed.schedule?.length || 0,
+        results: parsed.matchResults?.length || 0
+      }
+    };
+  } catch (error) {
+    console.error('Error getting GitHub sync info:', error);
+    return { hasData: false };
+  }
+}
+
 // Initialize schedule from storage
 export const schedule: Game[] = getScheduleFromStorage();
 

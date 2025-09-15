@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/lib/language';
 import { useAuth } from '@/lib/auth';
-import { teams, schedule, matchResults, removeGameFromSchedule, updateGameInfo, refreshScheduleFromStorage, addMatchResult, updateMatchResult, refreshMatchResultsFromStorage, downloadLatestData, getLastSyncInfo } from '@/lib/data';
+import { teams, schedule, matchResults, removeGameFromSchedule, updateGameInfo, refreshScheduleFromStorage, addMatchResult, updateMatchResult, refreshMatchResultsFromStorage, downloadLatestData, getLastSyncInfo, syncFromGitHub, getGitHubSyncInfo } from '@/lib/data';
 import DetailedScoreSubmission from '@/components/DetailedScoreSubmission';
 import ScoreModification from '@/components/ScoreModification';
 import CreateGameForm from '@/components/CreateGameForm';
@@ -72,6 +72,22 @@ export default function CaptainPage() {
         setCurrentMatchResults(newResults);
         console.log('Auto-sync completed successfully');
       }
+    }
+    
+    // Auto-sync: Check for GitHub data on page load
+    const githubSyncInfo = getGitHubSyncInfo();
+    if (githubSyncInfo.hasData) {
+      console.log('GitHub data detected, auto-syncing...');
+      syncFromGitHub().then(syncSuccess => {
+        if (syncSuccess) {
+          // Refresh data after sync
+          const newSchedule = refreshScheduleFromStorage();
+          setCurrentSchedule(newSchedule);
+          const newResults = refreshMatchResultsFromStorage();
+          setCurrentMatchResults(newResults);
+          console.log('GitHub auto-sync completed successfully');
+        }
+      });
     }
   }, []);
 
