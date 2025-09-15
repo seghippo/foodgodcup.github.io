@@ -92,6 +92,91 @@ export type Post = {
   contentEn: string;
 };
 
+// Data validation functions
+export function validatePlayer(player: any): player is Player {
+  return (
+    typeof player === 'object' &&
+    player !== null &&
+    typeof player.id === 'string' &&
+    player.id.length > 0 &&
+    typeof player.name === 'string' &&
+    player.name.length > 0 &&
+    typeof player.nameEn === 'string' &&
+    player.nameEn.length > 0 &&
+    typeof player.experience === 'string' &&
+    typeof player.experienceEn === 'string' &&
+    typeof player.wins === 'number' &&
+    typeof player.losses === 'number' &&
+    player.wins >= 0 &&
+    player.losses >= 0
+  );
+}
+
+export function validateTeam(team: any): team is Team {
+  return (
+    typeof team === 'object' &&
+    team !== null &&
+    typeof team.id === 'string' &&
+    team.id.length > 0 &&
+    typeof team.name === 'string' &&
+    team.name.length > 0 &&
+    typeof team.nameEn === 'string' &&
+    team.nameEn.length > 0 &&
+    typeof team.city === 'string' &&
+    typeof team.cityEn === 'string' &&
+    typeof team.coach === 'string' &&
+    typeof team.coachEn === 'string' &&
+    typeof team.founded === 'number' &&
+    typeof team.arena === 'string' &&
+    typeof team.arenaEn === 'string' &&
+    Array.isArray(team.roster) &&
+    team.roster.length > 0 &&
+    team.roster.every(validatePlayer)
+  );
+}
+
+export function validateGame(game: any): game is Game {
+  return (
+    typeof game === 'object' &&
+    game !== null &&
+    typeof game.id === 'string' &&
+    game.id.length > 0 &&
+    typeof game.date === 'string' &&
+    typeof game.home === 'string' &&
+    game.home.length > 0 &&
+    typeof game.away === 'string' &&
+    game.away.length > 0 &&
+    typeof game.venue === 'string' &&
+    typeof game.time === 'string' &&
+    typeof game.status === 'string' &&
+    ['scheduled', 'completed', 'preseason'].includes(game.status) &&
+    (game.homeScore === undefined || typeof game.homeScore === 'number') &&
+    (game.awayScore === undefined || typeof game.awayScore === 'number')
+  );
+}
+
+export function validateMatchResult(result: any): result is MatchResult {
+  return (
+    typeof result === 'object' &&
+    result !== null &&
+    typeof result.id === 'string' &&
+    result.id.length > 0 &&
+    typeof result.gameId === 'string' &&
+    result.gameId.length > 0 &&
+    typeof result.homeTeamId === 'string' &&
+    result.homeTeamId.length > 0 &&
+    typeof result.awayTeamId === 'string' &&
+    result.awayTeamId.length > 0 &&
+    typeof result.homeTotalScore === 'number' &&
+    typeof result.awayTotalScore === 'number' &&
+    typeof result.submittedBy === 'string' &&
+    typeof result.submittedAt === 'string' &&
+    typeof result.status === 'string' &&
+    ['pending', 'approved', 'rejected'].includes(result.status) &&
+    Array.isArray(result.matchLines)
+  );
+}
+
 export const teams: Team[] = [
   { 
     id: 'DND', 
@@ -298,15 +383,35 @@ function getScheduleFromStorage(): Game[] {
     const stored = localStorage.getItem('tennis-schedule');
     if (stored) {
       const parsed = JSON.parse(stored);
-      // Ensure we always have the preseason game
-      const hasPreseason = parsed.some((game: Game) => game.id === 'P1');
-      if (!hasPreseason) {
-        parsed.unshift(defaultSchedule[0]);
+      
+      // Validate data structure
+      if (!Array.isArray(parsed)) {
+        console.warn('Invalid schedule data structure, using default');
+        return defaultSchedule;
       }
-      return parsed;
+      
+      // Validate each game
+      const validGames = parsed.filter(validateGame);
+      if (validGames.length !== parsed.length) {
+        console.warn(`Filtered out ${parsed.length - validGames.length} invalid games`);
+      }
+      
+      // Ensure we always have the preseason game
+      const hasPreseason = validGames.some((game: Game) => game.id === 'P1');
+      if (!hasPreseason) {
+        validGames.unshift(defaultSchedule[0]);
+      }
+      
+      return validGames;
     }
   } catch (error) {
     console.error('Error loading schedule from localStorage:', error);
+    // Try to load from backup
+    const backup = getBackupData('schedule');
+    if (backup) {
+      console.log('Loaded schedule from backup');
+      return backup;
+    }
   }
   
   return defaultSchedule;
@@ -319,10 +424,119 @@ function saveScheduleToStorage(schedule: Game[]): void {
   }
   
   try {
-    localStorage.setItem('tennis-schedule', JSON.stringify(schedule));
+    // Validate data before saving
+    const validSchedule = schedule.filter(validateGame);
+    if (validSchedule.length !== schedule.length) {
+      console.warn(`Filtered out ${schedule.length - validSchedule.length} invalid games before saving`);
+    }
+    
+    localStorage.setItem('tennis-schedule', JSON.stringify(validSchedule));
+    
+    // Create backup
+    createBackup('schedule', validSchedule);
   } catch (error) {
     console.error('Error saving schedule to localStorage:', error);
   }
+}
+
+// Backup system functions
+function createBackup(type: string, data: any): void {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const backup = {
+      data: data,
+      timestamp: new Date().toISOString(),
+      version: '1.0'
+    };
+    localStorage.setItem(`backup-${type}`, JSON.stringify(backup));
+  } catch (error) {
+    console.error(`Error creating backup for ${type}:`, error);
+  }
+}
+
+function getBackupData(type: string): any {
+  if (typeof window === 'undefined') return null;
+  
+  try {
+    const backup = localStorage.getItem(`backup-${type}`);
+    if (backup) {
+      const parsed = JSON.parse(backup);
+      return parsed.data;
+    }
+  } catch (error) {
+    console.error(`Error loading backup for ${type}:`, error);
+  }
+  
+  return null;
+}
+
+export function createFullBackup(): void {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const fullBackup = {
+      teams: teams,
+      schedule: schedule,
+      matchResults: matchResults,
+      timestamp: new Date().toISOString(),
+      version: '1.0'
+    };
+    
+    const blob = new Blob([JSON.stringify(fullBackup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `league-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    console.log('Full backup created successfully');
+  } catch (error) {
+    console.error('Error creating full backup:', error);
+  }
+}
+
+export function restoreFromBackup(file: File): Promise<boolean> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const backup = JSON.parse(e.target?.result as string);
+        
+        // Validate backup structure
+        if (!backup.teams || !backup.schedule || !backup.matchResults) {
+          console.error('Invalid backup file structure');
+          resolve(false);
+          return;
+        }
+        
+        // Validate data
+        const validTeams = backup.teams.filter(validateTeam);
+        const validSchedule = backup.schedule.filter(validateGame);
+        const validResults = backup.matchResults.filter(validateMatchResult);
+        
+        if (validTeams.length === 0 || validSchedule.length === 0) {
+          console.error('Backup contains no valid data');
+          resolve(false);
+          return;
+        }
+        
+        // Restore data
+        localStorage.setItem('tennis-schedule', JSON.stringify(validSchedule));
+        localStorage.setItem('tennis-match-results', JSON.stringify(validResults));
+        
+        console.log('Backup restored successfully');
+        resolve(true);
+      } catch (error) {
+        console.error('Error restoring backup:', error);
+        resolve(false);
+      }
+    };
+    reader.readAsText(file);
+  });
 }
 
 // Initialize schedule from storage
@@ -527,15 +741,35 @@ function getMatchResultsFromStorage(): MatchResult[] {
     const stored = localStorage.getItem('tennis-match-results');
     if (stored) {
       const parsed = JSON.parse(stored);
-      // Ensure we always have the preseason game result
-      const hasPreseason = parsed.some((result: MatchResult) => result.gameId === 'P1');
-      if (!hasPreseason) {
-        parsed.unshift(defaultMatchResults[0]);
+      
+      // Validate data structure
+      if (!Array.isArray(parsed)) {
+        console.warn('Invalid match results data structure, using default');
+        return defaultMatchResults;
       }
-      return parsed;
+      
+      // Validate each result
+      const validResults = parsed.filter(validateMatchResult);
+      if (validResults.length !== parsed.length) {
+        console.warn(`Filtered out ${parsed.length - validResults.length} invalid match results`);
+      }
+      
+      // Ensure we always have the preseason game result
+      const hasPreseason = validResults.some((result: MatchResult) => result.gameId === 'P1');
+      if (!hasPreseason) {
+        validResults.unshift(defaultMatchResults[0]);
+      }
+      
+      return validResults;
     }
   } catch (error) {
     console.error('Error loading match results from localStorage:', error);
+    // Try to load from backup
+    const backup = getBackupData('matchResults');
+    if (backup) {
+      console.log('Loaded match results from backup');
+      return backup;
+    }
   }
   
   return defaultMatchResults;
@@ -548,7 +782,16 @@ function saveMatchResultsToStorage(matchResults: MatchResult[]): void {
   }
   
   try {
-    localStorage.setItem('tennis-match-results', JSON.stringify(matchResults));
+    // Validate data before saving
+    const validResults = matchResults.filter(validateMatchResult);
+    if (validResults.length !== matchResults.length) {
+      console.warn(`Filtered out ${matchResults.length - validResults.length} invalid match results before saving`);
+    }
+    
+    localStorage.setItem('tennis-match-results', JSON.stringify(validResults));
+    
+    // Create backup
+    createBackup('matchResults', validResults);
   } catch (error) {
     console.error('Error saving match results to localStorage:', error);
   }

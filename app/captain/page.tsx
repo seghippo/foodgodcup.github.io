@@ -9,6 +9,7 @@ import DetailedScoreSubmission from '@/components/DetailedScoreSubmission';
 import ScoreModification from '@/components/ScoreModification';
 import CreateGameForm from '@/components/CreateGameForm';
 import EditGameForm from '@/components/EditGameForm';
+import { DataManagement } from '@/components/DataManagement';
 
 export default function CaptainPage() {
   const { t, getTeamName } = useLanguage();
@@ -449,11 +450,16 @@ export default function CaptainPage() {
                     Submitted: {new Date(result.submittedAt).toLocaleString()}
                   </div>
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
+        )}
+
+        {/* Data Management Section */}
+        <div className="mt-8">
+          <DataManagement />
         </div>
-      )}
+      </div>
 
       {/* Delete Confirmation Dialog */}
       {showDeleteDialog && (
