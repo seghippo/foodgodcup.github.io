@@ -471,36 +471,37 @@ export default function CaptainPage() {
         </div>
       )}
 
-      {/* Data Management Section */}
-      <div className="mt-8">
-        <DataManagement />
-      </div>
+        {/* Data Management Section */}
+        <div className="mt-8">
+          <DataManagement />
+        </div>
 
-      {/* Delete Confirmation Dialog */}
-      {showDeleteDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">{t('captain.deleteGame')}</h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-6">
-              {t('captain.confirmDeleteGame')}
-            </p>
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={cancelDeleteGame}
-                className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
-              >
-                {t('captain.cancel')}
-              </button>
-              <button
-                onClick={confirmDeleteGame}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-              >
-                {t('captain.delete')}
-              </button>
+        {/* Delete Confirmation Dialog */}
+        {showDeleteDialog && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-md w-full mx-4">
+              <h3 className="text-lg font-semibold mb-4">{t('captain.deleteGame')}</h3>
+              <p className="text-slate-600 dark:text-slate-400 mb-6">
+                {t('captain.confirmDeleteGame')}
+              </p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={cancelDeleteGame}
+                  className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                >
+                  {t('captain.cancel')}
+                </button>
+                <button
+                  onClick={confirmDeleteGame}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                >
+                  {t('captain.delete')}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
