@@ -1,14 +1,17 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { createFullBackup, restoreFromBackup, exportMatchResults, exportSchedule } from '@/lib/data';
+import { createFullBackup, restoreFromBackup, exportMatchResults, exportSchedule, uploadDataToShared, downloadLatestData, restoreFromSharedFile, getLastSyncInfo } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
 
 export function DataManagement() {
   const { t } = useLanguage();
   const [isRestoring, setIsRestoring] = useState(false);
   const [restoreMessage, setRestoreMessage] = useState('');
+  const [syncMessage, setSyncMessage] = useState('');
+  const [syncInfo, setSyncInfo] = useState(getLastSyncInfo());
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const sharedFileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCreateBackup = () => {
     try {
@@ -40,6 +43,61 @@ export function DataManagement() {
     } catch (error) {
       setRestoreMessage('Error exporting schedule. Please try again.');
       setTimeout(() => setRestoreMessage(''), 3000);
+    }
+  };
+
+  const handleUploadData = () => {
+    try {
+      uploadDataToShared();
+      setSyncMessage('Data uploaded successfully! Other devices can now sync.');
+      setSyncInfo(getLastSyncInfo());
+      setTimeout(() => setSyncMessage(''), 3000);
+    } catch (error) {
+      setSyncMessage('Error uploading data. Please try again.');
+      setTimeout(() => setSyncMessage(''), 3000);
+    }
+  };
+
+  const handleDownloadData = () => {
+    try {
+      const success = downloadLatestData();
+      if (success) {
+        setSyncMessage('Data synced successfully! Please refresh the page.');
+        setSyncInfo(getLastSyncInfo());
+      } else {
+        setSyncMessage('No shared data found to sync.');
+      }
+      setTimeout(() => setSyncMessage(''), 3000);
+    } catch (error) {
+      setSyncMessage('Error syncing data. Please try again.');
+      setTimeout(() => setSyncMessage(''), 3000);
+    }
+  };
+
+  const handleRestoreSharedFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsRestoring(true);
+    setSyncMessage('');
+
+    try {
+      const success = await restoreFromSharedFile(file);
+      if (success) {
+        setSyncMessage('Shared data restored successfully! Please refresh the page.');
+        setSyncInfo(getLastSyncInfo());
+        // Clear the file input
+        if (sharedFileInputRef.current) {
+          sharedFileInputRef.current.value = '';
+        }
+      } else {
+        setSyncMessage('Error restoring shared data. Please check the file format.');
+      }
+    } catch (error) {
+      setSyncMessage('Error restoring shared data. Please try again.');
+    } finally {
+      setIsRestoring(false);
+      setTimeout(() => setSyncMessage(''), 5000);
     }
   };
 
@@ -102,6 +160,58 @@ export function DataManagement() {
           </div>
         </div>
 
+        {/* Data Sync Section */}
+        <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+          <h4 className="font-medium mb-2">数据同步 / Data Sync</h4>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+            在不同设备间同步数据，解决设备依赖问题。
+          </p>
+          
+          {/* Sync Status */}
+          {syncInfo.hasSharedData && (
+            <div className="mb-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-sm">
+              <p className="text-blue-800 dark:text-blue-200">
+                📊 共享数据可用 / Shared data available
+              </p>
+              <p className="text-blue-600 dark:text-blue-300 text-xs">
+                上次上传: {new Date(syncInfo.lastUpload!).toLocaleString()} | 
+                游戏: {syncInfo.dataCount?.games} | 
+                结果: {syncInfo.dataCount?.results}
+              </p>
+            </div>
+          )}
+          
+          <div className="flex flex-wrap gap-2 mb-3">
+            <button
+              onClick={handleUploadData}
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors text-sm"
+            >
+              📤 上传数据 / Upload Data
+            </button>
+            <button
+              onClick={handleDownloadData}
+              className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors text-sm"
+            >
+              📥 下载数据 / Download Data
+            </button>
+          </div>
+          
+          {/* File-based sync */}
+          <div className="mt-3">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+              或通过文件同步 / Or sync via file:
+            </p>
+            <input
+              ref={sharedFileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleRestoreSharedFile}
+              disabled={isRestoring}
+              className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-600 file:text-white hover:file:bg-purple-700 disabled:opacity-50"
+            />
+          </div>
+        </div>
+
         {/* Restore Section */}
         <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
           <h4 className="font-medium mb-2">恢复备份 / Restore Backup</h4>
@@ -123,14 +233,14 @@ export function DataManagement() {
           )}
         </div>
 
-        {/* Status Message */}
-        {restoreMessage && (
+        {/* Status Messages */}
+        {(restoreMessage || syncMessage) && (
           <div className={`p-3 rounded-lg text-sm ${
-            restoreMessage.includes('successfully') 
+            (restoreMessage.includes('successfully') || syncMessage.includes('successfully')) 
               ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
               : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
           }`}>
-            {restoreMessage}
+            {restoreMessage || syncMessage}
           </div>
         )}
 

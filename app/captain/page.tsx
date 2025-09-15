@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/lib/language';
 import { useAuth } from '@/lib/auth';
-import { teams, schedule, matchResults, removeGameFromSchedule, updateGameInfo, refreshScheduleFromStorage, addMatchResult, updateMatchResult, refreshMatchResultsFromStorage } from '@/lib/data';
+import { teams, schedule, matchResults, removeGameFromSchedule, updateGameInfo, refreshScheduleFromStorage, addMatchResult, updateMatchResult, refreshMatchResultsFromStorage, downloadLatestData, getLastSyncInfo } from '@/lib/data';
 import DetailedScoreSubmission from '@/components/DetailedScoreSubmission';
 import ScoreModification from '@/components/ScoreModification';
 import CreateGameForm from '@/components/CreateGameForm';
@@ -58,6 +58,21 @@ export default function CaptainPage() {
     
     const refreshedResults = refreshMatchResultsFromStorage();
     setCurrentMatchResults(refreshedResults);
+    
+    // Auto-sync: Check for shared data on page load
+    const syncInfo = getLastSyncInfo();
+    if (syncInfo.hasSharedData) {
+      console.log('Shared data detected, auto-syncing...');
+      const syncSuccess = downloadLatestData();
+      if (syncSuccess) {
+        // Refresh data after sync
+        const newSchedule = refreshScheduleFromStorage();
+        setCurrentSchedule(newSchedule);
+        const newResults = refreshMatchResultsFromStorage();
+        setCurrentMatchResults(newResults);
+        console.log('Auto-sync completed successfully');
+      }
+    }
   }, []);
 
   // Redirect to auth if not authenticated

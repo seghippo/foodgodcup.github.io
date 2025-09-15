@@ -595,6 +595,161 @@ export function exportSchedule(): void {
   }
 }
 
+// Data sync functions for cross-device compatibility
+export function uploadDataToShared(): void {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const syncData = {
+      schedule: getScheduleFromStorage(),
+      matchResults: getMatchResultsFromStorage(),
+      uploadDate: new Date().toISOString(),
+      uploadedBy: 'captain', // Could be enhanced with actual user ID
+      version: '1.0'
+    };
+    
+    // Store in localStorage as "shared" data for other devices to pick up
+    localStorage.setItem('shared-league-data', JSON.stringify(syncData));
+    
+    // Also create a downloadable file for manual sharing
+    const blob = new Blob([JSON.stringify(syncData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `shared-data-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    console.log('Data uploaded to shared storage successfully');
+  } catch (error) {
+    console.error('Error uploading data:', error);
+  }
+}
+
+export function downloadLatestData(): boolean {
+  if (typeof window === 'undefined') return false;
+  
+  try {
+    const sharedData = localStorage.getItem('shared-league-data');
+    if (!sharedData) {
+      console.log('No shared data found');
+      return false;
+    }
+    
+    const parsed = JSON.parse(sharedData);
+    
+    // Validate shared data
+    if (!parsed.schedule || !parsed.matchResults) {
+      console.error('Invalid shared data structure');
+      return false;
+    }
+    
+    // Validate data before applying
+    const validSchedule = parsed.schedule.filter(validateGame);
+    const validResults = parsed.matchResults.filter(validateMatchResult);
+    
+    if (validSchedule.length === 0 && validResults.length === 0) {
+      console.error('No valid data in shared storage');
+      return false;
+    }
+    
+    // Apply the shared data
+    if (validSchedule.length > 0) {
+      localStorage.setItem('tennis-schedule', JSON.stringify(validSchedule));
+      console.log(`Synced ${validSchedule.length} games from shared data`);
+    }
+    
+    if (validResults.length > 0) {
+      localStorage.setItem('tennis-match-results', JSON.stringify(validResults));
+      console.log(`Synced ${validResults.length} match results from shared data`);
+    }
+    
+    // Refresh the exported arrays
+    refreshScheduleFromStorage();
+    refreshMatchResultsFromStorage();
+    
+    console.log('Data synced successfully');
+    return true;
+  } catch (error) {
+    console.error('Error downloading shared data:', error);
+    return false;
+  }
+}
+
+export function restoreFromSharedFile(file: File): Promise<boolean> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const sharedData = JSON.parse(e.target?.result as string);
+        
+        // Validate shared data structure
+        if (!sharedData.schedule || !sharedData.matchResults) {
+          console.error('Invalid shared data file structure');
+          resolve(false);
+          return;
+        }
+        
+        // Validate data
+        const validSchedule = sharedData.schedule.filter(validateGame);
+        const validResults = sharedData.matchResults.filter(validateMatchResult);
+        
+        if (validSchedule.length === 0 && validResults.length === 0) {
+          console.error('Shared file contains no valid data');
+          resolve(false);
+          return;
+        }
+        
+        // Apply the shared data
+        if (validSchedule.length > 0) {
+          localStorage.setItem('tennis-schedule', JSON.stringify(validSchedule));
+        }
+        
+        if (validResults.length > 0) {
+          localStorage.setItem('tennis-match-results', JSON.stringify(validResults));
+        }
+        
+        // Refresh the exported arrays
+        refreshScheduleFromStorage();
+        refreshMatchResultsFromStorage();
+        
+        console.log('Shared data restored successfully');
+        resolve(true);
+      } catch (error) {
+        console.error('Error restoring shared data:', error);
+        resolve(false);
+      }
+    };
+    reader.readAsText(file);
+  });
+}
+
+export function getLastSyncInfo(): { hasSharedData: boolean; lastUpload?: string; dataCount?: { games: number; results: number } } {
+  if (typeof window === 'undefined') return { hasSharedData: false };
+  
+  try {
+    const sharedData = localStorage.getItem('shared-league-data');
+    if (!sharedData) {
+      return { hasSharedData: false };
+    }
+    
+    const parsed = JSON.parse(sharedData);
+    return {
+      hasSharedData: true,
+      lastUpload: parsed.uploadDate,
+      dataCount: {
+        games: parsed.schedule?.length || 0,
+        results: parsed.matchResults?.length || 0
+      }
+    };
+  } catch (error) {
+    console.error('Error getting sync info:', error);
+    return { hasSharedData: false };
+  }
+}
+
 // Initialize schedule from storage
 export const schedule: Game[] = getScheduleFromStorage();
 
