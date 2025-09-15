@@ -1,13 +1,48 @@
 'use client';
 
-import { standings, teamsById, generatePlayerStandings, teams } from '@/lib/data';
+import { useEffect, useState } from 'react';
+import { standings, teamsById, generatePlayerStandings, teams, syncFromCloud, refreshMatchResultsFromStorage } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
 
 export default function StandingsPage() {
   const { t, getTeamName, getPlayerName, language } = useLanguage();
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  // Auto-sync from GitHub when page loads
+  useEffect(() => {
+    const autoSync = async () => {
+      setIsSyncing(true);
+      try {
+        const success = await syncFromCloud();
+        if (success) {
+          console.log('Standings page: Data synced from GitHub');
+          // Refresh the page to show updated data
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Standings page: Failed to sync from GitHub', error);
+      } finally {
+        setIsSyncing(false);
+      }
+    };
+
+    autoSync();
+  }, []);
 
   // Generate individual player standings
   const playerStandings = generatePlayerStandings();
+  
+  // Show loading while syncing
+  if (isSyncing) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-league-primary mx-auto mb-4"></div>
+          <p className="text-slate-600 dark:text-slate-400">Syncing latest results...</p>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-12">

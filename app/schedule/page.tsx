@@ -1,6 +1,6 @@
 'use client';
 
-import { schedule, teamsById, refreshScheduleFromStorage, refreshMatchResultsFromStorage } from '@/lib/data';
+import { schedule, teamsById, refreshScheduleFromStorage, refreshMatchResultsFromStorage, syncFromCloud } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
 import { useState, useEffect } from 'react';
 
@@ -40,11 +40,26 @@ export default function SchedulePage() {
   // Refresh schedule and match results from localStorage when component mounts
   useEffect(() => {
     if (isClient) {
-      const refreshedSchedule = refreshScheduleFromStorage();
-      setCurrentSchedule(refreshedSchedule);
-      
-      const refreshedResults = refreshMatchResultsFromStorage();
-      setMatchResults(refreshedResults);
+      // Auto-sync from GitHub first
+      const autoSync = async () => {
+        try {
+          const success = await syncFromCloud();
+          if (success) {
+            console.log('Schedule page: Data synced from GitHub');
+          }
+        } catch (error) {
+          console.error('Schedule page: Failed to sync from GitHub', error);
+        }
+      };
+
+      autoSync().then(() => {
+        // Then refresh from localStorage
+        const refreshedSchedule = refreshScheduleFromStorage();
+        setCurrentSchedule(refreshedSchedule);
+        
+        const refreshedResults = refreshMatchResultsFromStorage();
+        setMatchResults(refreshedResults);
+      });
     }
   }, [isClient]);
   

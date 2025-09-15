@@ -1011,6 +1011,15 @@ export function createNewGame(homeTeamId: string, awayTeamId: string, date: stri
 export function addGameToSchedule(game: Game): void {
   schedule.push(game);
   saveScheduleToStorage(schedule);
+  
+  // Auto-sync to GitHub when new games are added
+  syncToCloud().then(success => {
+    if (success) {
+      console.log('New game automatically synced to GitHub');
+    } else {
+      console.warn('Failed to auto-sync new game to GitHub');
+    }
+  });
 }
 
 // Function to remove a game from the schedule
@@ -1260,6 +1269,15 @@ export function refreshMatchResultsFromStorage(): MatchResult[] {
 export function addMatchResult(result: MatchResult): void {
   matchResults.push(result);
   saveMatchResultsToStorage(matchResults);
+  
+  // Auto-sync to GitHub when new results are added
+  syncToCloud().then(success => {
+    if (success) {
+      console.log('Match result automatically synced to GitHub');
+    } else {
+      console.warn('Failed to auto-sync match result to GitHub');
+    }
+  });
 }
 
 // Function to update an existing match result
@@ -1268,6 +1286,16 @@ export function updateMatchResult(resultId: string, updates: Partial<MatchResult
   if (index !== -1) {
     matchResults[index] = { ...matchResults[index], ...updates };
     saveMatchResultsToStorage(matchResults);
+    
+    // Auto-sync to GitHub when results are updated
+    syncToCloud().then(success => {
+      if (success) {
+        console.log('Updated match result automatically synced to GitHub');
+      } else {
+        console.warn('Failed to auto-sync updated match result to GitHub');
+      }
+    });
+    
     return true;
   }
   return false;
