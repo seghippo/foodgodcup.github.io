@@ -52,7 +52,7 @@ export default function CreateGameForm({ userTeamId, onGameCreated }: CreateGame
       );
       
       // Add to schedule
-      addGameToSchedule(newGame);
+      await addGameToSchedule(newGame);
       
       // Notify parent component
       onGameCreated(newGame);
