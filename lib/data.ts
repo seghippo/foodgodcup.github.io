@@ -11,7 +11,15 @@ import {
   subscribeToMatchResults,
   initializeFirebaseData,
   removeDuplicateGames,
-  removeDuplicateMatchResults
+  removeDuplicateMatchResults,
+  getFoodPostsFromFirebase,
+  addFoodPostToFirebase,
+  updateFoodPostInFirebase,
+  deleteFoodPostFromFirebase,
+  addFoodCommentToFirebase,
+  likeFoodPostInFirebase,
+  likeFoodCommentInFirebase,
+  subscribeToFoodPosts
 } from './firebase-data';
 
 export type Player = {
@@ -131,6 +139,7 @@ export type FoodPost = {
   likes: number;
   likedBy: string[]; // Array of user IDs who liked this post
   comments: FoodComment[];
+  commentIds?: string[]; // Array of comment IDs for Firebase storage
   tags: string[]; // e.g., ['川菜', '火锅', '推荐']
   imageUrl?: string; // Optional image URL
   location?: string; // Optional location where the food was found
@@ -1489,78 +1498,196 @@ export const foodPosts: FoodPost[] = [
     ],
     tags: ['东北菜', '家常菜', '分享'],
     imageUrl: '/images/food/酸菜炖粉条.jpg'
+  },
+  {
+    id: 'FP004',
+    title: '推荐一家超棒的粤菜餐厅',
+    content: '在Mira Mesa发现了一家很正宗的粤菜馆，他们的白切鸡和烧鸭都很棒！环境也很不错，适合聚餐。',
+    author: '两广队长',
+    authorTeam: '两广牛河队',
+    authorId: 'LG01',
+    createdAt: '2024-01-16T12:00:00Z',
+    updatedAt: '2024-01-16T12:00:00Z',
+    likes: 6,
+    likedBy: ['TJ01', 'FJ01', 'HB01', 'DB01', 'BJ01', 'JZ01'],
+    comments: [],
+    tags: ['粤菜', '推荐', '聚餐'],
+    location: 'Mira Mesa, San Diego'
   }
 ];
 
-// Food Posts Functions
-export function getFoodPosts(): FoodPost[] {
-  return foodPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-}
-
-export function addFoodPost(post: Omit<FoodPost, 'id' | 'createdAt' | 'updatedAt' | 'likes' | 'likedBy' | 'comments'>): FoodPost {
-  const newPost: FoodPost = {
-    ...post,
-    id: `FP${Date.now()}`,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    likes: 0,
-    likedBy: [],
-    comments: []
-  };
-  
-  foodPosts.unshift(newPost);
-  return newPost;
-}
-
-export function addFoodComment(postId: string, comment: Omit<FoodComment, 'id' | 'createdAt' | 'likes' | 'likedBy'>): FoodComment {
-  const newComment: FoodComment = {
-    ...comment,
-    id: `FC${Date.now()}`,
-    createdAt: new Date().toISOString(),
-    likes: 0,
-    likedBy: []
-  };
-  
-  const post = foodPosts.find(p => p.id === postId);
-  if (post) {
-    post.comments.push(newComment);
-    post.updatedAt = new Date().toISOString();
+// Food Posts Functions - Now using Firebase
+export async function getFoodPosts(): Promise<FoodPost[]> {
+  try {
+    return await getFoodPostsFromFirebase();
+  } catch (error) {
+    console.error('Error getting food posts:', error);
+    return foodPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
-  
-  return newComment;
 }
 
-export function likeFoodPost(postId: string, userId: string): boolean {
-  const post = foodPosts.find(p => p.id === postId);
-  if (post) {
-    const index = post.likedBy.indexOf(userId);
-    if (index === -1) {
-      post.likedBy.push(userId);
-      post.likes++;
-    } else {
-      post.likedBy.splice(index, 1);
-      post.likes--;
+export async function addFoodPost(post: Omit<FoodPost, 'id' | 'createdAt' | 'updatedAt' | 'likes' | 'likedBy' | 'comments'>): Promise<FoodPost | null> {
+  try {
+    const postId = await addFoodPostToFirebase(post);
+    if (postId) {
+      const newPost: FoodPost = {
+        ...post,
+        id: postId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        likes: 0,
+        likedBy: [],
+        comments: []
+      };
+      
+      // Also add to local array for fallback
+      foodPosts.unshift(newPost);
+      return newPost;
     }
-    return true;
+    return null;
+  } catch (error) {
+    console.error('Error adding food post:', error);
+    // Fallback to local storage
+    const newPost: FoodPost = {
+      ...post,
+      id: `FP${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      likes: 0,
+      likedBy: [],
+      comments: []
+    };
+    foodPosts.unshift(newPost);
+    return newPost;
   }
-  return false;
 }
 
-export function likeFoodComment(postId: string, commentId: string, userId: string): boolean {
-  const post = foodPosts.find(p => p.id === postId);
-  if (post) {
-    const comment = post.comments.find(c => c.id === commentId);
-    if (comment) {
-      const index = comment.likedBy.indexOf(userId);
-      if (index === -1) {
-        comment.likedBy.push(userId);
-        comment.likes++;
-      } else {
-        comment.likedBy.splice(index, 1);
-        comment.likes--;
+export async function addFoodComment(postId: string, comment: Omit<FoodComment, 'id' | 'createdAt' | 'likes' | 'likedBy'>): Promise<FoodComment | null> {
+  try {
+    const commentId = await addFoodCommentToFirebase(postId, comment);
+    if (commentId) {
+      const newComment: FoodComment = {
+        ...comment,
+        id: commentId,
+        createdAt: new Date().toISOString(),
+        likes: 0,
+        likedBy: []
+      };
+      
+      // Also add to local array for fallback
+      const post = foodPosts.find(p => p.id === postId);
+      if (post) {
+        post.comments.push(newComment);
+        post.updatedAt = new Date().toISOString();
+      }
+      
+      return newComment;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error adding food comment:', error);
+    // Fallback to local storage
+    const newComment: FoodComment = {
+      ...comment,
+      id: `FC${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      likes: 0,
+      likedBy: []
+    };
+    
+    const post = foodPosts.find(p => p.id === postId);
+    if (post) {
+      post.comments.push(newComment);
+      post.updatedAt = new Date().toISOString();
+    }
+    
+    return newComment;
+  }
+}
+
+export async function likeFoodPost(postId: string, userId: string): Promise<boolean> {
+  try {
+    const success = await likeFoodPostInFirebase(postId, userId);
+    if (success) {
+      // Also update local array for fallback
+      const post = foodPosts.find(p => p.id === postId);
+      if (post) {
+        const index = post.likedBy.indexOf(userId);
+        if (index === -1) {
+          post.likedBy.push(userId);
+          post.likes++;
+        } else {
+          post.likedBy.splice(index, 1);
+          post.likes--;
+        }
       }
       return true;
     }
+    return false;
+  } catch (error) {
+    console.error('Error liking food post:', error);
+    // Fallback to local storage
+    const post = foodPosts.find(p => p.id === postId);
+    if (post) {
+      const index = post.likedBy.indexOf(userId);
+      if (index === -1) {
+        post.likedBy.push(userId);
+        post.likes++;
+      } else {
+        post.likedBy.splice(index, 1);
+        post.likes--;
+      }
+      return true;
+    }
+    return false;
   }
-  return false;
+}
+
+export async function likeFoodComment(postId: string, commentId: string, userId: string): Promise<boolean> {
+  try {
+    const success = await likeFoodCommentInFirebase(commentId, userId);
+    if (success) {
+      // Also update local array for fallback
+      const post = foodPosts.find(p => p.id === postId);
+      if (post) {
+        const comment = post.comments.find(c => c.id === commentId);
+        if (comment) {
+          const index = comment.likedBy.indexOf(userId);
+          if (index === -1) {
+            comment.likedBy.push(userId);
+            comment.likes++;
+          } else {
+            comment.likedBy.splice(index, 1);
+            comment.likes--;
+          }
+        }
+      }
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error liking food comment:', error);
+    // Fallback to local storage
+    const post = foodPosts.find(p => p.id === postId);
+    if (post) {
+      const comment = post.comments.find(c => c.id === commentId);
+      if (comment) {
+        const index = comment.likedBy.indexOf(userId);
+        if (index === -1) {
+          comment.likedBy.push(userId);
+          comment.likes++;
+        } else {
+          comment.likedBy.splice(index, 1);
+          comment.likes--;
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
+// Real-time subscription for food posts
+export function subscribeToFoodPostsRealtime(callback: (posts: FoodPost[]) => void): () => void {
+  return subscribeToFoodPosts(callback);
 }

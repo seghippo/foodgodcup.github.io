@@ -13,14 +13,16 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { Game, MatchResult, Player, Team } from './data';
+import { Game, MatchResult, Player, Team, FoodPost, FoodComment } from './data';
 
 // Collection names
 const COLLECTIONS = {
   SCHEDULE: 'schedule',
   MATCH_RESULTS: 'matchResults',
   PLAYERS: 'players',
-  TEAMS: 'teams'
+  TEAMS: 'teams',
+  FOOD_POSTS: 'foodPosts',
+  FOOD_COMMENTS: 'foodComments'
 } as const;
 
 // Helper function to create unique key for games
@@ -416,4 +418,274 @@ export async function initializeFirebaseData(): Promise<void> {
   } catch (error) {
     console.error('Error initializing Firebase data:', error);
   }
+}
+
+// ==================== FOOD POSTS FUNCTIONS ====================
+
+// Helper function to create unique key for food posts
+function createFoodPostKey(post: Omit<FoodPost, 'id' | 'createdAt' | 'updatedAt' | 'likes' | 'likedBy' | 'comments'>): string {
+  return `${post.authorId}-${post.title}-${Date.now()}`;
+}
+
+// Helper function to create unique key for food comments
+function createFoodCommentKey(comment: Omit<FoodComment, 'id' | 'createdAt' | 'likes' | 'likedBy'>): string {
+  return `${comment.postId}-${comment.author}-${Date.now()}`;
+}
+
+// Get all food posts from Firebase
+export async function getFoodPostsFromFirebase(): Promise<FoodPost[]> {
+  try {
+    const querySnapshot = await getDocs(
+      query(collection(db, COLLECTIONS.FOOD_POSTS), orderBy('createdAt', 'desc'))
+    );
+    
+    const posts: FoodPost[] = [];
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const post: FoodPost = {
+        id: doc.id,
+        title: data.title || '',
+        content: data.content || '',
+        author: data.author || '',
+        authorTeam: data.authorTeam || '',
+        authorId: data.authorId || '',
+        createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt || new Date().toISOString(),
+        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt || new Date().toISOString(),
+        likes: data.likes || 0,
+        likedBy: data.likedBy || [],
+        comments: [], // Will be populated separately
+        commentIds: data.comments || [],
+        tags: data.tags || [],
+        imageUrl: data.imageUrl || '',
+        location: data.location || ''
+      };
+      posts.push(post);
+    });
+    
+    return posts;
+  } catch (error) {
+    console.error('Error getting food posts from Firebase:', error);
+    return [];
+  }
+}
+
+// Add a new food post to Firebase
+export async function addFoodPostToFirebase(post: Omit<FoodPost, 'id' | 'createdAt' | 'updatedAt' | 'likes' | 'likedBy' | 'comments'>): Promise<string | null> {
+  try {
+    const postData = {
+      ...post,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      likes: 0,
+      likedBy: [],
+      comments: []
+    };
+    
+    const docRef = await addDoc(collection(db, COLLECTIONS.FOOD_POSTS), postData);
+    console.log('Food post added to Firebase with ID:', docRef.id);
+    return docRef.id;
+  } catch (error) {
+    console.error('Error adding food post to Firebase:', error);
+    return null;
+  }
+}
+
+// Update a food post in Firebase
+export async function updateFoodPostInFirebase(postId: string, updates: Partial<FoodPost>): Promise<boolean> {
+  try {
+    const postRef = doc(db, COLLECTIONS.FOOD_POSTS, postId);
+    const updateData = {
+      ...updates,
+      updatedAt: serverTimestamp()
+    };
+    
+    await updateDoc(postRef, updateData);
+    console.log('Food post updated in Firebase:', postId);
+    return true;
+  } catch (error) {
+    console.error('Error updating food post in Firebase:', error);
+    return false;
+  }
+}
+
+// Delete a food post from Firebase
+export async function deleteFoodPostFromFirebase(postId: string): Promise<boolean> {
+  try {
+    await deleteDoc(doc(db, COLLECTIONS.FOOD_POSTS, postId));
+    console.log('Food post deleted from Firebase:', postId);
+    return true;
+  } catch (error) {
+    console.error('Error deleting food post from Firebase:', error);
+    return false;
+  }
+}
+
+// Add a comment to a food post
+export async function addFoodCommentToFirebase(postId: string, comment: Omit<FoodComment, 'id' | 'createdAt' | 'likes' | 'likedBy'>): Promise<string | null> {
+  try {
+    const commentData = {
+      ...comment,
+      createdAt: serverTimestamp(),
+      likes: 0,
+      likedBy: []
+    };
+    
+    const docRef = await addDoc(collection(db, COLLECTIONS.FOOD_COMMENTS), commentData);
+    
+    // Also update the post's commentIds array
+    const postRef = doc(db, COLLECTIONS.FOOD_POSTS, postId);
+    const postDoc = await getDoc(postRef);
+    if (postDoc.exists()) {
+      const postData = postDoc.data();
+      const updatedCommentIds = [...(postData.comments || []), docRef.id];
+      await updateDoc(postRef, {
+        comments: updatedCommentIds,
+        updatedAt: serverTimestamp()
+      });
+    }
+    
+    console.log('Food comment added to Firebase with ID:', docRef.id);
+    return docRef.id;
+  } catch (error) {
+    console.error('Error adding food comment to Firebase:', error);
+    return null;
+  }
+}
+
+// Like/unlike a food post
+export async function likeFoodPostInFirebase(postId: string, userId: string): Promise<boolean> {
+  try {
+    const postRef = doc(db, COLLECTIONS.FOOD_POSTS, postId);
+    const postDoc = await getDoc(postRef);
+    
+    if (postDoc.exists()) {
+      const postData = postDoc.data();
+      const likedBy = postData.likedBy || [];
+      const likes = postData.likes || 0;
+      
+      const index = likedBy.indexOf(userId);
+      if (index === -1) {
+        // Add like
+        await updateDoc(postRef, {
+          likedBy: [...likedBy, userId],
+          likes: likes + 1,
+          updatedAt: serverTimestamp()
+        });
+      } else {
+        // Remove like
+        const newLikedBy = likedBy.filter((id: string) => id !== userId);
+        await updateDoc(postRef, {
+          likedBy: newLikedBy,
+          likes: likes - 1,
+          updatedAt: serverTimestamp()
+        });
+      }
+      
+      return true;
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('Error liking food post in Firebase:', error);
+    return false;
+  }
+}
+
+// Like/unlike a food comment
+export async function likeFoodCommentInFirebase(commentId: string, userId: string): Promise<boolean> {
+  try {
+    const commentRef = doc(db, COLLECTIONS.FOOD_COMMENTS, commentId);
+    const commentDoc = await getDoc(commentRef);
+    
+    if (commentDoc.exists()) {
+      const commentData = commentDoc.data();
+      const likedBy = commentData.likedBy || [];
+      const likes = commentData.likes || 0;
+      
+      const index = likedBy.indexOf(userId);
+      if (index === -1) {
+        // Add like
+        await updateDoc(commentRef, {
+          likedBy: [...likedBy, userId],
+          likes: likes + 1
+        });
+      } else {
+        // Remove like
+        const newLikedBy = likedBy.filter((id: string) => id !== userId);
+        await updateDoc(commentRef, {
+          likedBy: newLikedBy,
+          likes: likes - 1
+        });
+      }
+      
+      return true;
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('Error liking food comment in Firebase:', error);
+    return false;
+  }
+}
+
+// Subscribe to real-time updates for food posts
+export function subscribeToFoodPosts(callback: (posts: FoodPost[]) => void): () => void {
+  const q = query(collection(db, COLLECTIONS.FOOD_POSTS), orderBy('createdAt', 'desc'));
+  
+  return onSnapshot(q, async (querySnapshot) => {
+    const posts: FoodPost[] = [];
+    
+    for (const docSnapshot of querySnapshot.docs) {
+      const data = docSnapshot.data();
+      const post: FoodPost = {
+        id: docSnapshot.id,
+        title: data.title || '',
+        content: data.content || '',
+        author: data.author || '',
+        authorTeam: data.authorTeam || '',
+        authorId: data.authorId || '',
+        createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt || new Date().toISOString(),
+        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt || new Date().toISOString(),
+        likes: data.likes || 0,
+        likedBy: data.likedBy || [],
+        comments: [], // Will be populated separately
+        commentIds: data.comments || [],
+        tags: data.tags || [],
+        imageUrl: data.imageUrl || '',
+        location: data.location || ''
+      };
+      
+      // Get comments for this post
+      if (post.commentIds && post.commentIds.length > 0) {
+        const comments: FoodComment[] = [];
+        for (const commentId of post.commentIds) {
+          try {
+            const commentDoc = await getDoc(doc(db, COLLECTIONS.FOOD_COMMENTS, commentId));
+            if (commentDoc.exists()) {
+              const commentData = commentDoc.data();
+              comments.push({
+                id: commentId,
+                postId: post.id,
+                author: commentData.author || '',
+                authorTeam: commentData.authorTeam || '',
+                content: commentData.content || '',
+                createdAt: commentData.createdAt?.toDate?.()?.toISOString() || commentData.createdAt || new Date().toISOString(),
+                likes: commentData.likes || 0,
+                likedBy: commentData.likedBy || []
+              });
+            }
+          } catch (error) {
+            console.error('Error fetching comment:', error);
+          }
+        }
+        post.comments = comments;
+      }
+      
+      posts.push(post);
+    }
+    
+    callback(posts);
+  }, (error) => {
+    console.error('Error in food posts subscription:', error);
+  });
 }

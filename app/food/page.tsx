@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getFoodPosts, addFoodPost, addFoodComment, likeFoodPost, likeFoodComment, type FoodPost, type FoodComment } from '@/lib/data';
+import { getFoodPosts, addFoodPost, addFoodComment, likeFoodPost, likeFoodComment, subscribeToFoodPostsRealtime, type FoodPost, type FoodComment } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
 
 export default function FoodPage() {
@@ -22,53 +22,86 @@ export default function FoodPage() {
 
   useEffect(() => {
     if (isClient) {
-      setPosts(getFoodPosts());
+      // Set up real-time subscription to Firebase
+      const unsubscribe = subscribeToFoodPostsRealtime((firebasePosts) => {
+        setPosts(firebasePosts);
+      });
+
+      // Also load initial data as fallback
+      getFoodPosts().then((initialPosts) => {
+        if (initialPosts.length > 0) {
+          setPosts(initialPosts);
+        }
+      });
+
+      // Cleanup subscription on unmount
+      return () => {
+        unsubscribe();
+      };
     }
   }, [isClient]);
 
-  const handleSubmitPost = (e: React.FormEvent) => {
+  const handleSubmitPost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPost.title.trim() && newPost.content.trim()) {
-      const post = addFoodPost({
-        ...newPost,
-        author: newPost.author || '匿名用户',
-        authorId: currentUser
-      });
-      setPosts(getFoodPosts());
-      setNewPost({
-        title: '',
-        content: '',
-        author: '',
-        authorTeam: '',
-        authorId: '',
-        tags: [],
-        location: ''
-      });
-      setShowNewPostForm(false);
+      try {
+        const post = await addFoodPost({
+          ...newPost,
+          author: newPost.author || '匿名用户',
+          authorId: currentUser
+        });
+        
+        if (post) {
+          setNewPost({
+            title: '',
+            content: '',
+            author: '',
+            authorTeam: '',
+            authorId: '',
+            tags: [],
+            location: ''
+          });
+          setShowNewPostForm(false);
+        }
+      } catch (error) {
+        console.error('Error submitting post:', error);
+      }
     }
   };
 
-  const handleSubmitComment = (postId: string) => {
+  const handleSubmitComment = async (postId: string) => {
     const content = newComment[postId];
     if (content?.trim()) {
-      addFoodComment(postId, {
-        postId,
-        author: '匿名用户',
-        content: content.trim()
-      });
-      setPosts(getFoodPosts());
-      setNewComment({ ...newComment, [postId]: '' });
+      try {
+        const comment = await addFoodComment(postId, {
+          postId,
+          author: '匿名用户',
+          content: content.trim()
+        });
+        
+        if (comment) {
+          setNewComment({ ...newComment, [postId]: '' });
+        }
+      } catch (error) {
+        console.error('Error submitting comment:', error);
+      }
     }
   };
 
-  const handleLikePost = (postId: string) => {
-    likeFoodPost(postId, currentUser);
-    setPosts(getFoodPosts());
+  const handleLikePost = async (postId: string) => {
+    try {
+      await likeFoodPost(postId, currentUser);
+    } catch (error) {
+      console.error('Error liking post:', error);
+    }
   };
 
-  const handleLikeComment = (postId: string, commentId: string) => {
-    likeFoodComment(postId, commentId, currentUser);
-    setPosts(getFoodPosts());
+  const handleLikeComment = async (postId: string, commentId: string) => {
+    try {
+      await likeFoodComment(postId, commentId, currentUser);
+    } catch (error) {
+      console.error('Error liking comment:', error);
+    }
   };
 
   const formatDate = (dateString: string) => {
