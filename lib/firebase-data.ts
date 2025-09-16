@@ -246,6 +246,23 @@ export async function getTeamsFromFirebase(): Promise<Team[]> {
   }
 }
 
+// Clear all games from Firebase
+export async function clearAllGamesFromFirebase(): Promise<boolean> {
+  try {
+    const scheduleRef = collection(db, COLLECTIONS.SCHEDULE);
+    const querySnapshot = await getDocs(scheduleRef);
+    
+    const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
+    await Promise.all(deletePromises);
+    
+    console.log(`Cleared ${querySnapshot.docs.length} games from Firebase`);
+    return true;
+  } catch (error) {
+    console.error('Error clearing games from Firebase:', error);
+    return false;
+  }
+}
+
 // Initialize data in Firebase (run once to migrate from localStorage)
 export async function initializeFirebaseData(): Promise<void> {
   try {
@@ -254,23 +271,8 @@ export async function initializeFirebaseData(): Promise<void> {
     if (scheduleSnapshot.empty) {
       console.log('Initializing Firebase with default data...');
       
-      // Add default schedule
-      const defaultGame = {
-        date: new Date('2025-01-20T00:00:00.000Z'),
-        home: 'TJG',
-        away: 'FJT',
-        venue: 'Kit Carson',
-        time: '7:00 PM',
-        homeScore: 3,
-        awayScore: 2,
-        isPreseason: true,
-        status: 'preseason' as const,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      };
-      
-      await addDoc(collection(db, COLLECTIONS.SCHEDULE), defaultGame);
-      console.log('Default schedule added to Firebase');
+      // No default games - start with empty schedule
+      console.log('Firebase initialized with empty schedule');
     }
   } catch (error) {
     console.error('Error initializing Firebase data:', error);
