@@ -66,11 +66,45 @@ export default function RulesPage() {
               <h3 className="font-semibold text-league-primary dark:text-white mb-3">
                 {t('rules.tennis.chapter2.title')}
               </h3>
-              <div className="space-y-2 text-slate-600 dark:text-slate-300">
-                <p className="font-medium">{t('rules.tennis.chapter2.order.title')}</p>
-                <div className="ml-4 space-y-1 text-sm">
-                  <p>• {t('rules.tennis.chapter2.order.mens')}</p>
-                  <p>• {t('rules.tennis.chapter2.order.mixed')}</p>
+              <div className="space-y-3 text-slate-600 dark:text-slate-300">
+                <div>
+                  <p className="font-medium">{t('rules.tennis.chapter2.rating.title')}</p>
+                  <p className="text-sm ml-4">{t('rules.tennis.chapter2.rating.content')}</p>
+                </div>
+                
+                <div>
+                  <p className="font-medium">{t('rules.tennis.chapter2.order.title')}</p>
+                  <div className="ml-4 space-y-1 text-sm">
+                    <p>• {t('rules.tennis.chapter2.order.mens')}</p>
+                    <p>• {t('rules.tennis.chapter2.order.mixed')}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="font-medium">{t('rules.tennis.chapter2.limits.title')}</p>
+                  <div className="ml-4 space-y-1 text-sm">
+                    <p>• {t('rules.tennis.chapter2.limits.md1')}</p>
+                    <p>• {t('rules.tennis.chapter2.limits.md2')}</p>
+                    <p>• {t('rules.tennis.chapter2.limits.md3')}</p>
+                    <p>• {t('rules.tennis.chapter2.limits.wd')}</p>
+                    <p>• {t('rules.tennis.chapter2.limits.xd1')}</p>
+                    <p>• {t('rules.tennis.chapter2.limits.xd2')}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="font-medium">{t('rules.tennis.chapter2.handicap.title')}</p>
+                  <div className="ml-4 space-y-1 text-sm">
+                    <p>• {t('rules.tennis.chapter2.handicap.rule1')}</p>
+                    <p>• {t('rules.tennis.chapter2.handicap.rule2')}</p>
+                    <p>• {t('rules.tennis.chapter2.handicap.rule3')}</p>
+                    <p>• {t('rules.tennis.chapter2.handicap.rule4')}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="font-medium">{t('rules.tennis.chapter2.gender.title')}</p>
+                  <p className="text-sm ml-4">{t('rules.tennis.chapter2.gender.content')}</p>
                 </div>
               </div>
             </div>
@@ -132,6 +166,7 @@ export default function RulesPage() {
                 <div className="ml-4 space-y-1 text-sm">
                   <p>• {t('rules.tennis.chapter6.details.doubles')}</p>
                   <p>• {t('rules.tennis.chapter6.details.serve')}</p>
+                  <p>• {t('rules.tennis.chapter6.details.score')}</p>
                   <p>• {t('rules.tennis.chapter6.details.noExcuse')}</p>
                   <p>• {t('rules.tennis.chapter6.details.let')}</p>
                 </div>
