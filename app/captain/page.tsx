@@ -223,8 +223,12 @@ export default function CaptainPage() {
   const confirmDeleteGame = async () => {
     if (gameToDelete) {
       try {
+        console.log('Starting to delete game:', gameToDelete);
+        
         // Remove from schedule (now async)
         const success = await removeGameFromSchedule(gameToDelete);
+        console.log('Delete result:', success);
+        
         if (success) {
           // Refresh schedule from localStorage to get the latest data
           const refreshedSchedule = refreshScheduleFromStorage();
@@ -243,19 +247,21 @@ export default function CaptainPage() {
           setScheduleKey(prev => prev + 1);
           
           // Show success message
-          alert(t('captain.gameDeleted'));
+          alert(t('captain.gameDeleted') || 'Game deleted successfully!');
+          console.log('Game deletion completed successfully');
         } else {
-          alert(t('captain.gameDeleteFailed'));
+          console.error('Failed to delete game - removeGameFromSchedule returned false');
+          alert(t('captain.gameDeleteFailed') || 'Failed to delete game. Please try again.');
         }
       } catch (error) {
         console.error('Error deleting game:', error);
-        alert(t('captain.gameDeleteFailed'));
+        alert(t('captain.gameDeleteFailed') || 'Failed to delete game. Please try again.');
+      } finally {
+        // Close dialog
+        setShowDeleteDialog(false);
+        setGameToDelete(null);
       }
     }
-    
-    // Close dialog
-    setShowDeleteDialog(false);
-    setGameToDelete(null);
   };
 
   const cancelDeleteGame = () => {
