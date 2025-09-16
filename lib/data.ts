@@ -865,16 +865,26 @@ export async function syncToCloud(captainName?: string): Promise<boolean> {
     const currentSchedule = getScheduleFromStorage();
     const currentResults = getMatchResultsFromStorage();
     
-    // Sync schedule to Firebase
+    // Sync schedule to Firebase - check for duplicates first
+    const existingGames = await getScheduleFromFirebase();
+    const existingGameIds = new Set(existingGames.map(g => g.id));
+    
     for (const game of currentSchedule) {
-      // Always add new games to Firebase (don't try to update existing ones)
-      await addGameToFirebase(game);
+      // Only add games that don't already exist in Firebase
+      if (!existingGameIds.has(game.id)) {
+        await addGameToFirebase(game);
+      }
     }
     
-    // Sync match results to Firebase
+    // Sync match results to Firebase - check for duplicates first
+    const existingResults = await getMatchResultsFromFirebase();
+    const existingResultIds = new Set(existingResults.map(r => r.id));
+    
     for (const result of currentResults) {
-      // Always add new results to Firebase (don't try to update existing ones)
-      await addMatchResultToFirebase(result);
+      // Only add results that don't already exist in Firebase
+      if (!existingResultIds.has(result.id)) {
+        await addMatchResultToFirebase(result);
+      }
     }
     
     console.log(`Data synced to Firebase by: ${captainName || 'unknown'}`);
@@ -995,7 +1005,26 @@ export function createNewGame(homeTeamId: string, awayTeamId: string, date: stri
 }
 
 // Function to add a new game to the schedule
-export function addGameToSchedule(game: Game): void {
+export async function addGameToSchedule(game: Game): Promise<void> {
+  // Check if game already exists in Firebase before adding locally
+  try {
+    const existingGames = await getScheduleFromFirebase();
+    const gameKey = `${game.home}-${game.away}-${game.date}-${game.venue}`;
+    
+    // Check if this exact game already exists
+    const isDuplicate = existingGames.some(existingGame => {
+      const existingKey = `${existingGame.home}-${existingGame.away}-${existingGame.date}-${existingGame.venue}`;
+      return existingKey === gameKey;
+    });
+    
+    if (isDuplicate) {
+      console.log('Game already exists in Firebase, skipping duplicate');
+      return;
+    }
+  } catch (error) {
+    console.warn('Could not check for duplicates, proceeding with game creation:', error);
+  }
+  
   schedule.push(game);
   saveScheduleToStorage(schedule);
   
@@ -1253,7 +1282,26 @@ export function refreshMatchResultsFromStorage(): MatchResult[] {
 }
 
 // Function to add a new match result
-export function addMatchResult(result: MatchResult): void {
+export async function addMatchResult(result: MatchResult): Promise<void> {
+  // Check if result already exists in Firebase before adding locally
+  try {
+    const existingResults = await getMatchResultsFromFirebase();
+    const resultKey = `${result.gameId}-${result.homeTeamId}-${result.awayTeamId}-${result.submittedBy}`;
+    
+    // Check if this exact result already exists
+    const isDuplicate = existingResults.some(existingResult => {
+      const existingKey = `${existingResult.gameId}-${existingResult.homeTeamId}-${existingResult.awayTeamId}-${existingResult.submittedBy}`;
+      return existingKey === resultKey;
+    });
+    
+    if (isDuplicate) {
+      console.log('Match result already exists in Firebase, skipping duplicate');
+      return;
+    }
+  } catch (error) {
+    console.warn('Could not check for duplicates, proceeding with result creation:', error);
+  }
+  
   matchResults.push(result);
   saveMatchResultsToStorage(matchResults);
   

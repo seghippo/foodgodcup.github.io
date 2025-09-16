@@ -13,7 +13,6 @@ import { DataManagement } from '@/components/DataManagement';
 import FirebaseDemo from '@/components/FirebaseDemo';
 import FirebaseTest from '@/components/FirebaseTest';
 import CaptainSyncTest from '@/components/CaptainSyncTest';
-import FirebaseCleanup from '@/components/FirebaseCleanup';
 
 export default function CaptainPage() {
   const { t, getTeamName } = useLanguage();
@@ -505,10 +504,6 @@ export default function CaptainPage() {
         </div>
       )}
 
-      {/* Firebase Cleanup Section */}
-      <div className="mt-8">
-        <FirebaseCleanup />
-      </div>
 
       {/* Captain Sync Test Section */}
       <div className="mt-8">

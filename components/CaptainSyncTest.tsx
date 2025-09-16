@@ -26,7 +26,7 @@ export default function CaptainSyncTest() {
         status: 'scheduled' as const
       };
       
-      addGameToSchedule(testGame);
+      await addGameToSchedule(testGame);
       setMessage('✅ Test game created! Check the schedule page to see it.');
       
     } catch (error) {
@@ -71,7 +71,7 @@ export default function CaptainSyncTest() {
         ]
       };
       
-      addMatchResult(testResult);
+      await addMatchResult(testResult);
       setMessage('✅ Test result created! Check the standings page to see it.');
       
     } catch (error) {
