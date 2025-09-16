@@ -42,6 +42,7 @@ export default function SchedulePage() {
     if (isClient) {
       // First load data from localStorage
       const refreshedSchedule = refreshScheduleFromStorage();
+      console.log('Schedule data loaded:', refreshedSchedule);
       setCurrentSchedule(refreshedSchedule);
       
       const refreshedResults = refreshMatchResultsFromStorage();
@@ -139,40 +140,49 @@ export default function SchedulePage() {
     return <span className="text-slate-400">-</span>;
   };
   
+  const validGames = currentSchedule.filter(g => g && g.date);
+  
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">{t('schedule.title')}</h1>
       <div className="card overflow-x-auto">
-        <table className="w-full text-left">
-          <thead className="text-sm text-slate-500">
-            <tr>
-              <th className="py-2 pr-4">{t('schedule.date')}</th>
-              <th className="py-2 pr-4">{t('schedule.match')}</th>
-              <th className="py-2 pr-4">{t('schedule.score')}</th>
-              <th className="py-2 pr-4">{t('schedule.venue')}</th>
-              <th className="py-2 pr-4">{t('schedule.time')}</th>
-              <th className="py-2 pr-4">{t('schedule.status')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentSchedule.map((g) => (
-              <tr key={g.id} className="border-t border-slate-200 dark:border-slate-800">
-                <td className="py-3 pr-4">{formatDateString(g.date)}</td>
-                <td className="py-3 pr-4">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{getTeamName(teamsById[g.home])}</span>
-                    <span className="text-slate-400">vs</span>
-                    <span className="font-medium">{getTeamName(teamsById[g.away])}</span>
-                  </div>
-                </td>
-                <td className="py-3 pr-4">{getScoreDisplay(g)}</td>
-                <td className="py-3 pr-4">{g.venue}</td>
-                <td className="py-3 pr-4">{g.time}</td>
-                <td className="py-3 pr-4">{getStatusBadge(g.status, g.isPreseason)}</td>
+        {validGames.length === 0 ? (
+          <div className="p-8 text-center text-slate-500">
+            <p>No games scheduled yet.</p>
+            <p className="text-sm mt-2">Check back later or contact your captain to add games.</p>
+          </div>
+        ) : (
+          <table className="w-full text-left">
+            <thead className="text-sm text-slate-500">
+              <tr>
+                <th className="py-2 pr-4">{t('schedule.date')}</th>
+                <th className="py-2 pr-4">{t('schedule.match')}</th>
+                <th className="py-2 pr-4">{t('schedule.score')}</th>
+                <th className="py-2 pr-4">{t('schedule.venue')}</th>
+                <th className="py-2 pr-4">{t('schedule.time')}</th>
+                <th className="py-2 pr-4">{t('schedule.status')}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {validGames.map((g) => (
+                <tr key={g.id} className="border-t border-slate-200 dark:border-slate-800">
+                  <td className="py-3 pr-4">{formatDateString(g.date)}</td>
+                  <td className="py-3 pr-4">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{getTeamName(teamsById[g.home])}</span>
+                      <span className="text-slate-400">vs</span>
+                      <span className="font-medium">{getTeamName(teamsById[g.away])}</span>
+                    </div>
+                  </td>
+                  <td className="py-3 pr-4">{getScoreDisplay(g)}</td>
+                  <td className="py-3 pr-4">{g.venue || '-'}</td>
+                  <td className="py-3 pr-4">{g.time || '-'}</td>
+                  <td className="py-3 pr-4">{getStatusBadge(g.status, g.isPreseason)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
