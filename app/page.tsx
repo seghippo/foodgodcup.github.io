@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { posts, latestPost, schedule, teams } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
+import FirebaseDemo from '@/components/FirebaseDemo';
 
 export default function HomePage() {
   const latest = latestPost();
@@ -258,6 +259,11 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Firebase Demo Section */}
+      <section className="mt-12">
+        <FirebaseDemo />
       </section>
     </div>
   );

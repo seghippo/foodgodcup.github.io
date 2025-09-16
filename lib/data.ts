@@ -1,3 +1,17 @@
+// Firebase-based data storage
+import { 
+  getScheduleFromFirebase, 
+  addGameToFirebase, 
+  updateGameInFirebase, 
+  deleteGameFromFirebase,
+  getMatchResultsFromFirebase,
+  addMatchResultToFirebase,
+  updateMatchResultInFirebase,
+  subscribeToSchedule,
+  subscribeToMatchResults,
+  initializeFirebaseData
+} from './firebase-data';
+
 export type Player = {
   id: string;
   name: string;
@@ -841,50 +855,33 @@ export function getLastSyncInfo(): { hasSharedData: boolean; lastUpload?: string
   }
 }
 
-// GitHub-based data storage
-const GITHUB_DATA_URL = 'https://seghippo.github.io/foodgodcup.github.io/data/league-data.json';
-const GITHUB_RAW_URL = 'https://raw.githubusercontent.com/seghippo/foodgodcup.github.io/main/public/data/league-data.json';
-
 export async function syncToCloud(captainName?: string): Promise<boolean> {
   if (typeof window === 'undefined') return false;
   
   try {
+    // Initialize Firebase data if needed
+    await initializeFirebaseData();
+    
     // Get current data from localStorage
     const currentSchedule = getScheduleFromStorage();
     const currentResults = getMatchResultsFromStorage();
     
-    // Create the data structure for GitHub storage
-    const githubData = {
-      schedule: currentSchedule,
-      matchResults: currentResults,
-      lastUpdated: new Date().toISOString(),
-      version: '1.0',
-      metadata: {
-        totalGames: currentSchedule.length,
-        totalResults: currentResults.length,
-        lastSync: new Date().toISOString(),
-        updatedBy: captainName || 'unknown'
-      }
-    };
+    // Sync schedule to Firebase
+    for (const game of currentSchedule) {
+      // Always add new games to Firebase (don't try to update existing ones)
+      await addGameToFirebase(game);
+    }
     
-    // Store in localStorage as backup
-    localStorage.setItem('github-sync-data', JSON.stringify(githubData));
+    // Sync match results to Firebase
+    for (const result of currentResults) {
+      // Always add new results to Firebase (don't try to update existing ones)
+      await addMatchResultToFirebase(result);
+    }
     
-    // Store in a special localStorage key that can be accessed by other devices
-    localStorage.setItem('github-league-data', JSON.stringify(githubData));
-    
-    // Also store in a shared key that all devices can access
-    localStorage.setItem('shared-league-data', JSON.stringify(githubData));
-    
-    // Store in a global key that persists across sessions
-    localStorage.setItem('global-league-data', JSON.stringify(githubData));
-    
-    console.log(`Data synced to shared storage by: ${captainName || 'unknown'}`);
-    console.log('Shared data:', githubData);
-    
+    console.log(`Data synced to Firebase by: ${captainName || 'unknown'}`);
     return true;
   } catch (error) {
-    console.error('Error syncing to GitHub:', error);
+    console.error('Error syncing to Firebase:', error);
     return false;
   }
 }
@@ -893,80 +890,52 @@ export async function syncFromCloud(captainName?: string): Promise<boolean> {
   if (typeof window === 'undefined') return false;
   
   try {
-    let githubData = null;
+    console.log('Starting sync from Firebase...');
     
-    // Try to fetch from GitHub file
-    try {
-      const response = await fetch(GITHUB_RAW_URL + '?t=' + Date.now());
-      if (response.ok) {
-        githubData = await response.json();
-        console.log('Data fetched from GitHub:', githubData);
-      } else {
-        console.log('GitHub file not accessible, trying local fallback');
-      }
-    } catch (githubError) {
-      console.warn('GitHub fetch failed, using local fallback:', githubError);
-    }
+    // Initialize Firebase data if needed
+    await initializeFirebaseData();
+    console.log('Firebase initialized');
     
-    // Fallback to local storage
-    if (!githubData) {
-      // Try global data first (most recent)
-      const globalData = localStorage.getItem('global-league-data');
-      if (globalData) {
-        githubData = JSON.parse(globalData);
-        console.log('Using global league data');
-      } else {
-        // Try shared data
-        const sharedData = localStorage.getItem('shared-league-data');
-        if (sharedData) {
-          githubData = JSON.parse(sharedData);
-          console.log('Using shared league data');
-        } else {
-          const localData = localStorage.getItem('github-league-data');
-          if (!localData) {
-            console.log('No GitHub sync data found');
-            return false;
-          }
-          githubData = JSON.parse(localData);
-          console.log('Using local GitHub data fallback');
-        }
-      }
-    }
+    // Get data from Firebase
+    console.log('Fetching schedule from Firebase...');
+    const firebaseSchedule = await getScheduleFromFirebase();
+    console.log(`Found ${firebaseSchedule.length} games in Firebase`);
     
-    // Validate data structure
-    if (!githubData.schedule || !githubData.matchResults) {
-      console.error('Invalid GitHub data structure');
-      return false;
-    }
+    console.log('Fetching match results from Firebase...');
+    const firebaseResults = await getMatchResultsFromFirebase();
+    console.log(`Found ${firebaseResults.length} match results in Firebase`);
     
-    // Validate individual items
-    const validSchedule = githubData.schedule.filter(validateGame);
-    const validResults = githubData.matchResults.filter(validateMatchResult);
+    // Validate data
+    const validSchedule = firebaseSchedule.filter(validateGame);
+    const validResults = firebaseResults.filter(validateMatchResult);
+    
+    console.log(`Valid schedule items: ${validSchedule.length}, Valid results: ${validResults.length}`);
     
     if (validSchedule.length === 0 && validResults.length === 0) {
-      console.error('No valid data in GitHub storage');
-      return false;
+      console.log('No valid data in Firebase storage - this is normal for a new setup');
+      return true; // Return true even if no data, as this is not an error
     }
     
-    // Apply the synced data
+    // Apply the synced data to localStorage
     if (validSchedule.length > 0) {
       localStorage.setItem('tennis-schedule', JSON.stringify(validSchedule));
-      console.log(`Synced ${validSchedule.length} games from GitHub`);
+      console.log(`Synced ${validSchedule.length} games from Firebase`);
     }
     
     if (validResults.length > 0) {
       localStorage.setItem('tennis-match-results', JSON.stringify(validResults));
-      console.log(`Synced ${validResults.length} match results from GitHub`);
+      console.log(`Synced ${validResults.length} match results from Firebase`);
     }
     
     // Refresh the exported arrays
     refreshScheduleFromStorage();
     refreshMatchResultsFromStorage();
     
-    console.log('Data synced from GitHub successfully');
+    console.log('Data synced from Firebase successfully');
     return true;
   } catch (error) {
-    console.error('Error syncing from GitHub:', error);
+    console.error('Error syncing from Firebase:', error);
+    console.error('Error details:', error);
     return false;
   }
 }
@@ -1031,12 +1000,12 @@ export function addGameToSchedule(game: Game): void {
   schedule.push(game);
   saveScheduleToStorage(schedule);
   
-  // Auto-sync to GitHub when new games are added
+  // Auto-sync to Firebase when new games are added
   syncToCloud().then(success => {
     if (success) {
-      console.log('New game automatically synced to GitHub');
+      console.log('New game automatically synced to Firebase');
     } else {
-      console.warn('Failed to auto-sync new game to GitHub');
+      console.warn('Failed to auto-sync new game to Firebase');
     }
   });
 }
@@ -1289,12 +1258,12 @@ export function addMatchResult(result: MatchResult): void {
   matchResults.push(result);
   saveMatchResultsToStorage(matchResults);
   
-  // Auto-sync to GitHub when new results are added
+  // Auto-sync to Firebase when new results are added
   syncToCloud().then(success => {
     if (success) {
-      console.log('Match result automatically synced to GitHub');
+      console.log('Match result automatically synced to Firebase');
     } else {
-      console.warn('Failed to auto-sync match result to GitHub');
+      console.warn('Failed to auto-sync match result to Firebase');
     }
   });
 }
