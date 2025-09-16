@@ -40,26 +40,33 @@ export default function SchedulePage() {
   // Refresh schedule and match results from localStorage when component mounts
   useEffect(() => {
     if (isClient) {
-      // Auto-sync from GitHub first
+      // First load data from localStorage
+      const refreshedSchedule = refreshScheduleFromStorage();
+      setCurrentSchedule(refreshedSchedule);
+      
+      const refreshedResults = refreshMatchResultsFromStorage();
+      setMatchResults(refreshedResults);
+
+      // Then auto-sync from GitHub in background
       const autoSync = async () => {
         try {
           const success = await syncFromCloud();
           if (success) {
             console.log('Schedule page: Data synced from GitHub');
+            // Update data after sync
+            const newSchedule = refreshScheduleFromStorage();
+            setCurrentSchedule(newSchedule);
+            
+            const newResults = refreshMatchResultsFromStorage();
+            setMatchResults(newResults);
           }
         } catch (error) {
           console.error('Schedule page: Failed to sync from GitHub', error);
         }
       };
 
-      autoSync().then(() => {
-        // Then refresh from localStorage
-        const refreshedSchedule = refreshScheduleFromStorage();
-        setCurrentSchedule(refreshedSchedule);
-        
-        const refreshedResults = refreshMatchResultsFromStorage();
-        setMatchResults(refreshedResults);
-      });
+      // Run sync in background without blocking UI
+      autoSync();
     }
   }, [isClient]);
   
