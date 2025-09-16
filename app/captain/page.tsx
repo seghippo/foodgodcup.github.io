@@ -151,7 +151,7 @@ export default function CaptainPage() {
 
   // Filter games that are completed or can have scores submitted
   const availableGames = currentSchedule.filter(game => 
-    game.status === 'completed' || game.status === 'scheduled'
+    game && (game.status === 'completed' || game.status === 'scheduled')
   );
 
   const handleScoreSubmit = (result: any) => {
@@ -388,7 +388,7 @@ export default function CaptainPage() {
                           ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
                           : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
                       }`}>
-                        {t(`schedule.${game.status}`)}
+                        {t(`schedule.${game.status || 'scheduled'}`)}
                       </span>
                       {selectedGame === game.id && (
                         <span className="text-league-primary">✓</span>

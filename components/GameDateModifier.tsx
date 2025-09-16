@@ -140,7 +140,7 @@ export default function GameDateModifier({ game, onDateUpdate }: GameDateModifie
       <div className="text-sm text-slate-600 dark:text-slate-400">
         <p><strong>{t('schedule.venue')}:</strong> {game.venue || t('schedule.tbd')}</p>
         <p><strong>{t('schedule.time')}:</strong> {game.time}</p>
-        <p><strong>{t('schedule.status')}:</strong> {t(`schedule.${game.status}`)}</p>
+        <p><strong>{t('schedule.status')}:</strong> {t(`schedule.${game.status || 'scheduled'}`)}</p>
       </div>
     </div>
   );

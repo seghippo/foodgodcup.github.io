@@ -9,7 +9,7 @@ export default function HomePage() {
   const { t, getPostTitle, getPostExcerpt, language, setLanguage } = useLanguage();
   
   // Count completed official matches (excluding preseason)
-  const completedMatches = schedule.filter(game => game.status === 'completed' && !game.isPreseason).length;
+  const completedMatches = schedule.filter(game => game && game.status === 'completed' && !game.isPreseason).length;
   
   // Calculate total players from all team rosters
   const totalPlayers = teams.reduce((total, team) => total + team.roster.length, 0);

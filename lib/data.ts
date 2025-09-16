@@ -164,8 +164,7 @@ export function validateGame(game: any): game is Game {
     game.away.length > 0 &&
     typeof game.venue === 'string' &&
     typeof game.time === 'string' &&
-    typeof game.status === 'string' &&
-    ['scheduled', 'completed', 'preseason'].includes(game.status) &&
+    (game.status === undefined || (typeof game.status === 'string' && ['scheduled', 'completed', 'preseason'].includes(game.status))) &&
     (game.homeScore === undefined || typeof game.homeScore === 'number') &&
     (game.awayScore === undefined || typeof game.awayScore === 'number')
   );
