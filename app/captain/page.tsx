@@ -10,9 +10,6 @@ import ScoreModification from '@/components/ScoreModification';
 import CreateGameForm from '@/components/CreateGameForm';
 import EditGameForm from '@/components/EditGameForm';
 import { DataManagement } from '@/components/DataManagement';
-import FirebaseDemo from '@/components/FirebaseDemo';
-import FirebaseTest from '@/components/FirebaseTest';
-import CaptainSyncTest from '@/components/CaptainSyncTest';
 
 export default function CaptainPage() {
   const { t, getTeamName } = useLanguage();
@@ -511,20 +508,6 @@ export default function CaptainPage() {
       )}
 
 
-      {/* Captain Sync Test Section */}
-      <div className="mt-8">
-        <CaptainSyncTest />
-      </div>
-
-      {/* Firebase Test Section */}
-      <div className="mt-8">
-        <FirebaseTest />
-      </div>
-
-      {/* Firebase Demo Section */}
-      <div className="mt-8">
-        <FirebaseDemo />
-      </div>
 
       {/* Data Management Section */}
       <div className="mt-8">
