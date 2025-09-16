@@ -220,11 +220,11 @@ export default function CaptainPage() {
     setShowDeleteDialog(true);
   };
 
-  const confirmDeleteGame = () => {
+  const confirmDeleteGame = async () => {
     if (gameToDelete) {
       try {
-        // Remove from schedule
-        const success = removeGameFromSchedule(gameToDelete);
+        // Remove from schedule (now async)
+        const success = await removeGameFromSchedule(gameToDelete);
         if (success) {
           // Refresh schedule from localStorage to get the latest data
           const refreshedSchedule = refreshScheduleFromStorage();

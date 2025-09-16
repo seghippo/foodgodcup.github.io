@@ -1058,11 +1058,21 @@ export async function addGameToSchedule(game: Game): Promise<void> {
 }
 
 // Function to remove a game from the schedule
-export function removeGameFromSchedule(gameId: string): boolean {
+export async function removeGameFromSchedule(gameId: string): Promise<boolean> {
   const index = schedule.findIndex(game => game.id === gameId);
   if (index !== -1) {
     schedule.splice(index, 1);
     saveScheduleToStorage(schedule);
+    
+    // Also remove from Firebase
+    try {
+      await deleteGameFromFirebase(gameId);
+      console.log(`Game ${gameId} removed from Firebase`);
+    } catch (error) {
+      console.error('Error removing game from Firebase:', error);
+      // Continue anyway - local removal was successful
+    }
+    
     return true;
   }
   return false;
