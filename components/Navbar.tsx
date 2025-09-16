@@ -51,6 +51,7 @@ export function Navbar() {
           {link('/standings', t('nav.standings'))}
           {link('/rules', t('nav.rules'))}
           {link('/blog', t('nav.blog'))}
+          {link('/food', '美食汇')}
           {link('/captain', t('nav.captain'))}
           
           {/* Language Toggle */}
@@ -90,6 +91,7 @@ export function Navbar() {
             {link('/standings', t('nav.standings'))}
             {link('/rules', t('nav.rules'))}
             {link('/blog', t('nav.blog'))}
+            {link('/food', '美食汇')}
             {link('/captain', t('nav.captain'))}
             
             {/* Mobile Language Toggle */}

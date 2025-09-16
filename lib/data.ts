@@ -108,6 +108,34 @@ export type Post = {
   contentEn: string;
 };
 
+export type FoodComment = {
+  id: string;
+  postId: string;
+  author: string;
+  authorTeam?: string;
+  content: string;
+  createdAt: string;
+  likes: number;
+  likedBy: string[]; // Array of user IDs who liked this comment
+};
+
+export type FoodPost = {
+  id: string;
+  title: string;
+  content: string;
+  author: string;
+  authorTeam?: string;
+  authorId: string;
+  createdAt: string;
+  updatedAt: string;
+  likes: number;
+  likedBy: string[]; // Array of user IDs who liked this post
+  comments: FoodComment[];
+  tags: string[]; // e.g., ['川菜', '火锅', '推荐']
+  imageUrl?: string; // Optional image URL
+  location?: string; // Optional location where the food was found
+};
+
 // Data validation functions
 export function validatePlayer(player: any): player is Player {
   return (
@@ -1389,6 +1417,150 @@ export function removeMatchResult(resultId: string): boolean {
     matchResults.splice(index, 1);
     saveMatchResultsToStorage(matchResults);
     return true;
+  }
+  return false;
+}
+
+// Food Posts Data and Functions
+export const foodPosts: FoodPost[] = [
+  {
+    id: 'FP001',
+    title: '圣地亚哥最好吃的川菜馆推荐',
+    content: '今天去了Convoy Street上的川菜馆，水煮鱼和麻婆豆腐都超级正宗！老板是四川人，味道很地道。推荐大家去试试！',
+    author: '天津队长',
+    authorTeam: '天津狗不理包子队',
+    authorId: 'TJ01',
+    createdAt: '2024-01-15T10:30:00Z',
+    updatedAt: '2024-01-15T10:30:00Z',
+    likes: 12,
+    likedBy: ['FJ01', 'HB01', 'DB01', 'BJ01', 'JZ01', 'LG01'],
+    comments: [
+      {
+        id: 'FC001',
+        postId: 'FP001',
+        author: '福建队长',
+        authorTeam: '福建佛跳墙队',
+        content: '我也去过！他们家的夫妻肺片也很棒！',
+        createdAt: '2024-01-15T11:00:00Z',
+        likes: 3,
+        likedBy: ['TJ01', 'HB01', 'DB01']
+      }
+    ],
+    tags: ['川菜', '推荐', 'Convoy Street'],
+    location: 'Convoy Street, San Diego'
+  },
+  {
+    id: 'FP002',
+    title: '周末聚餐好去处 - 火锅推荐',
+    content: '和队友们去了Little Sheep Mongolian Hot Pot，环境很好，食材新鲜，汤底选择多。特别推荐他们的羊肉和虾滑！',
+    author: '湖北队长',
+    authorTeam: '湖北热干面队',
+    authorId: 'HB01',
+    createdAt: '2024-01-14T19:00:00Z',
+    updatedAt: '2024-01-14T19:00:00Z',
+    likes: 8,
+    likedBy: ['TJ01', 'FJ01', 'DB01', 'BJ01'],
+    comments: [],
+    tags: ['火锅', '聚餐', '推荐'],
+    location: 'Little Sheep Mongolian Hot Pot'
+  },
+  {
+    id: 'FP003',
+    title: '自己做的东北酸菜炖粉条',
+    content: '今天在家复刻了东北酸菜炖粉条，用的是从中国超市买的酸菜，味道还不错！有队友想学的话可以交流一下做法。',
+    author: '东北队长',
+    authorTeam: '东北酸菜炖粉条队',
+    authorId: 'DB01',
+    createdAt: '2024-01-13T16:30:00Z',
+    updatedAt: '2024-01-13T16:30:00Z',
+    likes: 15,
+    likedBy: ['TJ01', 'FJ01', 'HB01', 'BJ01', 'JZ01', 'LG01'],
+    comments: [
+      {
+        id: 'FC002',
+        postId: 'FP003',
+        author: '北京队长',
+        authorTeam: '北京全聚德烤鸭队',
+        content: '求做法！看起来很好吃！',
+        createdAt: '2024-01-13T17:00:00Z',
+        likes: 2,
+        likedBy: ['TJ01', 'FJ01']
+      }
+    ],
+    tags: ['东北菜', '家常菜', '分享'],
+    imageUrl: '/images/food/酸菜炖粉条.jpg'
+  }
+];
+
+// Food Posts Functions
+export function getFoodPosts(): FoodPost[] {
+  return foodPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export function addFoodPost(post: Omit<FoodPost, 'id' | 'createdAt' | 'updatedAt' | 'likes' | 'likedBy' | 'comments'>): FoodPost {
+  const newPost: FoodPost = {
+    ...post,
+    id: `FP${Date.now()}`,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    likes: 0,
+    likedBy: [],
+    comments: []
+  };
+  
+  foodPosts.unshift(newPost);
+  return newPost;
+}
+
+export function addFoodComment(postId: string, comment: Omit<FoodComment, 'id' | 'createdAt' | 'likes' | 'likedBy'>): FoodComment {
+  const newComment: FoodComment = {
+    ...comment,
+    id: `FC${Date.now()}`,
+    createdAt: new Date().toISOString(),
+    likes: 0,
+    likedBy: []
+  };
+  
+  const post = foodPosts.find(p => p.id === postId);
+  if (post) {
+    post.comments.push(newComment);
+    post.updatedAt = new Date().toISOString();
+  }
+  
+  return newComment;
+}
+
+export function likeFoodPost(postId: string, userId: string): boolean {
+  const post = foodPosts.find(p => p.id === postId);
+  if (post) {
+    const index = post.likedBy.indexOf(userId);
+    if (index === -1) {
+      post.likedBy.push(userId);
+      post.likes++;
+    } else {
+      post.likedBy.splice(index, 1);
+      post.likes--;
+    }
+    return true;
+  }
+  return false;
+}
+
+export function likeFoodComment(postId: string, commentId: string, userId: string): boolean {
+  const post = foodPosts.find(p => p.id === postId);
+  if (post) {
+    const comment = post.comments.find(c => c.id === commentId);
+    if (comment) {
+      const index = comment.likedBy.indexOf(userId);
+      if (index === -1) {
+        comment.likedBy.push(userId);
+        comment.likes++;
+      } else {
+        comment.likedBy.splice(index, 1);
+        comment.likes--;
+      }
+      return true;
+    }
   }
   return false;
 }
