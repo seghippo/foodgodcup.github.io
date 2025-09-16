@@ -213,18 +213,39 @@ export async function getScheduleFromFirebase(): Promise<Game[]> {
 }
 
 export async function addGameToFirebase(game: Omit<Game, 'id'>): Promise<string | null> {
-  try {
-    const scheduleRef = collection(db, COLLECTIONS.SCHEDULE);
-    const docRef = await addDoc(scheduleRef, {
-      ...game,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    });
-    return docRef.id;
-  } catch (error) {
-    console.error('Error adding game to Firebase:', error);
-    return null;
+  const maxRetries = 3;
+  let lastError: any;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const scheduleRef = collection(db, COLLECTIONS.SCHEDULE);
+      const docRef = await addDoc(scheduleRef, {
+        ...game,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      return docRef.id;
+    } catch (error) {
+      lastError = error;
+      console.error(`Error adding game to Firebase (attempt ${attempt}/${maxRetries}):`, error);
+      
+      // If it's a network error and we have retries left, wait and try again
+      if (attempt < maxRetries && (
+        error instanceof Error && (
+          error.message.includes('network') || 
+          error.message.includes('timeout') ||
+          error.message.includes('fetch')
+        )
+      )) {
+        console.log(`Retrying in ${attempt * 1000}ms...`);
+        await new Promise(resolve => setTimeout(resolve, attempt * 1000));
+        continue;
+      }
+    }
   }
+  
+  console.error('Failed to add game to Firebase after all retries:', lastError);
+  return null;
 }
 
 export async function updateGameInFirebase(gameId: string, updates: Partial<Game>): Promise<boolean> {
@@ -301,18 +322,39 @@ export async function getMatchResultsFromFirebase(): Promise<MatchResult[]> {
 }
 
 export async function addMatchResultToFirebase(result: Omit<MatchResult, 'id'>): Promise<string | null> {
-  try {
-    const resultsRef = collection(db, COLLECTIONS.MATCH_RESULTS);
-    const docRef = await addDoc(resultsRef, {
-      ...result,
-      submittedAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    });
-    return docRef.id;
-  } catch (error) {
-    console.error('Error adding match result to Firebase:', error);
-    return null;
+  const maxRetries = 3;
+  let lastError: any;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const resultsRef = collection(db, COLLECTIONS.MATCH_RESULTS);
+      const docRef = await addDoc(resultsRef, {
+        ...result,
+        submittedAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      return docRef.id;
+    } catch (error) {
+      lastError = error;
+      console.error(`Error adding match result to Firebase (attempt ${attempt}/${maxRetries}):`, error);
+      
+      // If it's a network error and we have retries left, wait and try again
+      if (attempt < maxRetries && (
+        error instanceof Error && (
+          error.message.includes('network') || 
+          error.message.includes('timeout') ||
+          error.message.includes('fetch')
+        )
+      )) {
+        console.log(`Retrying in ${attempt * 1000}ms...`);
+        await new Promise(resolve => setTimeout(resolve, attempt * 1000));
+        continue;
+      }
+    }
   }
+  
+  console.error('Failed to add match result to Firebase after all retries:', lastError);
+  return null;
 }
 
 export async function updateMatchResultInFirebase(resultId: string, updates: Partial<MatchResult>): Promise<boolean> {

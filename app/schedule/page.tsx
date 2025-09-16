@@ -1,6 +1,6 @@
 'use client';
 
-import { schedule, teamsById, refreshScheduleFromStorage, refreshMatchResultsFromStorage, syncFromCloud } from '@/lib/data';
+import { schedule, teamsById, refreshScheduleFromStorage, refreshMatchResultsFromStorage, syncFromCloud, ensureFirestoreIsSourceOfTruth } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
 import { useState, useEffect } from 'react';
 
@@ -40,34 +40,15 @@ export default function SchedulePage() {
   // Refresh schedule and match results from localStorage when component mounts
   useEffect(() => {
     if (isClient) {
-      // First load data from localStorage
-      const refreshedSchedule = refreshScheduleFromStorage();
-      console.log('Schedule data loaded:', refreshedSchedule);
-      setCurrentSchedule(refreshedSchedule);
-      
-      const refreshedResults = refreshMatchResultsFromStorage();
-      setMatchResults(refreshedResults);
-
-      // Then auto-sync from GitHub in background
-      const autoSync = async () => {
-        try {
-          const success = await syncFromCloud();
-          if (success) {
-            console.log('Schedule page: Data synced from GitHub');
-            // Update data after sync
-            const newSchedule = refreshScheduleFromStorage();
-            setCurrentSchedule(newSchedule);
-            
-            const newResults = refreshMatchResultsFromStorage();
-            setMatchResults(newResults);
-          }
-        } catch (error) {
-          console.error('Schedule page: Failed to sync from GitHub', error);
-        }
-      };
-
-      // Run sync in background without blocking UI
-      autoSync();
+      // CRITICAL: Ensure Firestore is the single source of truth first
+      ensureFirestoreIsSourceOfTruth().then(() => {
+        const refreshedSchedule = refreshScheduleFromStorage();
+        console.log('Schedule data loaded from Firestore:', refreshedSchedule);
+        setCurrentSchedule(refreshedSchedule);
+        
+        const refreshedResults = refreshMatchResultsFromStorage();
+        setMatchResults(refreshedResults);
+      });
     }
   }, [isClient]);
   

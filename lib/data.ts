@@ -431,6 +431,11 @@ function getScheduleFromStorage(): Game[] {
   }
   
   try {
+    // Test localStorage availability first
+    const testKey = 'tennis-storage-test';
+    localStorage.setItem(testKey, 'test');
+    localStorage.removeItem(testKey);
+    
     const stored = localStorage.getItem('tennis-schedule');
     if (stored) {
       const parsed = JSON.parse(stored);
@@ -457,6 +462,21 @@ function getScheduleFromStorage(): Game[] {
     }
   } catch (error) {
     console.error('Error loading schedule from localStorage:', error);
+    
+    // Try sessionStorage as fallback for mobile private mode
+    try {
+      const sessionStored = sessionStorage.getItem('tennis-schedule');
+      if (sessionStored) {
+        const parsed = JSON.parse(sessionStored);
+        if (Array.isArray(parsed)) {
+          console.log('Loaded schedule from sessionStorage fallback');
+          return parsed.filter(validateGame);
+        }
+      }
+    } catch (sessionError) {
+      console.error('SessionStorage also failed:', sessionError);
+    }
+    
     // Try to load from backup
     const backup = getBackupData('schedule');
     if (backup) {
@@ -481,12 +501,25 @@ function saveScheduleToStorage(schedule: Game[]): void {
       console.warn(`Filtered out ${schedule.length - validSchedule.length} invalid games before saving`);
     }
     
+    // Test localStorage availability (mobile private mode can block it)
+    const testKey = 'tennis-storage-test';
+    localStorage.setItem(testKey, 'test');
+    localStorage.removeItem(testKey);
+    
     localStorage.setItem('tennis-schedule', JSON.stringify(validSchedule));
     
     // Create backup
     createBackup('schedule', validSchedule);
   } catch (error) {
     console.error('Error saving schedule to localStorage:', error);
+    // If localStorage fails, try to use sessionStorage as fallback
+    try {
+      sessionStorage.setItem('tennis-schedule', JSON.stringify(schedule));
+      console.warn('localStorage failed, using sessionStorage as fallback');
+    } catch (sessionError) {
+      console.error('Both localStorage and sessionStorage failed:', sessionError);
+      throw new Error('Storage not available. Please check your browser settings.');
+    }
   }
 }
 
@@ -1039,8 +1072,27 @@ export const syncToGitHub = syncToCloud;
 export const syncFromGitHub = syncFromCloud;
 export const getGitHubSyncInfo = getCloudSyncInfo;
 
-// Initialize schedule from storage
+// Initialize schedule from storage (will be overridden by Firestore sync)
 export const schedule: Game[] = getScheduleFromStorage();
+
+// CRITICAL: Function to ensure Firestore is the single source of truth
+export async function ensureFirestoreIsSourceOfTruth(): Promise<void> {
+  if (typeof window === 'undefined') return; // Server-side rendering
+  
+  try {
+    console.log('🔄 Ensuring Firestore is the single source of truth...');
+    
+    // Always sync from Firestore first to get the latest data
+    const syncSuccess = await syncFromCloud();
+    if (syncSuccess) {
+      console.log('✅ Firestore sync completed - Firestore is now the source of truth');
+    } else {
+      console.warn('⚠️ Firestore sync failed, using local data as fallback');
+    }
+  } catch (error) {
+    console.error('❌ Error ensuring Firestore is source of truth:', error);
+  }
+}
 
 // Function to refresh schedule from storage (for client-side updates)
 export function refreshScheduleFromStorage(): Game[] {
@@ -1086,17 +1138,26 @@ export async function addGameToSchedule(game: Game): Promise<void> {
     console.warn('Could not check for duplicates, proceeding with game creation:', error);
   }
   
-  schedule.push(game);
-  saveScheduleToStorage(schedule);
-  
-  // Auto-sync to Firebase when new games are added
-  syncToCloud().then(success => {
-    if (success) {
-      console.log('New game automatically synced to Firebase');
-    } else {
-      console.warn('Failed to auto-sync new game to Firebase');
+  // CRITICAL: Add to Firestore FIRST (single source of truth)
+  try {
+    const firebaseId = await addGameToFirebase(game);
+    if (!firebaseId) {
+      throw new Error('Failed to add game to Firestore');
     }
-  });
+    console.log('✅ Game successfully added to Firestore with ID:', firebaseId);
+    
+    // Update the game with the Firestore ID
+    const gameWithFirebaseId = { ...game, id: firebaseId };
+    
+    // Then add to local storage
+    schedule.push(gameWithFirebaseId);
+    saveScheduleToStorage(schedule);
+    
+    console.log('✅ Game successfully synced to local storage');
+  } catch (error) {
+    console.error('❌ Failed to add game to Firestore:', error);
+    throw new Error(`Failed to create game: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
 
 // Function to remove a game from the schedule
@@ -1133,12 +1194,29 @@ export async function removeGameFromSchedule(gameId: string): Promise<boolean> {
 }
 
 // Function to update game information
-export function updateGameInfo(gameId: string, updates: Partial<Game>): boolean {
+export async function updateGameInfo(gameId: string, updates: Partial<Game>): Promise<boolean> {
   const index = schedule.findIndex(game => game.id === gameId);
   if (index !== -1) {
-    schedule[index] = { ...schedule[index], ...updates };
-    saveScheduleToStorage(schedule);
-    return true;
+    const updatedGame = { ...schedule[index], ...updates };
+    
+    // CRITICAL: Update Firestore FIRST (single source of truth)
+    try {
+      const success = await updateGameInFirebase(gameId, updates);
+      if (!success) {
+        throw new Error('Failed to update game in Firestore');
+      }
+      console.log('✅ Game successfully updated in Firestore');
+      
+      // Then update local storage
+      schedule[index] = updatedGame;
+      saveScheduleToStorage(schedule);
+      
+      console.log('✅ Game successfully synced to local storage');
+      return true;
+    } catch (error) {
+      console.error('❌ Failed to update game in Firestore:', error);
+      throw new Error(`Failed to update game: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
   return false;
 }
@@ -1385,36 +1463,52 @@ export async function addMatchResult(result: MatchResult): Promise<void> {
     console.warn('Could not check for duplicates, proceeding with result creation:', error);
   }
   
-  matchResults.push(result);
-  saveMatchResultsToStorage(matchResults);
-  
-  // Auto-sync to Firebase when new results are added
-  syncToCloud().then(success => {
-    if (success) {
-      console.log('Match result automatically synced to Firebase');
-    } else {
-      console.warn('Failed to auto-sync match result to Firebase');
+  // CRITICAL: Add to Firestore FIRST (single source of truth)
+  try {
+    const firebaseId = await addMatchResultToFirebase(result);
+    if (!firebaseId) {
+      throw new Error('Failed to add match result to Firestore');
     }
-  });
+    console.log('✅ Match result successfully added to Firestore with ID:', firebaseId);
+    
+    // Update the result with the Firestore ID
+    const resultWithFirebaseId = { ...result, id: firebaseId };
+    
+    // Then add to local storage
+    matchResults.push(resultWithFirebaseId);
+    saveMatchResultsToStorage(matchResults);
+    
+    console.log('✅ Match result successfully synced to local storage');
+  } catch (error) {
+    console.error('❌ Failed to add match result to Firestore:', error);
+    throw new Error(`Failed to create match result: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
 
 // Function to update an existing match result
-export function updateMatchResult(resultId: string, updates: Partial<MatchResult>): boolean {
+export async function updateMatchResult(resultId: string, updates: Partial<MatchResult>): Promise<boolean> {
   const index = matchResults.findIndex(result => result.id === resultId);
   if (index !== -1) {
-    matchResults[index] = { ...matchResults[index], ...updates };
-    saveMatchResultsToStorage(matchResults);
+    const updatedResult = { ...matchResults[index], ...updates };
     
-    // Auto-sync to GitHub when results are updated
-    syncToCloud().then(success => {
-      if (success) {
-        console.log('Updated match result automatically synced to GitHub');
-      } else {
-        console.warn('Failed to auto-sync updated match result to GitHub');
+    // CRITICAL: Update Firestore FIRST (single source of truth)
+    try {
+      const success = await updateMatchResultInFirebase(resultId, updates);
+      if (!success) {
+        throw new Error('Failed to update match result in Firestore');
       }
-    });
-    
-    return true;
+      console.log('✅ Match result successfully updated in Firestore');
+      
+      // Then update local storage
+      matchResults[index] = updatedResult;
+      saveMatchResultsToStorage(matchResults);
+      
+      console.log('✅ Match result successfully synced to local storage');
+      return true;
+    } catch (error) {
+      console.error('❌ Failed to update match result in Firestore:', error);
+      throw new Error(`Failed to update match result: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
   return false;
 }

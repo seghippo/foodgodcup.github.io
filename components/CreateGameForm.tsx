@@ -13,6 +13,7 @@ export default function CreateGameForm({ userTeamId, onGameCreated }: CreateGame
   const { t, getTeamName } = useLanguage();
   const [isCreating, setIsCreating] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
   const [formData, setFormData] = useState({
     opponentId: '',
     date: '',
@@ -24,6 +25,13 @@ export default function CreateGameForm({ userTeamId, onGameCreated }: CreateGame
   const availableOpponents = teams.filter(team => team.id !== userTeamId);
   const userTeam = teams.find(team => team.id === userTeamId);
 
+  // Mobile-friendly message display
+  const showMessage = (type: 'success' | 'error' | 'info', text: string) => {
+    setMessage({ type, text });
+    // Auto-hide after 5 seconds
+    setTimeout(() => setMessage(null), 5000);
+  };
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
@@ -34,8 +42,13 @@ export default function CreateGameForm({ userTeamId, onGameCreated }: CreateGame
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Prevent double submission on mobile
+    if (isCreating) {
+      return;
+    }
+    
     if (!formData.opponentId || !formData.date || !formData.time) {
-      alert('Please fill in all required fields');
+      showMessage('error', 'Please fill in all required fields');
       return;
     }
 
@@ -67,10 +80,18 @@ export default function CreateGameForm({ userTeamId, onGameCreated }: CreateGame
       setShowForm(false);
       
       // Show success message
-      alert(t('captain.gameCreated'));
+      showMessage('success', t('captain.gameCreated') || 'Game created successfully!');
     } catch (error) {
       console.error('Error creating game:', error);
-      alert(t('captain.gameCreationFailed'));
+      // Provide more specific error messages for mobile
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      if (errorMessage.includes('Firebase') || errorMessage.includes('network')) {
+        showMessage('error', 'Network error. Please check your connection and try again.');
+      } else if (errorMessage.includes('localStorage') || errorMessage.includes('storage')) {
+        showMessage('error', 'Storage error. Please try refreshing the page.');
+      } else {
+        showMessage('error', t('captain.gameCreationFailed') || 'Failed to create game. Please try again.');
+      }
     } finally {
       setIsCreating(false);
     }
@@ -108,6 +129,19 @@ export default function CreateGameForm({ userTeamId, onGameCreated }: CreateGame
   return (
     <div className="card">
       <h3 className="text-lg font-semibold mb-4">{t('captain.createNewGame')}</h3>
+      
+      {/* Mobile-friendly message display */}
+      {message && (
+        <div className={`mb-4 p-3 rounded-lg text-sm ${
+          message.type === 'success' 
+            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' 
+            : message.type === 'error'
+            ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+            : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+        }`}>
+          {message.text}
+        </div>
+      )}
       
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Home Team Display */}
@@ -187,14 +221,16 @@ export default function CreateGameForm({ userTeamId, onGameCreated }: CreateGame
           <button
             type="button"
             onClick={handleCancel}
-            className="flex-1 px-4 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
+            className="flex-1 px-4 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors min-h-[44px] touch-manipulation"
+            style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
           >
             {t('captain.cancel')}
           </button>
           <button
             type="submit"
             disabled={isCreating}
-            className="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg transition-colors"
+            className="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg transition-colors min-h-[44px] touch-manipulation"
+            style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
           >
             {isCreating ? t('captain.creating') : t('captain.createGame')}
           </button>

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/lib/language';
 import { useAuth } from '@/lib/auth';
-import { teams, schedule, matchResults, removeGameFromSchedule, updateGameInfo, refreshScheduleFromStorage, addMatchResult, updateMatchResult, refreshMatchResultsFromStorage, downloadLatestData, getLastSyncInfo, syncFromCloud, getCloudSyncInfo } from '@/lib/data';
+import { teams, schedule, matchResults, removeGameFromSchedule, updateGameInfo, refreshScheduleFromStorage, addMatchResult, updateMatchResult, refreshMatchResultsFromStorage, downloadLatestData, getLastSyncInfo, syncFromCloud, getCloudSyncInfo, ensureFirestoreIsSourceOfTruth } from '@/lib/data';
 import DetailedScoreSubmission from '@/components/DetailedScoreSubmission';
 import ScoreModification from '@/components/ScoreModification';
 import CreateGameForm from '@/components/CreateGameForm';
@@ -53,11 +53,14 @@ export default function CaptainPage() {
 
   // Refresh schedule and match results from localStorage when component mounts
   useEffect(() => {
-    const refreshedSchedule = refreshScheduleFromStorage();
-    setCurrentSchedule(refreshedSchedule);
-    
-    const refreshedResults = refreshMatchResultsFromStorage();
-    setCurrentMatchResults(refreshedResults);
+    // CRITICAL: Ensure Firestore is the single source of truth first
+    ensureFirestoreIsSourceOfTruth().then(() => {
+      const refreshedSchedule = refreshScheduleFromStorage();
+      setCurrentSchedule(refreshedSchedule);
+      
+      const refreshedResults = refreshMatchResultsFromStorage();
+      setCurrentMatchResults(refreshedResults);
+    });
     
     // Auto-sync: Check for shared data on page load
     const syncInfo = getLastSyncInfo();
@@ -167,18 +170,25 @@ export default function CaptainPage() {
       setCurrentSchedule(updatedSchedule);
       
       // Update the global schedule as well
-      updateGameInfo(result.gameId, { status: 'completed' });
+      updateGameInfo(result.gameId, { status: 'completed' }).catch(error => {
+        console.error('Error updating game status:', error);
+      });
       setScheduleKey(prev => prev + 1);
     }
   };
 
-  const handleScoreUpdate = (updatedResult: any) => {
-    // Update in persistent storage
-    updateMatchResult(updatedResult.id, updatedResult);
-    
-    // Refresh local state
-    const refreshedResults = refreshMatchResultsFromStorage();
-    setCurrentMatchResults(refreshedResults);
+  const handleScoreUpdate = async (updatedResult: any) => {
+    try {
+      // Update in persistent storage (now async)
+      await updateMatchResult(updatedResult.id, updatedResult);
+      
+      // Refresh local state
+      const refreshedResults = refreshMatchResultsFromStorage();
+      setCurrentMatchResults(refreshedResults);
+    } catch (error) {
+      console.error('Error updating match result:', error);
+      alert('Failed to update match result. Please try again.');
+    }
   };
 
   const handleDateUpdate = (gameId: string, newDate: string) => {
@@ -270,10 +280,10 @@ export default function CaptainPage() {
     setGameToEdit(gameId);
   };
 
-  const handleGameUpdated = (updatedGame: any) => {
+  const handleGameUpdated = async (updatedGame: any) => {
     try {
-      // Update in schedule
-      const success = updateGameInfo(updatedGame.id, updatedGame);
+      // Update in schedule (now async)
+      const success = await updateGameInfo(updatedGame.id, updatedGame);
       if (success) {
         // Refresh schedule from localStorage to get the latest data
         const refreshedSchedule = refreshScheduleFromStorage();

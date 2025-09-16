@@ -104,6 +104,17 @@ export default function FoodPage() {
     }
   };
 
+  const handleExportData = () => {
+    const dataStr = JSON.stringify(posts, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `food-data-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('zh-CN', {
       year: 'numeric',
@@ -137,13 +148,20 @@ export default function FoodPage() {
         </p>
       </div>
 
-      {/* New Post Button */}
-      <div className="text-center">
+      {/* Action Buttons */}
+      <div className="text-center space-x-4">
         <button
           onClick={() => setShowNewPostForm(!showNewPostForm)}
           className="btn-gold"
         >
           {showNewPostForm ? '取消发布' : '发布美食分享'}
+        </button>
+        <button
+          onClick={handleExportData}
+          className="btn-primary"
+          title="导出美食数据"
+        >
+          📥 导出数据
         </button>
       </div>
 
