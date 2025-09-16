@@ -47,10 +47,11 @@ export default function CaptainSyncTest() {
         gameId: 'TEST-GAME',
         homeTeamId: 'TJG',
         awayTeamId: 'FJT',
-        homeScore: 3,
-        awayScore: 2,
+        homeTotalScore: 3,
+        awayTotalScore: 2,
         submittedBy: 'Test Captain',
         submittedAt: new Date().toISOString(),
+        status: 'approved' as const,
         matchLines: [
           {
             id: 'ML1',
@@ -122,9 +123,9 @@ export default function CaptainSyncTest() {
         <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
           <h4 className="font-medium text-blue-800 mb-2">📋 Test Steps:</h4>
           <ol className="text-sm text-blue-700 space-y-1 list-decimal list-inside">
-            <li>Click "Create Test Game" above</li>
+            <li>Click &ldquo;Create Test Game&rdquo; above</li>
             <li>Go to <strong>Schedule page</strong> - you should see the new game</li>
-            <li>Click "Create Test Result" above</li>
+            <li>Click &ldquo;Create Test Result&rdquo; above</li>
             <li>Go to <strong>Standings page</strong> - you should see the new result</li>
             <li>This proves captain submissions are visible to everyone!</li>
           </ol>
