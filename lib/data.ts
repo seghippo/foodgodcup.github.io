@@ -384,7 +384,6 @@ export const teamsById = Object.fromEntries(teams.map(t => [t.id, t] as const));
 // Default schedule with preseason game
 const defaultSchedule: Game[] = [
   // Preseason Game
-  { id: 'P1', date: new Date(Date.now() - 7*86400000).toISOString(), home: 'TJG', away: 'FJT', venue: 'Kit Carson', time: '7:00 PM', homeScore: 3, awayScore: 2, isPreseason: true, status: 'preseason' }
 ];
 
 // Function to get schedule from localStorage or return default
