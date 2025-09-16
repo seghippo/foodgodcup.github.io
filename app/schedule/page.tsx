@@ -82,7 +82,7 @@ export default function SchedulePage() {
     );
   }
   
-  const getStatusBadge = (status: string, isPreseason?: boolean) => {
+  const getStatusBadge = (status?: string, isPreseason?: boolean) => {
     if (isPreseason) {
       return <span className="badge-warning">{t('schedule.preseason')}</span>;
     }
@@ -92,7 +92,7 @@ export default function SchedulePage() {
       case 'scheduled':
         return <span className="badge">{t('schedule.scheduled')}</span>;
       default:
-        return <span className="badge">{status}</span>;
+        return <span className="badge">{status || 'scheduled'}</span>;
     }
   };
 
@@ -140,7 +140,18 @@ export default function SchedulePage() {
     return <span className="text-slate-400">-</span>;
   };
   
-  const validGames = currentSchedule.filter(g => g && g.date);
+  const validGames = currentSchedule.filter(g => 
+    g && 
+    g.date && 
+    g.home && 
+    g.away && 
+    g.id
+  );
+  
+  // Debug logging
+  console.log('Total games:', currentSchedule.length);
+  console.log('Valid games:', validGames.length);
+  console.log('Sample game:', validGames[0]);
   
   return (
     <div className="space-y-6">
@@ -169,9 +180,9 @@ export default function SchedulePage() {
                   <td className="py-3 pr-4">{formatDateString(g.date)}</td>
                   <td className="py-3 pr-4">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium">{getTeamName(teamsById[g.home])}</span>
+                      <span className="font-medium">{getTeamName(teamsById[g.home]) || g.home}</span>
                       <span className="text-slate-400">vs</span>
-                      <span className="font-medium">{getTeamName(teamsById[g.away])}</span>
+                      <span className="font-medium">{getTeamName(teamsById[g.away]) || g.away}</span>
                     </div>
                   </td>
                   <td className="py-3 pr-4">{getScoreDisplay(g)}</td>
