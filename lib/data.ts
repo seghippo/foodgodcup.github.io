@@ -939,20 +939,25 @@ export async function syncFromCloud(captainName?: string): Promise<boolean> {
     
     console.log(`Valid schedule items: ${validSchedule.length}, Valid results: ${validResults.length}`);
     
-    if (validSchedule.length === 0 && validResults.length === 0) {
-      console.log('No valid data in Firebase storage - this is normal for a new setup');
-      return true; // Return true even if no data, as this is not an error
-    }
+    // ALWAYS clear localStorage first to ensure we get fresh data from Firebase
+    console.log('🧹 Clearing localStorage to ensure fresh Firebase data...');
+    localStorage.removeItem('tennis-schedule');
+    localStorage.removeItem('tennis-match-results');
     
-    // Apply the synced data to localStorage
+    // Apply the synced data to localStorage (even if empty arrays)
+    localStorage.setItem('tennis-schedule', JSON.stringify(validSchedule));
+    localStorage.setItem('tennis-match-results', JSON.stringify(validResults));
+    
     if (validSchedule.length > 0) {
-      localStorage.setItem('tennis-schedule', JSON.stringify(validSchedule));
       console.log(`Synced ${validSchedule.length} games from Firebase`);
+    } else {
+      console.log('No games in Firebase - localStorage cleared');
     }
     
     if (validResults.length > 0) {
-      localStorage.setItem('tennis-match-results', JSON.stringify(validResults));
       console.log(`Synced ${validResults.length} match results from Firebase`);
+    } else {
+      console.log('No match results in Firebase - localStorage cleared');
     }
     
     // Refresh the exported arrays
