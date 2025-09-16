@@ -23,6 +23,145 @@ const COLLECTIONS = {
   TEAMS: 'teams'
 } as const;
 
+// Helper function to create unique key for games
+function createGameKey(game: Game): string {
+  return `${game.home}-${game.away}-${game.date}-${game.venue || 'no-venue'}`;
+}
+
+// Helper function to create unique key for match results
+function createMatchResultKey(result: MatchResult): string {
+  return `${result.gameId}-${result.homeTeamId}-${result.awayTeamId}-${result.submittedBy}`;
+}
+
+// Automatic duplicate detection and removal for games
+export async function removeDuplicateGames(): Promise<{ removed: number; kept: number }> {
+  try {
+    console.log('🔍 Checking for duplicate games...');
+    
+    const games = await getScheduleFromFirebase();
+    if (games.length === 0) {
+      return { removed: 0, kept: 0 };
+    }
+    
+    // Group games by unique key
+    const gameGroups: { [key: string]: Game[] } = {};
+    games.forEach(game => {
+      const key = createGameKey(game);
+      if (!gameGroups[key]) {
+        gameGroups[key] = [];
+      }
+      gameGroups[key].push(game);
+    });
+    
+    // Find and remove duplicates
+    const duplicateGroups = Object.entries(gameGroups).filter(([key, games]) => games.length > 1);
+    
+    if (duplicateGroups.length === 0) {
+      console.log('✅ No duplicate games found');
+      return { removed: 0, kept: games.length };
+    }
+    
+    console.log(`🔄 Found ${duplicateGroups.length} sets of duplicate games`);
+    
+    let removedCount = 0;
+    let keptCount = 0;
+    
+    for (const [key, duplicateGames] of duplicateGroups) {
+      console.log(`📋 Processing duplicate group: ${key}`);
+      
+      // Keep the first game (oldest by ID or creation time), remove the rest
+      const [keepGame, ...gamesToRemove] = duplicateGames.sort((a, b) => {
+        // Sort by ID to ensure consistent ordering
+        return a.id.localeCompare(b.id);
+      });
+      
+      console.log(`✅ Keeping game: ${keepGame.id}`);
+      keptCount++;
+      
+      for (const gameToRemove of gamesToRemove) {
+        console.log(`🗑️ Removing duplicate game: ${gameToRemove.id}`);
+        await deleteGameFromFirebase(gameToRemove.id);
+        removedCount++;
+      }
+    }
+    
+    // Count remaining games
+    const remainingGames = games.length - removedCount;
+    keptCount = remainingGames;
+    
+    console.log(`📊 Duplicate cleanup completed: ${removedCount} removed, ${keptCount} kept`);
+    return { removed: removedCount, kept: keptCount };
+    
+  } catch (error) {
+    console.error('❌ Error removing duplicate games:', error);
+    return { removed: 0, kept: 0 };
+  }
+}
+
+// Automatic duplicate detection and removal for match results
+export async function removeDuplicateMatchResults(): Promise<{ removed: number; kept: number }> {
+  try {
+    console.log('🔍 Checking for duplicate match results...');
+    
+    const results = await getMatchResultsFromFirebase();
+    if (results.length === 0) {
+      return { removed: 0, kept: 0 };
+    }
+    
+    // Group results by unique key
+    const resultGroups: { [key: string]: MatchResult[] } = {};
+    results.forEach(result => {
+      const key = createMatchResultKey(result);
+      if (!resultGroups[key]) {
+        resultGroups[key] = [];
+      }
+      resultGroups[key].push(result);
+    });
+    
+    // Find and remove duplicates
+    const duplicateGroups = Object.entries(resultGroups).filter(([key, results]) => results.length > 1);
+    
+    if (duplicateGroups.length === 0) {
+      console.log('✅ No duplicate match results found');
+      return { removed: 0, kept: results.length };
+    }
+    
+    console.log(`🔄 Found ${duplicateGroups.length} sets of duplicate match results`);
+    
+    let removedCount = 0;
+    let keptCount = 0;
+    
+    for (const [key, duplicateResults] of duplicateGroups) {
+      console.log(`📋 Processing duplicate group: ${key}`);
+      
+      // Keep the first result (oldest by ID), remove the rest
+      const [keepResult, ...resultsToRemove] = duplicateResults.sort((a, b) => {
+        return a.id.localeCompare(b.id);
+      });
+      
+      console.log(`✅ Keeping result: ${keepResult.id}`);
+      keptCount++;
+      
+      for (const resultToRemove of resultsToRemove) {
+        console.log(`🗑️ Removing duplicate result: ${resultToRemove.id}`);
+        await deleteDoc(doc(db, COLLECTIONS.MATCH_RESULTS, resultToRemove.id));
+        removedCount++;
+      }
+    }
+    
+    // Count remaining results
+    const remainingResults = results.length - removedCount;
+    keptCount = remainingResults;
+    
+    console.log(`📊 Duplicate cleanup completed: ${removedCount} removed, ${keptCount} kept`);
+    return { removed: removedCount, kept: keptCount };
+    
+  } catch (error) {
+    console.error('❌ Error removing duplicate match results:', error);
+    return { removed: 0, kept: 0 };
+  }
+}
+
 // Schedule functions
 export async function getScheduleFromFirebase(): Promise<Game[]> {
   try {

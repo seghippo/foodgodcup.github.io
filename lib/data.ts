@@ -9,7 +9,9 @@ import {
   updateMatchResultInFirebase,
   subscribeToSchedule,
   subscribeToMatchResults,
-  initializeFirebaseData
+  initializeFirebaseData,
+  removeDuplicateGames,
+  removeDuplicateMatchResults
 } from './firebase-data';
 
 export type Player = {
@@ -887,6 +889,15 @@ export async function syncToCloud(captainName?: string): Promise<boolean> {
       }
     }
     
+    // Run automatic duplicate cleanup after syncing
+    console.log('Running automatic duplicate cleanup after sync...');
+    const gameCleanup = await removeDuplicateGames();
+    const resultCleanup = await removeDuplicateMatchResults();
+    
+    if (gameCleanup.removed > 0 || resultCleanup.removed > 0) {
+      console.log(`🧹 Post-sync cleanup: ${gameCleanup.removed} duplicate games and ${resultCleanup.removed} duplicate results removed`);
+    }
+    
     console.log(`Data synced to Firebase by: ${captainName || 'unknown'}`);
     return true;
   } catch (error) {
@@ -905,7 +916,16 @@ export async function syncFromCloud(captainName?: string): Promise<boolean> {
     await initializeFirebaseData();
     console.log('Firebase initialized');
     
-    // Get data from Firebase
+    // Run automatic duplicate cleanup first
+    console.log('Running automatic duplicate cleanup...');
+    const gameCleanup = await removeDuplicateGames();
+    const resultCleanup = await removeDuplicateMatchResults();
+    
+    if (gameCleanup.removed > 0 || resultCleanup.removed > 0) {
+      console.log(`🧹 Cleanup completed: ${gameCleanup.removed} duplicate games and ${resultCleanup.removed} duplicate results removed`);
+    }
+    
+    // Get data from Firebase (after cleanup)
     console.log('Fetching schedule from Firebase...');
     const firebaseSchedule = await getScheduleFromFirebase();
     console.log(`Found ${firebaseSchedule.length} games in Firebase`);
