@@ -150,9 +150,18 @@ export default function CaptainPage() {
   }
 
   // Filter games that are completed or can have scores submitted
-  const availableGames = currentSchedule.filter(game => 
-    game && (game.status === 'completed' || game.status === 'scheduled')
-  );
+  const availableGames = currentSchedule.filter(game => {
+    if (!game || !game.id) {
+      console.warn('Invalid game found in schedule:', game);
+      return false;
+    }
+    return game.status === 'completed' || game.status === 'scheduled';
+  });
+
+  // Debug logging
+  console.log('Current schedule length:', currentSchedule.length);
+  console.log('Available games length:', availableGames.length);
+  console.log('Selected game:', selectedGame);
 
   const handleScoreSubmit = async (result: any) => {
     try {
@@ -391,7 +400,10 @@ export default function CaptainPage() {
                       ? 'border-league-primary bg-league-primary/5'
                       : 'border-slate-200 dark:border-slate-700 hover:border-league-primary/50'
                   }`}
-                  onClick={() => setSelectedGame(game.id)}
+                  onClick={() => {
+                    console.log('Selecting game:', game.id);
+                    setSelectedGame(game.id);
+                  }}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -418,6 +430,7 @@ export default function CaptainPage() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
+                          console.log('Edit button clicked for game:', game.id);
                           handleEditGame(game.id);
                         }}
                         className="px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded transition-colors"
@@ -453,33 +466,63 @@ export default function CaptainPage() {
       </div>
 
       {/* Edit Game Form */}
-      {gameToEdit && (
-        <EditGameForm
-          game={currentSchedule.find(game => game.id === gameToEdit)!}
-          onGameUpdated={handleGameUpdated}
-          onCancel={cancelEditGame}
-        />
-      )}
+      {gameToEdit && (() => {
+        const gameToEditObj = currentSchedule.find(game => game.id === gameToEdit);
+        if (!gameToEditObj) {
+          console.error('Game not found for editing:', gameToEdit);
+          return null;
+        }
+        
+        // Validate game object has required properties
+        if (!gameToEditObj.home || !gameToEditObj.away || !gameToEditObj.date) {
+          console.error('Game to edit missing required properties:', gameToEditObj);
+          return null;
+        }
+        
+        return (
+          <EditGameForm
+            game={gameToEditObj}
+            onGameUpdated={handleGameUpdated}
+            onCancel={cancelEditGame}
+          />
+        );
+      })()}
 
       {/* Score Submission Form */}
-      {selectedGame && (
-        <>
-          {/* Check if there's an existing result for this game */}
-          {currentMatchResults.find(result => result.gameId === selectedGame) ? (
-            <ScoreModification 
-              game={currentSchedule.find(game => game.id === selectedGame)!} 
-              onScoreUpdate={handleScoreUpdate}
-              onDateUpdate={handleDateUpdate}
-            />
-          ) : (
-            <DetailedScoreSubmission 
-              game={currentSchedule.find(game => game.id === selectedGame)!} 
-              onScoreSubmit={handleScoreSubmit}
-              onDateUpdate={handleDateUpdate}
-            />
-          )}
-        </>
-      )}
+      {selectedGame && (() => {
+        const selectedGameObj = currentSchedule.find(game => game.id === selectedGame);
+        if (!selectedGameObj) {
+          console.error('Selected game not found:', selectedGame);
+          return null;
+        }
+        
+        // Validate game object has required properties
+        if (!selectedGameObj.home || !selectedGameObj.away || !selectedGameObj.date) {
+          console.error('Selected game missing required properties:', selectedGameObj);
+          return null;
+        }
+        
+        const hasExistingResult = currentMatchResults.find(result => result.gameId === selectedGame);
+        
+        return (
+          <>
+            {/* Check if there's an existing result for this game */}
+            {hasExistingResult ? (
+              <ScoreModification 
+                game={selectedGameObj} 
+                onScoreUpdate={handleScoreUpdate}
+                onDateUpdate={handleDateUpdate}
+              />
+            ) : (
+              <DetailedScoreSubmission 
+                game={selectedGameObj} 
+                onScoreSubmit={handleScoreSubmit}
+                onDateUpdate={handleDateUpdate}
+              />
+            )}
+          </>
+        );
+      })()}
 
       {/* Submitted Results */}
       {currentMatchResults.length > 0 && (
