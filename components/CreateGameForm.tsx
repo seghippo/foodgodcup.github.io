@@ -63,6 +63,8 @@ export default function CreateGameForm({ userTeamId, onGameCreated }: CreateGame
     setIsCreating(true);
     
     try {
+      console.log('🎮 Starting game creation process...');
+      
       // Create new game
       const newGame = createNewGame(
         userTeamId,
@@ -72,11 +74,17 @@ export default function CreateGameForm({ userTeamId, onGameCreated }: CreateGame
         formData.venue
       );
       
+      console.log('🎮 Game object created:', newGame);
+      
       // Add to schedule and get the game with Firestore ID
       const createdGame = await addGameToSchedule(newGame);
       
+      console.log('🎮 Game successfully added to schedule:', createdGame);
+      
       // Notify parent component with the game that has the correct Firestore ID
       onGameCreated(createdGame);
+      
+      console.log('🎮 Parent component notified successfully');
       
       // Reset form
       setFormData({
@@ -88,9 +96,12 @@ export default function CreateGameForm({ userTeamId, onGameCreated }: CreateGame
       setShowForm(false);
       
       // Show success message
+      console.log('🎮 Showing success message...');
       showMessage('success', t('captain.gameCreated') || 'Game created successfully!');
+      console.log('🎮 Success message displayed');
     } catch (error) {
-      console.error('Error creating game:', error);
+      console.error('❌ Error creating game:', error);
+      console.error('❌ Error details:', error);
       // Provide more specific error messages for mobile
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       if (errorMessage.includes('Firebase') || errorMessage.includes('network')) {
