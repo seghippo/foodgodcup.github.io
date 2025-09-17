@@ -19,7 +19,8 @@ import {
   addFoodCommentToFirebase,
   likeFoodPostInFirebase,
   likeFoodCommentInFirebase,
-  subscribeToFoodPosts
+  subscribeToFoodPosts,
+  syncTeamsAndPlayersToFirebase
 } from './firebase-data';
 
 export type Player = {
@@ -934,6 +935,10 @@ export async function syncToCloud(captainName?: string): Promise<boolean> {
     // Initialize Firebase data if needed
     await initializeFirebaseData();
     
+    // CRITICAL: Sync teams and players first (foundation data)
+    console.log('🔄 Syncing teams and players to Firebase...');
+    await syncTeamsAndPlayersToFirebase(teams);
+    
     // Get current data from localStorage
     const currentSchedule = getScheduleFromStorage();
     const currentResults = getMatchResultsFromStorage();
@@ -969,7 +974,7 @@ export async function syncToCloud(captainName?: string): Promise<boolean> {
       console.log(`🧹 Post-sync cleanup: ${gameCleanup.removed} duplicate games and ${resultCleanup.removed} duplicate results removed`);
     }
     
-    console.log(`Data synced to Firebase by: ${captainName || 'unknown'}`);
+    console.log(`🎉 All data synced to Firebase by: ${captainName || 'unknown'}`);
     return true;
   } catch (error) {
     console.error('Error syncing to Firebase:', error);
@@ -1084,7 +1089,11 @@ export async function ensureFirestoreIsSourceOfTruth(): Promise<void> {
   try {
     console.log('🔄 Ensuring Firestore is the single source of truth...');
     
-    // Always sync from Firestore first to get the latest data
+    // First, ensure teams and players are synced to Firestore
+    console.log('🔄 Syncing teams and players to Firestore...');
+    await syncTeamsAndPlayersToFirebase(teams);
+    
+    // Then sync from Firestore to get the latest data
     const syncSuccess = await syncFromCloud();
     if (syncSuccess) {
       console.log('✅ Firestore sync completed - Firestore is now the source of truth');

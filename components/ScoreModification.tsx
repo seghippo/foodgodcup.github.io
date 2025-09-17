@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/lib/language';
-import { teams, matchResults, schedule, type MatchResult, type MatchLine, refreshMatchResultsFromStorage } from '@/lib/data';
+import { teams, matchResults, type MatchResult, type MatchLine, refreshMatchResultsFromStorage } from '@/lib/data';
 import { isGameDateInFuture } from '@/lib/dateUtils';
 import GameDateModifier from './GameDateModifier';
 
 interface ScoreModificationProps {
-  gameId: string;
+  game: any; // Game object
   onScoreUpdate: (result: MatchResult) => void;
   onDateUpdate?: (gameId: string, newDate: string) => void;
 }
@@ -25,7 +25,7 @@ interface MatchLineForm {
   }[];
 }
 
-export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate }: ScoreModificationProps) {
+export default function ScoreModification({ game, onScoreUpdate, onDateUpdate }: ScoreModificationProps) {
   const { t, getTeamName, getPlayerName } = useLanguage();
   const [matchLines, setMatchLines] = useState<MatchLineForm[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,7 +37,7 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
 
   // Find the existing match result (refresh from storage to get latest)
   const currentMatchResults = refreshMatchResultsFromStorage();
-  const existingResult = currentMatchResults.find(mr => mr.gameId === gameId);
+  const existingResult = currentMatchResults.find(mr => mr.gameId === game.id);
   
   useEffect(() => {
     if (existingResult) {
@@ -77,10 +77,6 @@ export default function ScoreModification({ gameId, onScoreUpdate, onDateUpdate 
       </div>
     );
   }
-
-  // Find the game to check its date
-  const game = schedule.find(g => g.id === gameId);
-  if (!game) return null;
 
   // Check if game is in the future
   const isFutureGame = isGameDateInFuture(game.date);

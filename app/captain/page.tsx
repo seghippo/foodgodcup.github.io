@@ -467,13 +467,13 @@ export default function CaptainPage() {
           {/* Check if there's an existing result for this game */}
           {currentMatchResults.find(result => result.gameId === selectedGame) ? (
             <ScoreModification 
-              gameId={selectedGame} 
+              game={currentSchedule.find(game => game.id === selectedGame)!} 
               onScoreUpdate={handleScoreUpdate}
               onDateUpdate={handleDateUpdate}
             />
           ) : (
             <DetailedScoreSubmission 
-              gameId={selectedGame} 
+              game={currentSchedule.find(game => game.id === selectedGame)!} 
               onScoreSubmit={handleScoreSubmit}
               onDateUpdate={handleDateUpdate}
             />

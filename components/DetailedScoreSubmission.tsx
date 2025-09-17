@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { useLanguage } from '@/lib/language';
-import { teams, schedule, type Game, type Team, type MatchLine } from '@/lib/data';
+import { teams, type Game, type Team, type MatchLine } from '@/lib/data';
 import { isGameDateInFuture } from '@/lib/dateUtils';
 import GameDateModifier from './GameDateModifier';
 
 interface DetailedScoreSubmissionProps {
-  gameId: string;
+  game: Game;
   onScoreSubmit: (result: any) => void;
   onDateUpdate?: (gameId: string, newDate: string) => void;
 }
@@ -24,7 +24,7 @@ interface MatchLineForm {
   }[];
 }
 
-export default function DetailedScoreSubmission({ gameId, onScoreSubmit, onDateUpdate }: DetailedScoreSubmissionProps) {
+export default function DetailedScoreSubmission({ game, onScoreSubmit, onDateUpdate }: DetailedScoreSubmissionProps) {
   const { t, getTeamName, getPlayerName } = useLanguage();
   const [matchLines, setMatchLines] = useState<MatchLineForm[]>([
     {
@@ -38,10 +38,6 @@ export default function DetailedScoreSubmission({ gameId, onScoreSubmit, onDateU
     }
   ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Find the game
-  const game = schedule.find(g => g.id === gameId);
-  if (!game) return null;
 
   const homeTeam = teams.find(t => t.id === game.home);
   const awayTeam = teams.find(t => t.id === game.away);
@@ -184,7 +180,7 @@ export default function DetailedScoreSubmission({ gameId, onScoreSubmit, onDateU
 
       const matchResult = {
         id: `MR${Date.now()}`,
-        gameId: gameId,
+        gameId: game.id,
         homeTeamId: game.home,
         awayTeamId: game.away,
         homeTotalScore,

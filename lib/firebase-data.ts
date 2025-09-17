@@ -429,6 +429,125 @@ export async function getTeamsFromFirebase(): Promise<Team[]> {
   }
 }
 
+// Add team to Firebase
+export async function addTeamToFirebase(team: Team): Promise<string | null> {
+  const maxRetries = 3;
+  let lastError: any;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const teamsRef = collection(db, COLLECTIONS.TEAMS);
+      const docRef = await addDoc(teamsRef, {
+        ...team,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      return docRef.id;
+    } catch (error) {
+      lastError = error;
+      console.error(`Error adding team to Firebase (attempt ${attempt}/${maxRetries}):`, error);
+      
+      // If it's a network error and we have retries left, wait and try again
+      if (attempt < maxRetries && (
+        error instanceof Error && (
+          error.message.includes('network') || 
+          error.message.includes('timeout') ||
+          error.message.includes('fetch')
+        )
+      )) {
+        console.log(`Retrying in ${attempt * 1000}ms...`);
+        await new Promise(resolve => setTimeout(resolve, attempt * 1000));
+        continue;
+      }
+    }
+  }
+  
+  console.error('Failed to add team to Firebase after all retries:', lastError);
+  return null;
+}
+
+// Add player to Firebase
+export async function addPlayerToFirebase(player: Player): Promise<string | null> {
+  const maxRetries = 3;
+  let lastError: any;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const playersRef = collection(db, COLLECTIONS.PLAYERS);
+      const docRef = await addDoc(playersRef, {
+        ...player,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      return docRef.id;
+    } catch (error) {
+      lastError = error;
+      console.error(`Error adding player to Firebase (attempt ${attempt}/${maxRetries}):`, error);
+      
+      // If it's a network error and we have retries left, wait and try again
+      if (attempt < maxRetries && (
+        error instanceof Error && (
+          error.message.includes('network') || 
+          error.message.includes('timeout') ||
+          error.message.includes('fetch')
+        )
+      )) {
+        console.log(`Retrying in ${attempt * 1000}ms...`);
+        await new Promise(resolve => setTimeout(resolve, attempt * 1000));
+        continue;
+      }
+    }
+  }
+  
+  console.error('Failed to add player to Firebase after all retries:', lastError);
+  return null;
+}
+
+// Sync all teams and players to Firebase
+export async function syncTeamsAndPlayersToFirebase(teams: Team[]): Promise<boolean> {
+  try {
+    console.log('🔄 Starting teams and players sync to Firebase...');
+    
+    // Get existing teams and players from Firebase
+    const existingTeams = await getTeamsFromFirebase();
+    const existingPlayers = await getPlayersFromFirebase();
+    
+    const existingTeamIds = new Set(existingTeams.map(t => t.id));
+    const existingPlayerIds = new Set(existingPlayers.map(p => p.id));
+    
+    let teamsAdded = 0;
+    let playersAdded = 0;
+    
+    // Sync teams
+    for (const team of teams) {
+      if (!existingTeamIds.has(team.id)) {
+        const teamId = await addTeamToFirebase(team);
+        if (teamId) {
+          teamsAdded++;
+          console.log(`✅ Team ${team.name} added to Firebase`);
+        }
+      }
+      
+      // Sync players for this team
+      for (const player of team.roster) {
+        if (!existingPlayerIds.has(player.id)) {
+          const playerId = await addPlayerToFirebase(player);
+          if (playerId) {
+            playersAdded++;
+            console.log(`✅ Player ${player.name} added to Firebase`);
+          }
+        }
+      }
+    }
+    
+    console.log(`🎉 Teams and players sync completed: ${teamsAdded} teams, ${playersAdded} players added`);
+    return true;
+  } catch (error) {
+    console.error('❌ Error syncing teams and players to Firebase:', error);
+    return false;
+  }
+}
+
 // Clear all games from Firebase
 export async function clearAllGamesFromFirebase(): Promise<boolean> {
   try {
