@@ -1118,7 +1118,7 @@ export function createNewGame(homeTeamId: string, awayTeamId: string, date: stri
 }
 
 // Function to add a new game to the schedule
-export async function addGameToSchedule(game: Game): Promise<void> {
+export async function addGameToSchedule(game: Game): Promise<Game> {
   // Check if game already exists in Firebase before adding locally
   try {
     const existingGames = await getScheduleFromFirebase();
@@ -1132,7 +1132,7 @@ export async function addGameToSchedule(game: Game): Promise<void> {
     
     if (isDuplicate) {
       console.log('Game already exists in Firebase, skipping duplicate');
-      return;
+      return game; // Return the original game if it's a duplicate
     }
   } catch (error) {
     console.warn('Could not check for duplicates, proceeding with game creation:', error);
@@ -1154,6 +1154,9 @@ export async function addGameToSchedule(game: Game): Promise<void> {
     saveScheduleToStorage(schedule);
     
     console.log('✅ Game successfully synced to local storage');
+    
+    // Return the game with the Firestore ID
+    return gameWithFirebaseId;
   } catch (error) {
     console.error('❌ Failed to add game to Firestore:', error);
     throw new Error(`Failed to create game: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -1443,7 +1446,7 @@ export function refreshMatchResultsFromStorage(): MatchResult[] {
 }
 
 // Function to add a new match result
-export async function addMatchResult(result: MatchResult): Promise<void> {
+export async function addMatchResult(result: MatchResult): Promise<MatchResult> {
   // Check if result already exists in Firebase before adding locally
   try {
     const existingResults = await getMatchResultsFromFirebase();
@@ -1457,7 +1460,7 @@ export async function addMatchResult(result: MatchResult): Promise<void> {
     
     if (isDuplicate) {
       console.log('Match result already exists in Firebase, skipping duplicate');
-      return;
+      return result; // Return the original result if it's a duplicate
     }
   } catch (error) {
     console.warn('Could not check for duplicates, proceeding with result creation:', error);
@@ -1479,6 +1482,9 @@ export async function addMatchResult(result: MatchResult): Promise<void> {
     saveMatchResultsToStorage(matchResults);
     
     console.log('✅ Match result successfully synced to local storage');
+    
+    // Return the result with the Firestore ID
+    return resultWithFirebaseId;
   } catch (error) {
     console.error('❌ Failed to add match result to Firestore:', error);
     throw new Error(`Failed to create match result: ${error instanceof Error ? error.message : 'Unknown error'}`);

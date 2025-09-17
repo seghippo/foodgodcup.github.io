@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '@/lib/language';
 import { teams, createNewGame, addGameToSchedule, type Game } from '@/lib/data';
 
@@ -14,6 +14,7 @@ export default function CreateGameForm({ userTeamId, onGameCreated }: CreateGame
   const [isCreating, setIsCreating] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
+  const [messageTimeout, setMessageTimeout] = useState<NodeJS.Timeout | null>(null);
   const [formData, setFormData] = useState({
     opponentId: '',
     date: '',
@@ -27,9 +28,16 @@ export default function CreateGameForm({ userTeamId, onGameCreated }: CreateGame
 
   // Mobile-friendly message display
   const showMessage = (type: 'success' | 'error' | 'info', text: string) => {
+    // Clear any existing timeout
+    if (messageTimeout) {
+      clearTimeout(messageTimeout);
+    }
+    
     setMessage({ type, text });
+    
     // Auto-hide after 5 seconds
-    setTimeout(() => setMessage(null), 5000);
+    const timeout = setTimeout(() => setMessage(null), 5000);
+    setMessageTimeout(timeout);
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -64,11 +72,11 @@ export default function CreateGameForm({ userTeamId, onGameCreated }: CreateGame
         formData.venue
       );
       
-      // Add to schedule
-      await addGameToSchedule(newGame);
+      // Add to schedule and get the game with Firestore ID
+      const createdGame = await addGameToSchedule(newGame);
       
-      // Notify parent component
-      onGameCreated(newGame);
+      // Notify parent component with the game that has the correct Firestore ID
+      onGameCreated(createdGame);
       
       // Reset form
       setFormData({
@@ -106,6 +114,15 @@ export default function CreateGameForm({ userTeamId, onGameCreated }: CreateGame
     });
     setShowForm(false);
   };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (messageTimeout) {
+        clearTimeout(messageTimeout);
+      }
+    };
+  }, [messageTimeout]);
 
   if (!showForm) {
     return (

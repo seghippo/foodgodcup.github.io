@@ -26,8 +26,8 @@ export default function CaptainSyncTest() {
         status: 'scheduled' as const
       };
       
-      await addGameToSchedule(testGame);
-      setMessage('✅ Test game created! Check the schedule page to see it.');
+      const createdGame = await addGameToSchedule(testGame);
+      setMessage(`✅ Test game created with ID: ${createdGame.id}! Check the schedule page to see it.`);
       
     } catch (error) {
       setMessage('❌ Error creating test game: ' + (error as Error).message);
@@ -71,8 +71,8 @@ export default function CaptainSyncTest() {
         ]
       };
       
-      await addMatchResult(testResult);
-      setMessage('✅ Test result created! Check the standings page to see it.');
+      const createdResult = await addMatchResult(testResult);
+      setMessage(`✅ Test result created with ID: ${createdResult.id}! Check the standings page to see it.`);
       
     } catch (error) {
       setMessage('❌ Error creating test result: ' + (error as Error).message);

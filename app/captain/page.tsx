@@ -154,13 +154,19 @@ export default function CaptainPage() {
     game && (game.status === 'completed' || game.status === 'scheduled')
   );
 
-  const handleScoreSubmit = (result: any) => {
-    // Add to persistent storage
-    addMatchResult(result);
-    
-    // Refresh local state
-    const refreshedResults = refreshMatchResultsFromStorage();
-    setCurrentMatchResults(refreshedResults);
+  const handleScoreSubmit = async (result: any) => {
+    try {
+      // Add to persistent storage (now async)
+      const createdResult = await addMatchResult(result);
+      
+      // Refresh local state
+      const refreshedResults = refreshMatchResultsFromStorage();
+      setCurrentMatchResults(refreshedResults);
+    } catch (error) {
+      console.error('Error submitting match result:', error);
+      alert('Failed to submit match result. Please try again.');
+      return;
+    }
     
     // Update game status to completed when results are submitted
     const gameIndex = currentSchedule.findIndex(game => game.id === result.gameId);
@@ -199,13 +205,16 @@ export default function CaptainPage() {
   };
 
   const handleGameCreated = (newGame: any) => {
-    // Refresh schedule from localStorage to get the latest data
-    const refreshedSchedule = refreshScheduleFromStorage();
-    setCurrentSchedule(refreshedSchedule);
-    // Select the newly created game
-    setSelectedGame(newGame.id);
-    // Force re-render
-    setScheduleKey(prev => prev + 1);
+    // Small delay to ensure localStorage is updated
+    setTimeout(() => {
+      // Refresh schedule from localStorage to get the latest data
+      const refreshedSchedule = refreshScheduleFromStorage();
+      setCurrentSchedule(refreshedSchedule);
+      // Select the newly created game
+      setSelectedGame(newGame.id);
+      // Force re-render
+      setScheduleKey(prev => prev + 1);
+    }, 100); // 100ms delay to ensure localStorage is updated
   };
 
   const handleRefreshData = () => {
