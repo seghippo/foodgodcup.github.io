@@ -253,7 +253,7 @@ export const teams: Team[] = [
       { id: 'DB08', name: '小王', nameEn: '小王', nickname: '正宗兰州拉面', nicknameEn: '正宗兰州拉面', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
       { id: 'DB09', name: 'Bill', nameEn: 'Bill', nickname: '涮涮羊', nicknameEn: '涮涮羊', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
       { id: 'DB10', name: '金辉', nameEn: '金辉', nickname: '铁锅炖', nicknameEn: '铁锅炖', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
-      { id: 'DB11', name: '墨旺', nameEn: '墨旺', nickname: '凉拌仙鱼', nicknameEn: '凉拌仙鱼', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
+      { id: 'DB11', name: '墨旺', nameEn: '墨旺', nickname: '尖椒干豆腐', nicknameEn: '尖椒干豆腐', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
       { id: 'DB12', name: '许三多', nameEn: '许三多', nickname: '红火大油条', nicknameEn: '红火大油条', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 },
       { id: 'DB13', name: 'Cindy Lin', nameEn: 'Cindy Lin', nickname: '地三鲜', nicknameEn: '地三鲜', experience: '3.5级', experienceEn: '3.5 Level', wins: 0, losses: 0 }
     ]

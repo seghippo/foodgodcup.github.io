@@ -390,7 +390,15 @@ export default function CaptainPage() {
               const homeTeam = teams.find(t => t.id === game.home);
               const awayTeam = teams.find(t => t.id === game.away);
               
-              if (!homeTeam || !awayTeam) return null;
+              if (!homeTeam || !awayTeam) {
+                console.error('Team not found for game:', {
+                  gameId: game.id,
+                  homeTeamId: game.home,
+                  awayTeamId: game.away,
+                  availableTeamIds: teams.map(t => t.id)
+                });
+                return null;
+              }
 
               return (
                 <div
@@ -401,19 +409,50 @@ export default function CaptainPage() {
                       : 'border-slate-200 dark:border-slate-700 hover:border-league-primary/50'
                   }`}
                   onClick={() => {
-                    console.log('Selecting game:', game.id);
-                    setSelectedGame(game.id);
+                    try {
+                      console.log('Selecting game:', game.id);
+                      console.log('Game object:', game);
+                      setSelectedGame(game.id);
+                    } catch (error) {
+                      console.error('Error selecting game:', error);
+                      console.error('Game that caused error:', game);
+                    }
                   }}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="text-center">
-                        <div className="font-semibold">{getTeamName(homeTeam)}</div>
+                        <div className="font-semibold">
+                          {(() => {
+                            try {
+                              return getTeamName(homeTeam);
+                            } catch (error) {
+                              console.error('Error getting home team name:', error);
+                              return homeTeam?.name || 'Unknown Team';
+                            }
+                          })()}
+                        </div>
                         <div className="text-sm text-slate-600 dark:text-slate-400">vs</div>
-                        <div className="font-semibold">{getTeamName(awayTeam)}</div>
+                        <div className="font-semibold">
+                          {(() => {
+                            try {
+                              return getTeamName(awayTeam);
+                            } catch (error) {
+                              console.error('Error getting away team name:', error);
+                              return awayTeam?.name || 'Unknown Team';
+                            }
+                          })()}
+                        </div>
                       </div>
                       <div className="text-sm text-slate-600 dark:text-slate-400">
-                        {formatDateString(game.date)}
+                        {(() => {
+                          try {
+                            return formatDateString(game.date);
+                          } catch (error) {
+                            console.error('Error formatting date:', error);
+                            return game.date || 'Invalid Date';
+                          }
+                        })()}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -504,24 +543,42 @@ export default function CaptainPage() {
         
         const hasExistingResult = currentMatchResults.find(result => result.gameId === selectedGame);
         
-        return (
-          <>
-            {/* Check if there's an existing result for this game */}
-            {hasExistingResult ? (
-              <ScoreModification 
-                game={selectedGameObj} 
-                onScoreUpdate={handleScoreUpdate}
-                onDateUpdate={handleDateUpdate}
-              />
-            ) : (
-              <DetailedScoreSubmission 
-                game={selectedGameObj} 
-                onScoreSubmit={handleScoreSubmit}
-                onDateUpdate={handleDateUpdate}
-              />
-            )}
-          </>
-        );
+        try {
+          return (
+            <>
+              {/* Check if there's an existing result for this game */}
+              {hasExistingResult ? (
+                <ScoreModification 
+                  game={selectedGameObj} 
+                  onScoreUpdate={handleScoreUpdate}
+                  onDateUpdate={handleDateUpdate}
+                />
+              ) : (
+                <DetailedScoreSubmission 
+                  game={selectedGameObj} 
+                  onScoreSubmit={handleScoreSubmit}
+                  onDateUpdate={handleDateUpdate}
+                />
+              )}
+            </>
+          );
+        } catch (error) {
+          console.error('Error rendering score submission components:', error);
+          console.error('Selected game object:', selectedGameObj);
+          console.error('Has existing result:', hasExistingResult);
+          return (
+            <div className="card">
+              <div className="text-center text-red-600">
+                <p>Error loading score submission form</p>
+                <p className="text-sm">Please try refreshing the page</p>
+                <details className="mt-2 text-xs">
+                  <summary>Error Details</summary>
+                  <pre className="mt-1 text-left">{error instanceof Error ? error.message : String(error)}</pre>
+                </details>
+              </div>
+            </div>
+          );
+        }
       })()}
 
       {/* Submitted Results */}

@@ -35,30 +35,39 @@ export default function ScoreModification({ game, onScoreUpdate, onDateUpdate }:
   const [originalMatchLines, setOriginalMatchLines] = useState<MatchLineForm[]>([]);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
 
-  // Find the existing match result (refresh from storage to get latest)
-  const currentMatchResults = refreshMatchResultsFromStorage();
-  const existingResult = currentMatchResults.find(mr => mr.gameId === game.id);
+  // Find the existing match result
+  const [existingResult, setExistingResult] = useState<MatchResult | undefined>(undefined);
   
   useEffect(() => {
-    if (existingResult) {
-      // Convert existing match lines to form format
-      const formLines: MatchLineForm[] = existingResult.matchLines.map(line => ({
-        id: line.id,
-        lineNumber: line.lineNumber,
-        matchType: line.matchType,
-        homePlayers: line.homePlayers,
-        awayPlayers: line.awayPlayers,
-        sets: line.sets.map(set => ({
-          setNumber: set.setNumber,
-          homeScore: set.homeScore,
-          awayScore: set.awayScore
-        }))
-      }));
-      setMatchLines(formLines);
-      setOriginalMatchLines(JSON.parse(JSON.stringify(formLines))); // Deep copy
-      setHasUnsavedChanges(false);
+    try {
+      // Refresh from storage to get latest data
+      const currentMatchResults = refreshMatchResultsFromStorage();
+      const foundResult = currentMatchResults.find(mr => mr.gameId === game.id);
+      setExistingResult(foundResult);
+      
+      if (foundResult) {
+        // Convert existing match lines to form format
+        const formLines: MatchLineForm[] = foundResult.matchLines.map(line => ({
+          id: line.id,
+          lineNumber: line.lineNumber,
+          matchType: line.matchType,
+          homePlayers: line.homePlayers,
+          awayPlayers: line.awayPlayers,
+          sets: line.sets.map(set => ({
+            setNumber: set.setNumber,
+            homeScore: set.homeScore,
+            awayScore: set.awayScore
+          }))
+        }));
+        setMatchLines(formLines);
+        setOriginalMatchLines(JSON.parse(JSON.stringify(formLines))); // Deep copy
+        setHasUnsavedChanges(false);
+      }
+    } catch (error) {
+      console.error('Error loading match result data:', error);
+      setExistingResult(undefined);
     }
-  }, [existingResult]);
+  }, [game.id]);
 
   // Track changes to detect unsaved modifications
   useEffect(() => {

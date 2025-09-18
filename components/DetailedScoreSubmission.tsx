@@ -39,13 +39,45 @@ export default function DetailedScoreSubmission({ game, onScoreSubmit, onDateUpd
   ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Add error handling for game object
+  if (!game || !game.id || !game.home || !game.away || !game.date) {
+    console.error('Invalid game object passed to DetailedScoreSubmission:', game);
+    return (
+      <div className="card">
+        <div className="text-center text-red-600">
+          <p>Error: Invalid game data</p>
+        </div>
+      </div>
+    );
+  }
+
   const homeTeam = teams.find(t => t.id === game.home);
   const awayTeam = teams.find(t => t.id === game.away);
   
-  if (!homeTeam || !awayTeam) return null;
+  if (!homeTeam || !awayTeam) {
+    console.error('Teams not found for game:', {
+      gameId: game.id,
+      homeTeamId: game.home,
+      awayTeamId: game.away,
+      availableTeamIds: teams.map(t => t.id)
+    });
+    return (
+      <div className="card">
+        <div className="text-center text-red-600">
+          <p>Error: Teams not found for this game</p>
+        </div>
+      </div>
+    );
+  }
 
   // Check if game is in the future
-  const isFutureGame = isGameDateInFuture(game.date);
+  let isFutureGame = false;
+  try {
+    isFutureGame = isGameDateInFuture(game.date);
+  } catch (error) {
+    console.error('Error checking if game is in future:', error);
+    console.error('Game date:', game.date);
+  }
   
   // If game is in the future, show date modifier instead of score submission
   if (isFutureGame) {
