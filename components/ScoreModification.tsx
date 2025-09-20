@@ -80,6 +80,14 @@ export default function ScoreModification({ game, onScoreUpdate, onDateUpdate }:
   // Add error handling for game object - after all hooks
   if (!game || !game.id || !game.home || !game.away || !game.date) {
     console.error('Invalid game object passed to ScoreModification:', game);
+    console.error('Game validation details:', {
+      hasGame: !!game,
+      hasId: !!game?.id,
+      hasHome: !!game?.home,
+      hasAway: !!game?.away,
+      hasDate: !!game?.date,
+      gameKeys: game ? Object.keys(game) : 'null'
+    });
     return (
       <div className="card">
         <div className="text-center text-red-600">
@@ -101,7 +109,14 @@ export default function ScoreModification({ game, onScoreUpdate, onDateUpdate }:
   }
 
   // Check if game is in the future
-  const isFutureGame = isGameDateInFuture(game.date);
+  let isFutureGame = false;
+  try {
+    isFutureGame = isGameDateInFuture(game.date);
+  } catch (error) {
+    console.error('Error checking if game is in future:', error);
+    console.error('Game date:', game.date);
+    isFutureGame = false; // Default to false if there's an error
+  }
   
   // If game is in the future, show date modifier instead of score modification
   if (isFutureGame) {

@@ -548,6 +548,8 @@ export default function CaptainPage() {
         }
         
         const hasExistingResult = currentMatchResults.find(result => result.gameId === selectedGame);
+        console.log('Has existing result:', hasExistingResult);
+        console.log('Current match results:', currentMatchResults);
         
         try {
           return (
