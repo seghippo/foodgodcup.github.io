@@ -35,6 +35,19 @@ export default function ScoreModification({ game, onScoreUpdate, onDateUpdate }:
   const [originalMatchLines, setOriginalMatchLines] = useState<MatchLineForm[]>([]);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
 
+  // Add error handling for game object
+  if (!game || !game.id || !game.home || !game.away || !game.date) {
+    console.error('Invalid game object passed to ScoreModification:', game);
+    return (
+      <div className="card">
+        <div className="text-center text-red-600">
+          <p>Error: Invalid game data</p>
+          <p className="text-sm">Game object: {JSON.stringify(game)}</p>
+        </div>
+      </div>
+    );
+  }
+
   // Find the existing match result
   const [existingResult, setExistingResult] = useState<MatchResult | undefined>(undefined);
   

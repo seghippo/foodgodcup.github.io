@@ -529,7 +529,13 @@ export default function CaptainPage() {
 
       {/* Score Submission Form */}
       {selectedGame && (() => {
+        console.log('Looking for game with ID:', selectedGame);
+        console.log('Current schedule length:', currentSchedule.length);
+        console.log('Current schedule:', currentSchedule);
+        
         const selectedGameObj = currentSchedule.find(game => game.id === selectedGame);
+        console.log('Found game object:', selectedGameObj);
+        
         if (!selectedGameObj) {
           console.error('Selected game not found:', selectedGame);
           return null;

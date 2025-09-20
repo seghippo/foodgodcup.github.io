@@ -1344,6 +1344,16 @@ const defaultMatchResults: MatchResult[] = [
 
 export const posts: Post[] = [
   {
+    slug: 'opening-ceremony-announcement',
+    title: '🎾🏆 食神杯开幕式通知',
+    titleEn: '🎾🏆 Food God Cup Opening Ceremony Announcement',
+    date: '2025-01-21',
+    excerpt: '食神杯开幕式即将开始！请大家准时参加集体合影和比赛。',
+    excerptEn: 'The Food God Cup Opening Ceremony is about to begin! Please join us for the group photo and matches.',
+    content: "🎾🏆 食神杯开幕式通知\n\n📍 地点：Kit Carson park tennis court\n⏰ 时间：09/27 2:30-6:30\n🏠 地址：3333 Bear Valley Parkway, Escondido CA\n\n📸 重要提醒：\n请大家参加27号开幕式的球友们2:50准时到场，我们集体合影。3:00开始比赛。\n\n🍽️ 聚餐安排：\n7:00聚餐，请参加聚餐参与接龙多谢大家合作支持。\n\n🏆 特别活动：\n聚餐现场将选出第一轮的最佳表现奖一位并颁发小奖品\n\n期待与大家在开幕式上相见！🎾🥟",
+    contentEn: "🎾🏆 Food God Cup Opening Ceremony Announcement\n\n📍 Location: Kit Carson park tennis court\n⏰ Time: 09/27 2:30-6:30\n🏠 Address: 3333 Bear Valley Parkway, Escondido CA\n\n📸 Important Reminder:\nAll players participating in the opening ceremony on the 27th, please arrive on time at 2:50 for our group photo. Matches will begin at 3:00.\n\n🍽️ Dinner Arrangement:\nDinner at 7:00, please participate in the dinner sign-up. Thank you for your cooperation and support.\n\n🏆 Special Activity:\nAt the dinner, we will select one best performer from the first round and award a small prize.\n\nLooking forward to seeing everyone at the opening ceremony! 🎾🥟"
+  },
+  {
     slug: 'meet-the-seven-teams',
     title: '🏆 七支战队大揭秘：美食与网球的完美融合',
     titleEn: '🏆 Meet the Seven Teams: Perfect Fusion of Food and Tennis',

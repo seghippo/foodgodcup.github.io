@@ -81,40 +81,7 @@ export default function HomePage() {
         <div className="absolute bottom-10 left-10 w-24 h-24 bg-yellow-400/20 rounded-full blur-lg"></div>
       </section>
 
-      {/* Stats Section */}
-      <section className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        <div className="stat-card text-center">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-league-accent to-league-highlight rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
-            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-          </div>
-          <div className="text-xl sm:text-2xl font-bold text-league-primary dark:text-white">7</div>
-          <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{t('home.activeTeams')}</div>
-        </div>
-        
-        <div className="stat-card text-center">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-league-success to-emerald-500 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
-            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div className="text-xl sm:text-2xl font-bold text-league-primary dark:text-white">{completedMatches}</div>
-          <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{t('home.gamesPlayed')}</div>
-        </div>
-        
-        <div className="stat-card text-center">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-league-info to-blue-500 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
-            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-            </svg>
-          </div>
-          <div className="text-xl sm:text-2xl font-bold text-league-primary dark:text-white">{totalPlayers}</div>
-          <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{t('home.players')}</div>
-        </div>
-      </section>
-
-      {/* Main Content Grid */}
+      {/* Latest Blog Post - Moved above stats */}
       <section className="grid lg:grid-cols-3 gap-8">
         {/* Latest Blog Post */}
         <div className="lg:col-span-2">
@@ -259,6 +226,40 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Stats Section */}
+      <section className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="stat-card text-center">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-league-accent to-league-highlight rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <div className="text-xl sm:text-2xl font-bold text-league-primary dark:text-white">7</div>
+          <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{t('home.activeTeams')}</div>
+        </div>
+        
+        <div className="stat-card text-center">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-league-success to-emerald-500 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div className="text-xl sm:text-2xl font-bold text-league-primary dark:text-white">{completedMatches}</div>
+          <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{t('home.gamesPlayed')}</div>
+        </div>
+        
+        <div className="stat-card text-center">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-league-info to-blue-500 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+            </svg>
+          </div>
+          <div className="text-xl sm:text-2xl font-bold text-league-primary dark:text-white">{totalPlayers}</div>
+          <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{t('home.players')}</div>
+        </div>
+      </section>
+
 
     </div>
   );
