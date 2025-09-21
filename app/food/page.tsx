@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { getFoodPosts, addFoodPost, addFoodComment, likeFoodPost, likeFoodComment, subscribeToFoodPostsRealtime, type FoodPost, type FoodComment } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
+import { compressImage, isValidImageFile, formatFileSize, type CompressedImageResult } from '@/lib/imageUtils';
 
 export default function FoodPage() {
   const { t, isClient } = useLanguage();
@@ -14,8 +15,11 @@ export default function FoodPage() {
     authorTeam: '',
     authorId: '',
     tags: [] as string[],
-    location: ''
+    location: '',
+    imageUrl: ''
   });
+  const [selectedImage, setSelectedImage] = useState<CompressedImageResult | null>(null);
+  const [isCompressing, setIsCompressing] = useState(false);
   const [newComment, setNewComment] = useState<{ [postId: string]: string }>({});
   const [showNewPostForm, setShowNewPostForm] = useState(false);
   const [currentUser] = useState('TJ01'); // Mock current user
@@ -41,6 +45,38 @@ export default function FoodPage() {
     }
   }, [isClient]);
 
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!isValidImageFile(file)) {
+      alert('请选择有效的图片文件 (JPG, PNG, GIF, WebP)');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      alert('图片文件过大，请选择小于10MB的图片');
+      return;
+    }
+
+    setIsCompressing(true);
+    try {
+      const compressed = await compressImage(file, 300, 0.8);
+      setSelectedImage(compressed);
+      setNewPost({ ...newPost, imageUrl: compressed.dataUrl });
+    } catch (error) {
+      console.error('Error compressing image:', error);
+      alert('图片压缩失败，请重试');
+    } finally {
+      setIsCompressing(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedImage(null);
+    setNewPost({ ...newPost, imageUrl: '' });
+  };
+
   const handleSubmitPost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPost.title.trim() && newPost.content.trim()) {
@@ -59,8 +95,10 @@ export default function FoodPage() {
             authorTeam: '',
             authorId: '',
             tags: [],
-            location: ''
+            location: '',
+            imageUrl: ''
           });
+          setSelectedImage(null);
           setShowNewPostForm(false);
         }
       } catch (error) {
@@ -229,6 +267,59 @@ export default function FoodPage() {
               />
             </div>
 
+            {/* Image Upload Section */}
+            <div>
+              <label className="block text-sm font-medium mb-2">美食图片（可选）</label>
+              <div className="space-y-3">
+                {!selectedImage ? (
+                  <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-league-primary transition-colors">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageSelect}
+                      className="hidden"
+                      id="image-upload"
+                      disabled={isCompressing}
+                    />
+                    <label
+                      htmlFor="image-upload"
+                      className={`cursor-pointer ${isCompressing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      <div className="text-4xl mb-2">📷</div>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        {isCompressing ? '正在压缩图片...' : '点击选择图片或拖拽到此处'}
+                      </p>
+                      <p className="text-xs text-slate-500 mt-1">
+                        支持 JPG, PNG, GIF, WebP，最大10MB，自动压缩至300px
+                      </p>
+                    </label>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <img
+                        src={selectedImage.dataUrl}
+                        alt="Selected food"
+                        className="w-full max-w-md mx-auto rounded-lg shadow-md"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className="text-xs text-slate-500 text-center">
+                      <p>原始大小: {formatFileSize(selectedImage.originalSize)}</p>
+                      <p>压缩后: {formatFileSize(selectedImage.compressedSize)}</p>
+                      <p>压缩率: {(selectedImage.compressionRatio * 100).toFixed(1)}%</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="flex gap-2">
               <button
                 type="submit"
@@ -280,6 +371,18 @@ export default function FoodPage() {
             <div className="prose dark:prose-invert max-w-none mb-4">
               <p className="whitespace-pre-wrap">{post.content}</p>
             </div>
+
+            {/* Display Image if exists */}
+            {post.imageUrl && (
+              <div className="mb-4">
+                <img
+                  src={post.imageUrl}
+                  alt="Food image"
+                  className="w-full max-w-md mx-auto rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => window.open(post.imageUrl, '_blank')}
+                />
+              </div>
+            )}
 
             {post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-4">
