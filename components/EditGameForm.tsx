@@ -14,6 +14,21 @@ export default function EditGameForm({ game, onGameUpdated, onCancel }: EditGame
   const { t, getTeamName } = useLanguage();
   const [isUpdating, setIsUpdating] = useState(false);
   
+  // Validate game object and extract date safely
+  const getDateString = (dateStr: string) => {
+    if (!dateStr) return '';
+    if (dateStr.includes('T')) {
+      return dateStr.split('T')[0];
+    }
+    return dateStr;
+  };
+  
+  const [formData, setFormData] = useState({
+    date: getDateString(game?.date || ''),
+    time: game?.time || '',
+    venue: game?.venue || ''
+  });
+  
   // Early return if game is invalid
   if (!game || !game.id) {
     return (
@@ -30,21 +45,6 @@ export default function EditGameForm({ game, onGameUpdated, onCancel }: EditGame
       </div>
     );
   }
-  
-  // Validate game object and extract date safely
-  const getDateString = (dateStr: string) => {
-    if (!dateStr) return '';
-    if (dateStr.includes('T')) {
-      return dateStr.split('T')[0];
-    }
-    return dateStr;
-  };
-  
-  const [formData, setFormData] = useState({
-    date: getDateString(game?.date || ''),
-    time: game?.time || '',
-    venue: game?.venue || ''
-  });
 
   const homeTeam = teams.find(team => team.id === game?.home);
   const awayTeam = teams.find(team => team.id === game?.away);
