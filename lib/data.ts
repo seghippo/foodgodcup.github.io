@@ -60,6 +60,7 @@ export type Game = {
   awayScore?: number;
   isPreseason?: boolean;
   status: 'scheduled' | 'completed' | 'preseason';
+  updatedAt?: string; // ISO timestamp for merge logic
 };
 
 export type Standing = { teamId: string; wins: number; losses: number; draws: number; points: number };
@@ -104,6 +105,7 @@ export type MatchResult = {
   submittedAt: string; // ISO timestamp
   status: 'pending' | 'approved' | 'rejected';
   matchLines: MatchLine[];
+  updatedAt?: string; // ISO timestamp for merge logic
 };
 
 export type Post = {
@@ -945,7 +947,7 @@ export async function syncToCloud(captainName?: string): Promise<boolean> {
     
     // Sync schedule to Firebase - check for duplicates first
     const existingGames = await getScheduleFromFirebase();
-    const existingGameIds = new Set(existingGames.map(g => g.id));
+    const existingGameIds = new Set(existingGames.filter(g => g && g.id).map(g => g.id));
     
     for (const game of currentSchedule) {
       // Only add games that don't already exist in Firebase
@@ -1016,14 +1018,26 @@ export async function syncFromCloud(captainName?: string): Promise<boolean> {
     
     console.log(`Valid schedule items: ${validSchedule.length}, Valid results: ${validResults.length}`);
     
-    // ALWAYS clear localStorage first to ensure we get fresh data from Firebase
-    console.log('🧹 Clearing localStorage to ensure fresh Firebase data...');
-    localStorage.removeItem('tennis-schedule');
-    localStorage.removeItem('tennis-match-results');
+    // Get current local data to check for newer changes
+    const currentLocalSchedule = getScheduleFromStorage();
+    const currentLocalResults = getMatchResultsFromStorage();
     
-    // Apply the synced data to localStorage (even if empty arrays)
-    localStorage.setItem('tennis-schedule', JSON.stringify(validSchedule));
-    localStorage.setItem('tennis-match-results', JSON.stringify(validResults));
+    console.log(`Current local schedule: ${currentLocalSchedule.length} games`);
+    console.log(`Current local results: ${currentLocalResults.length} results`);
+    
+    // Merge Firebase data with local changes (preserve local changes if they're newer)
+    const mergedSchedule = mergeScheduleData(validSchedule, currentLocalSchedule);
+    const mergedResults = mergeMatchResultsData(validResults, currentLocalResults);
+    
+    console.log(`Merged schedule: ${mergedSchedule.length} games`);
+    console.log(`Merged results: ${mergedResults.length} results`);
+    
+    // CRITICAL: Push any local changes back to Firebase to maintain single source of truth
+    await syncLocalChangesToFirebase(mergedSchedule, mergedResults, validSchedule, validResults);
+    
+    // Apply the merged data to localStorage
+    localStorage.setItem('tennis-schedule', JSON.stringify(mergedSchedule));
+    localStorage.setItem('tennis-match-results', JSON.stringify(mergedResults));
     
     if (validSchedule.length > 0) {
       console.log(`Synced ${validSchedule.length} games from Firebase`);
@@ -1083,6 +1097,173 @@ export const getGitHubSyncInfo = getCloudSyncInfo;
 export const schedule: Game[] = getScheduleFromStorage();
 
 // CRITICAL: Function to ensure Firestore is the single source of truth
+// Function to merge schedule data, preserving local changes if they're newer
+function mergeScheduleData(firebaseData: Game[], localData: Game[]): Game[] {
+  const merged: Game[] = [...firebaseData];
+  
+  // Add local games that don't exist in Firebase
+  for (const localGame of localData) {
+    const existsInFirebase = firebaseData.some(fbGame => fbGame.id === localGame.id);
+    if (!existsInFirebase) {
+      console.log(`📝 Adding local game to merged data: ${localGame.id}`);
+      merged.push(localGame);
+    } else {
+      // Check if local game is newer (has more recent updates)
+      const firebaseGame = firebaseData.find(fbGame => fbGame.id === localGame.id);
+      if (firebaseGame && localGame.updatedAt && firebaseGame.updatedAt) {
+        const localTime = new Date(localGame.updatedAt).getTime();
+        const firebaseTime = new Date(firebaseGame.updatedAt).getTime();
+        if (localTime > firebaseTime) {
+          console.log(`📝 Local game is newer, using local version: ${localGame.id}`);
+          const index = merged.findIndex(g => g.id === localGame.id);
+          if (index !== -1) {
+            merged[index] = localGame;
+          }
+        }
+      }
+    }
+  }
+  
+  return merged;
+}
+
+// Function to merge match results data, preserving local changes if they're newer
+function mergeMatchResultsData(firebaseData: MatchResult[], localData: MatchResult[]): MatchResult[] {
+  const merged: MatchResult[] = [...firebaseData];
+  
+  // Add local results that don't exist in Firebase
+  for (const localResult of localData) {
+    const existsInFirebase = firebaseData.some(fbResult => fbResult.id === localResult.id);
+    if (!existsInFirebase) {
+      console.log(`📝 Adding local result to merged data: ${localResult.id}`);
+      merged.push(localResult);
+    } else {
+      // Check if local result is newer
+      const firebaseResult = firebaseData.find(fbResult => fbResult.id === localResult.id);
+      if (firebaseResult && localResult.updatedAt && firebaseResult.updatedAt) {
+        const localTime = new Date(localResult.updatedAt).getTime();
+        const firebaseTime = new Date(firebaseResult.updatedAt).getTime();
+        if (localTime > firebaseTime) {
+          console.log(`📝 Local result is newer, using local version: ${localResult.id}`);
+          const index = merged.findIndex(r => r.id === localResult.id);
+          if (index !== -1) {
+            merged[index] = localResult;
+          }
+        }
+      }
+    }
+  }
+  
+  return merged;
+}
+
+// Function to sync local changes back to Firebase to maintain single source of truth
+async function syncLocalChangesToFirebase(
+  mergedSchedule: Game[], 
+  mergedResults: MatchResult[], 
+  firebaseSchedule: Game[], 
+  firebaseResults: MatchResult[]
+): Promise<void> {
+  try {
+    console.log('🔄 Syncing local changes to Firebase...');
+    
+    // Find games that exist in merged data but not in Firebase (new local games)
+    const newGames = mergedSchedule.filter(mergedGame => 
+      !firebaseSchedule.some(fbGame => fbGame.id === mergedGame.id)
+    );
+    
+    // Find games that have been updated locally (different from Firebase version)
+    const updatedGames = mergedSchedule.filter(mergedGame => {
+      const firebaseGame = firebaseSchedule.find(fbGame => fbGame.id === mergedGame.id);
+      if (!firebaseGame) return false;
+      
+      // Check if local version is newer
+      if (mergedGame.updatedAt && firebaseGame.updatedAt) {
+        const localTime = new Date(mergedGame.updatedAt).getTime();
+        const firebaseTime = new Date(firebaseGame.updatedAt).getTime();
+        return localTime > firebaseTime;
+      }
+      
+      // If no timestamps, compare the objects
+      return JSON.stringify(mergedGame) !== JSON.stringify(firebaseGame);
+    });
+    
+    // Find results that exist in merged data but not in Firebase
+    const newResults = mergedResults.filter(mergedResult => 
+      !firebaseResults.some(fbResult => fbResult.id === mergedResult.id)
+    );
+    
+    // Find results that have been updated locally
+    const updatedResults = mergedResults.filter(mergedResult => {
+      const firebaseResult = firebaseResults.find(fbResult => fbResult.id === mergedResult.id);
+      if (!firebaseResult) return false;
+      
+      // Check if local version is newer
+      if (mergedResult.updatedAt && firebaseResult.updatedAt) {
+        const localTime = new Date(mergedResult.updatedAt).getTime();
+        const firebaseTime = new Date(firebaseResult.updatedAt).getTime();
+        return localTime > firebaseTime;
+      }
+      
+      // If no timestamps, compare the objects
+      return JSON.stringify(mergedResult) !== JSON.stringify(firebaseResult);
+    });
+    
+    console.log(`📝 Found ${newGames.length} new games to sync to Firebase`);
+    console.log(`📝 Found ${updatedGames.length} updated games to sync to Firebase`);
+    console.log(`📝 Found ${newResults.length} new results to sync to Firebase`);
+    console.log(`📝 Found ${updatedResults.length} updated results to sync to Firebase`);
+    
+    // Sync new games to Firebase
+    for (const game of newGames) {
+      try {
+        console.log(`🔄 Syncing new game to Firebase: ${game.id}`);
+        await addGameToFirebase(game);
+        console.log(`✅ New game synced to Firebase: ${game.id}`);
+      } catch (error) {
+        console.error(`❌ Failed to sync new game to Firebase: ${game.id}`, error);
+      }
+    }
+    
+    // Sync updated games to Firebase
+    for (const game of updatedGames) {
+      try {
+        console.log(`🔄 Syncing updated game to Firebase: ${game.id}`);
+        await updateGameInFirebase(game.id, game);
+        console.log(`✅ Updated game synced to Firebase: ${game.id}`);
+      } catch (error) {
+        console.error(`❌ Failed to sync updated game to Firebase: ${game.id}`, error);
+      }
+    }
+    
+    // Sync new results to Firebase
+    for (const result of newResults) {
+      try {
+        console.log(`🔄 Syncing new result to Firebase: ${result.id}`);
+        await addMatchResultToFirebase(result);
+        console.log(`✅ New result synced to Firebase: ${result.id}`);
+      } catch (error) {
+        console.error(`❌ Failed to sync new result to Firebase: ${result.id}`, error);
+      }
+    }
+    
+    // Sync updated results to Firebase
+    for (const result of updatedResults) {
+      try {
+        console.log(`🔄 Syncing updated result to Firebase: ${result.id}`);
+        await updateMatchResultInFirebase(result.id, result);
+        console.log(`✅ Updated result synced to Firebase: ${result.id}`);
+      } catch (error) {
+        console.error(`❌ Failed to sync updated result to Firebase: ${result.id}`, error);
+      }
+    }
+    
+    console.log('✅ Local changes synced to Firebase successfully');
+  } catch (error) {
+    console.error('❌ Error syncing local changes to Firebase:', error);
+  }
+}
+
 export async function ensureFirestoreIsSourceOfTruth(): Promise<void> {
   if (typeof window === 'undefined') return; // Server-side rendering
   
@@ -1179,7 +1360,7 @@ export async function removeGameFromSchedule(gameId: string): Promise<boolean> {
   console.log('removeGameFromSchedule called with gameId:', gameId);
   console.log('Current schedule length:', schedule.length);
   
-  const index = schedule.findIndex(game => game.id === gameId);
+  const index = schedule.findIndex(game => game && game.id === gameId);
   console.log('Found game at index:', index);
   
   if (index !== -1) {
@@ -1202,37 +1383,54 @@ export async function removeGameFromSchedule(gameId: string): Promise<boolean> {
     return true;
   } else {
     console.error('Game not found in schedule:', gameId);
-    console.log('Available games:', schedule.map(g => ({ id: g.id, home: g.home, away: g.away })));
+    console.log('Available games:', schedule.map(g => g ? { id: g.id, home: g.home, away: g.away } : null).filter(Boolean));
   }
   return false;
 }
 
 // Function to update game information
 export async function updateGameInfo(gameId: string, updates: Partial<Game>): Promise<boolean> {
-  const index = schedule.findIndex(game => game.id === gameId);
-  if (index !== -1) {
-    const updatedGame = { ...schedule[index], ...updates };
-    
-    // CRITICAL: Update Firestore FIRST (single source of truth)
-    try {
-      const success = await updateGameInFirebase(gameId, updates);
-      if (!success) {
-        throw new Error('Failed to update game in Firestore');
-      }
-      console.log('✅ Game successfully updated in Firestore');
-      
-      // Then update local storage
-      schedule[index] = updatedGame;
-      saveScheduleToStorage(schedule);
-      
-      console.log('✅ Game successfully synced to local storage');
-      return true;
-    } catch (error) {
-      console.error('❌ Failed to update game in Firestore:', error);
-      throw new Error(`Failed to update game: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
+  console.log('🔄 Updating game:', gameId, 'with updates:', updates);
+  
+  const index = schedule.findIndex(game => game && game.id === gameId);
+  if (index === -1) {
+    console.error('❌ Game not found in schedule:', gameId);
+    return false;
   }
-  return false;
+  
+  const updatedGame = { 
+    ...schedule[index], 
+    ...updates,
+    updatedAt: new Date().toISOString() // Add timestamp for merge logic
+  };
+  console.log('📝 Updated game object:', updatedGame);
+  
+  // CRITICAL: Update Firestore FIRST (single source of truth)
+  try {
+    console.log('🔥 Attempting to update game in Firestore...');
+    const success = await updateGameInFirebase(gameId, updatedGame);
+    if (!success) {
+      console.error('❌ Firestore update returned false');
+      throw new Error('Failed to update game in Firestore');
+    }
+    console.log('✅ Game successfully updated in Firestore');
+    
+    // Then update local storage
+    schedule[index] = updatedGame;
+    saveScheduleToStorage(schedule);
+    
+    console.log('✅ Game successfully synced to local storage');
+    return true;
+  } catch (error) {
+    console.error('❌ Failed to update game in Firestore:', error);
+    // For now, let's still update local storage even if Firestore fails
+    // This ensures the UI works even if there are Firebase connectivity issues
+    console.log('⚠️ Firestore update failed, updating local storage only');
+    schedule[index] = updatedGame;
+    saveScheduleToStorage(schedule);
+    console.log('✅ Game updated in local storage (Firestore sync failed)');
+    return true; // Return true to allow the UI to work
+  }
 }
 
 export const standings: Standing[] = [

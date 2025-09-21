@@ -50,16 +50,26 @@ export default function CaptainPage() {
   const [gameToDelete, setGameToDelete] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [gameToEdit, setGameToEdit] = useState<string | null>(null);
+  const [isDataLoading, setIsDataLoading] = useState(true);
 
   // Refresh schedule and match results from localStorage when component mounts
   useEffect(() => {
+    setIsDataLoading(true);
+    
     // CRITICAL: Ensure Firestore is the single source of truth first
     ensureFirestoreIsSourceOfTruth().then(() => {
       const refreshedSchedule = refreshScheduleFromStorage();
+      console.log('Loaded schedule:', refreshedSchedule.length, 'games');
+      console.log('Schedule validation:', refreshedSchedule.map(g => g ? { id: g.id, valid: !!g.id } : { id: 'null', valid: false }));
       setCurrentSchedule(refreshedSchedule);
       
       const refreshedResults = refreshMatchResultsFromStorage();
       setCurrentMatchResults(refreshedResults);
+      
+      setIsDataLoading(false);
+    }).catch(error => {
+      console.error('Error loading data:', error);
+      setIsDataLoading(false);
     });
     
     // Auto-sync: Check for shared data on page load
@@ -132,13 +142,15 @@ export default function CaptainPage() {
     };
   }, []);
 
-  // Show loading while checking authentication
-  if (isLoading) {
+  // Show loading while checking authentication or loading data
+  if (isLoading || isDataLoading) {
     return (
       <div className="flex items-center justify-center min-h-96">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-league-primary mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">{t('auth.loggingIn')}</p>
+          <p className="text-slate-600 dark:text-slate-400">
+            {isLoading ? t('auth.loggingIn') : 'Loading game data...'}
+          </p>
         </div>
       </div>
     );
@@ -151,8 +163,12 @@ export default function CaptainPage() {
 
   // Filter games that are completed or can have scores submitted
   const availableGames = currentSchedule.filter(game => {
-    if (!game || !game.id) {
+    if (!game || !game.id || typeof game.id !== 'string') {
       console.warn('Invalid game found in schedule:', game);
+      return false;
+    }
+    if (!game.home || !game.away || !game.date) {
+      console.warn('Game missing required properties:', game);
       return false;
     }
     return game.status === 'completed' || game.status === 'scheduled';
@@ -178,7 +194,7 @@ export default function CaptainPage() {
     }
     
     // Update game status to completed when results are submitted
-    const gameIndex = currentSchedule.findIndex(game => game.id === result.gameId);
+    const gameIndex = currentSchedule.findIndex(game => game && game.id === result.gameId);
     if (gameIndex !== -1) {
       const updatedSchedule = [...currentSchedule];
       updatedSchedule[gameIndex] = { ...updatedSchedule[gameIndex], status: 'completed' };
@@ -295,6 +311,18 @@ export default function CaptainPage() {
   };
 
   const handleEditGame = (gameId: string) => {
+    console.log('handleEditGame called with gameId:', gameId);
+    console.log('Current schedule length:', currentSchedule.length);
+    console.log('Available games:', currentSchedule.map(g => g ? { id: g.id, home: g.home, away: g.away } : null).filter(Boolean));
+    
+    const gameToEdit = currentSchedule.find(game => game && game.id === gameId);
+    if (!gameToEdit) {
+      console.error('Game not found for editing:', gameId);
+      alert('Game not found. Please try refreshing the page.');
+      return;
+    }
+    
+    console.log('Found game to edit:', gameToEdit);
     setGameToEdit(gameId);
   };
 
@@ -316,11 +344,11 @@ export default function CaptainPage() {
         // Show success message
         alert(t('captain.gameUpdated'));
       } else {
-        alert(t('captain.gameUpdateFailed'));
+        throw new Error('Failed to update game in storage');
       }
     } catch (error) {
       console.error('Error updating game:', error);
-      alert(t('captain.gameUpdateFailed'));
+      throw error; // Re-throw to let EditGameForm handle the error
     }
   };
 
@@ -412,6 +440,13 @@ export default function CaptainPage() {
                     try {
                       console.log('Selecting game:', game.id);
                       console.log('Game object:', game);
+                      
+                      // Additional validation before setting selected game
+                      if (!game || !game.id || typeof game.id !== 'string') {
+                        console.error('Invalid game object, cannot select:', game);
+                        return;
+                      }
+                      
                       setSelectedGame(game.id);
                     } catch (error) {
                       console.error('Error selecting game:', error);
@@ -506,16 +541,46 @@ export default function CaptainPage() {
 
       {/* Edit Game Form */}
       {gameToEdit && (() => {
-        const gameToEditObj = currentSchedule.find(game => game.id === gameToEdit);
+        console.log('Rendering EditGameForm for gameId:', gameToEdit);
+        const gameToEditObj = currentSchedule.find(game => game && game.id === gameToEdit);
+        console.log('Found game object:', gameToEditObj);
+        
         if (!gameToEditObj) {
           console.error('Game not found for editing:', gameToEdit);
-          return null;
+          console.log('Available games:', currentSchedule.map(g => g ? { id: g.id, home: g.home, away: g.away } : null).filter(Boolean));
+          return (
+            <div className="card">
+              <div className="text-center text-red-600">
+                <p>Game not found for editing</p>
+                <p className="text-sm">Please try refreshing the page</p>
+                <button 
+                  onClick={cancelEditGame}
+                  className="mt-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          );
         }
         
         // Validate game object has required properties
         if (!gameToEditObj.home || !gameToEditObj.away || !gameToEditObj.date) {
           console.error('Game to edit missing required properties:', gameToEditObj);
-          return null;
+          return (
+            <div className="card">
+              <div className="text-center text-red-600">
+                <p>Game data is incomplete</p>
+                <p className="text-sm">Missing required properties</p>
+                <button 
+                  onClick={cancelEditGame}
+                  className="mt-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          );
         }
         
         return (
@@ -533,18 +598,33 @@ export default function CaptainPage() {
         console.log('Current schedule length:', currentSchedule.length);
         console.log('Current schedule:', currentSchedule);
         
-        const selectedGameObj = currentSchedule.find(game => game.id === selectedGame);
+        const selectedGameObj = currentSchedule.find(game => game && game.id === selectedGame);
         console.log('Found game object:', selectedGameObj);
         
-        if (!selectedGameObj) {
-          console.error('Selected game not found:', selectedGame);
-          return null;
+        if (!selectedGameObj || !selectedGameObj.id) {
+          console.error('Selected game not found or invalid:', selectedGame);
+          console.error('Available games:', currentSchedule.map(g => g ? { id: g.id, home: g.home, away: g.away } : null).filter(Boolean));
+          return (
+            <div className="card">
+              <div className="text-center text-red-600">
+                <p>Game not found</p>
+                <p className="text-sm">Please try refreshing the page</p>
+              </div>
+            </div>
+          );
         }
         
         // Validate game object has required properties
         if (!selectedGameObj.home || !selectedGameObj.away || !selectedGameObj.date) {
           console.error('Selected game missing required properties:', selectedGameObj);
-          return null;
+          return (
+            <div className="card">
+              <div className="text-center text-red-600">
+                <p>Game data is incomplete</p>
+                <p className="text-sm">Missing required properties</p>
+              </div>
+            </div>
+          );
         }
         
         const hasExistingResult = currentMatchResults.find(result => result.gameId === selectedGame);

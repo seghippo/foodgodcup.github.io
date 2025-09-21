@@ -42,7 +42,7 @@ export default function ScoreModification({ game, onScoreUpdate, onDateUpdate }:
     try {
       // Refresh from storage to get latest data
       const currentMatchResults = refreshMatchResultsFromStorage();
-      const foundResult = currentMatchResults.find(mr => mr.gameId === game.id);
+      const foundResult = currentMatchResults.find(mr => mr && mr.gameId === game.id);
       setExistingResult(foundResult);
       
       if (foundResult) {

@@ -13,14 +13,41 @@ interface EditGameFormProps {
 export default function EditGameForm({ game, onGameUpdated, onCancel }: EditGameFormProps) {
   const { t, getTeamName } = useLanguage();
   const [isUpdating, setIsUpdating] = useState(false);
+  
+  // Early return if game is invalid
+  if (!game || !game.id) {
+    return (
+      <div className="card">
+        <div className="text-center text-red-600">
+          <p>Invalid game data</p>
+          <button 
+            onClick={onCancel}
+            className="mt-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  // Validate game object and extract date safely
+  const getDateString = (dateStr: string) => {
+    if (!dateStr) return '';
+    if (dateStr.includes('T')) {
+      return dateStr.split('T')[0];
+    }
+    return dateStr;
+  };
+  
   const [formData, setFormData] = useState({
-    date: game.date.split('T')[0], // Extract date part from ISO string
-    time: game.time,
-    venue: game.venue || ''
+    date: getDateString(game?.date || ''),
+    time: game?.time || '',
+    venue: game?.venue || ''
   });
 
-  const homeTeam = teams.find(team => team.id === game.home);
-  const awayTeam = teams.find(team => team.id === game.away);
+  const homeTeam = teams.find(team => team.id === game?.home);
+  const awayTeam = teams.find(team => team.id === game?.away);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -31,6 +58,11 @@ export default function EditGameForm({ game, onGameUpdated, onCancel }: EditGame
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!game || !game.id) {
+      alert('Invalid game data. Please try again.');
+      return;
+    }
     
     if (!formData.date || !formData.time) {
       alert('Please fill in all required fields');
@@ -48,11 +80,9 @@ export default function EditGameForm({ game, onGameUpdated, onCancel }: EditGame
         venue: formData.venue
       };
       
-      // Notify parent component
-      onGameUpdated(updatedGame);
+      // Notify parent component and wait for completion
+      await onGameUpdated(updatedGame);
       
-      // Show success message
-      alert(t('captain.gameUpdated'));
     } catch (error) {
       console.error('Error updating game:', error);
       alert(t('captain.gameUpdateFailed'));
@@ -73,7 +103,7 @@ export default function EditGameForm({ game, onGameUpdated, onCancel }: EditGame
               {homeTeam ? getTeamName(homeTeam) : 'Unknown Team'} vs {awayTeam ? getTeamName(awayTeam) : 'Unknown Team'}
             </div>
             <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-              Game ID: {game.id}
+              Game ID: {game?.id || 'Unknown'}
             </div>
           </div>
         </div>

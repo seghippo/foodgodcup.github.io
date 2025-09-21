@@ -123,10 +123,15 @@ export default function SchedulePage() {
   
   const validGames = currentSchedule.filter(g => 
     g && 
+    typeof g === 'object' &&
+    g.id && 
+    typeof g.id === 'string' &&
     g.date && 
+    typeof g.date === 'string' &&
     g.home && 
+    typeof g.home === 'string' &&
     g.away && 
-    g.id
+    typeof g.away === 'string'
   );
   
   // Debug logging
@@ -156,22 +161,30 @@ export default function SchedulePage() {
               </tr>
             </thead>
             <tbody>
-              {validGames.map((g) => (
-                <tr key={g.id} className="border-t border-slate-200 dark:border-slate-800">
-                  <td className="py-3 pr-4">{formatDateString(g.date)}</td>
-                  <td className="py-3 pr-4">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{getTeamName(teamsById[g.home]) || g.home}</span>
-                      <span className="text-slate-400">vs</span>
-                      <span className="font-medium">{getTeamName(teamsById[g.away]) || g.away}</span>
-                    </div>
-                  </td>
-                  <td className="py-3 pr-4">{getScoreDisplay(g)}</td>
-                  <td className="py-3 pr-4">{g.venue || '-'}</td>
-                  <td className="py-3 pr-4">{g.time || '-'}</td>
-                  <td className="py-3 pr-4">{getStatusBadge(g.status, g.isPreseason)}</td>
-                </tr>
-              ))}
+              {validGames.map((g) => {
+                // Additional safety check
+                if (!g || !g.id) {
+                  console.warn('Invalid game object in map:', g);
+                  return null;
+                }
+                
+                return (
+                  <tr key={g.id} className="border-t border-slate-200 dark:border-slate-800">
+                    <td className="py-3 pr-4">{formatDateString(g.date)}</td>
+                    <td className="py-3 pr-4">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{getTeamName(teamsById[g.home]) || g.home}</span>
+                        <span className="text-slate-400">vs</span>
+                        <span className="font-medium">{getTeamName(teamsById[g.away]) || g.away}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 pr-4">{getScoreDisplay(g)}</td>
+                    <td className="py-3 pr-4">{g.venue || '-'}</td>
+                    <td className="py-3 pr-4">{g.time || '-'}</td>
+                    <td className="py-3 pr-4">{getStatusBadge(g.status, g.isPreseason)}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
